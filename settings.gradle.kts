@@ -3,6 +3,7 @@ rootProject.name = "Awake"
 include(":androidApp")
 include(":shared")
 include(":desktopApp")
+include(":awakeCore")
 
 pluginManagement {
     repositories {
