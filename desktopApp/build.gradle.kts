@@ -26,5 +26,8 @@ compose.desktop {
             packageName = "KotlinMultiplatformComposeDesktopApplication"
             packageVersion = "1.0.0"
         }
+        jvmArgs(
+            "-XstartOnFirstThread"
+        )
     }
 }
