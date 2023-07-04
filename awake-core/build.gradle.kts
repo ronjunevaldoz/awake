@@ -1,5 +1,6 @@
 import Deps.lwjgl
 import Deps.napier
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
@@ -50,16 +51,9 @@ kotlin {
             matching { it.name in publicationsFromMainHost }.all {
                 val targetPublication = this@all
                 tasks.withType<AbstractPublishToMaven>()
-                    .matching {
-                        it.publication == targetPublication && targetPublication.name.contains(
-                            "ios",
-                            false
-                        )
-                    }
+                    .matching { it.publication == targetPublication }
                     .configureEach {
-                        onlyIf {
-                            findProperty("isMainHost") == "true"
-                        }
+                        onlyIf { findProperty("isMainHost") == "true" }
                     }
             }
         }
