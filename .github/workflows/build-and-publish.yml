@@ -20,6 +20,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: $JAVA_VERSION
       - name: Set up Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       - name: Build
@@ -37,7 +41,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
-           java-version: $JAVA_VERSION
+         java-version: $JAVA_VERSION
       - name: Set up Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       - name: Publish to Maven repository
