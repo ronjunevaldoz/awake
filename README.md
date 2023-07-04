@@ -15,7 +15,7 @@ Awake is a cross-platform graphics wrapper and framework (OpenGL, Metal & Vulkan
 - OpenGL
     - [x] Android OpenGL
     - [x] iOS OpenGL
-    - [x] Desktop OpenGL (JVM experimental due to imcompatibility to compose AWT)
+    - [x] Desktop OpenGL (JVM experimental due to in-compatibility to compose AWT)
 - Vulkan
     - [ ] Android Vulkan (TODO)
     - [ ] iOS MoltenVK / Metal (TODO)
@@ -27,15 +27,15 @@ To use this library in your Kotlin Multiplatform project, follow the steps below
 
 1. Add the library as a dependency in your Gradle `build.gradle.kts`
 
-    ```kotlin
-   implementation("io.github.ronjunevaldoz:awake-core:1.0.0-SNAPSHOT")
-    ```
+```kotlin
+implementation("io.github.ronjunevaldoz:awake-core:1.0.0-SNAPSHOT")
+```
 
-    ```kotlin
-    repositories {
-         maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
-    }
-    ```
+```kotlin
+repositories {
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
+}
+```
 
 ### Example Usage
 

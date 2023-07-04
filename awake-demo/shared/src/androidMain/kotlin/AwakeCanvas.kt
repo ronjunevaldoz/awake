@@ -7,7 +7,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import io.github.ronjunevaldoz.awake.core.AwakeContext
-import io.github.ronjunevaldoz.awake.core.graphics.Config
 import io.github.ronjunevaldoz.awake.core.graphics.Renderer
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.AndroidRenderer
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.GameView

@@ -1,8 +1,8 @@
 rootProject.name = "Awake"
 
-include(":androidApp")
-include(":shared")
-include(":desktopApp")
+include(":awake-demo:androidApp")
+include(":awake-demo:shared")
+include(":awake-demo:desktopApp")
 include(":awake-core")
 
 pluginManagement {
@@ -31,6 +31,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
         maven("https://s01.oss.sonatype.org/content/repositories/snapshots")

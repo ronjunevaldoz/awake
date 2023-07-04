@@ -16,15 +16,16 @@ kotlin {
 
     cocoapods {
         version = "1.0.0"
-        summary = "Some description for the Shared Module"
-        homepage = "Link to the Shared Module homepage"
+        summary = "Awake Demo Compose"
+        homepage = "io.github.ronjunevaldoz/awake-demo"
         ios.deploymentTarget = "14.1"
         podfile = project.file("../iosApp/Podfile")
         framework {
             baseName = "shared"
             isStatic = true
         }
-        extraSpecAttributes["resources"] = "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
+        extraSpecAttributes["resources"] =
+            "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
     }
 
     sourceSets {
@@ -64,7 +65,7 @@ kotlin {
 
 android {
     compileSdkVersion((findProperty("android.compileSdk") as String).toInt())
-    namespace = "com.myapplication.common"
+    namespace = "io.github.ronjunevaldoz.awake.demo.common"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
