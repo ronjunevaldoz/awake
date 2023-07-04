@@ -11,11 +11,6 @@ kotlin {
     targetHierarchy.default()
 
     android {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
-        }
         publishLibraryVariants("release", "debug")
     }
     val iosArm64 = iosArm64()
@@ -38,11 +33,7 @@ kotlin {
         }
     }
 
-    jvm("desktop") {
-        compilations.all {
-            kotlinOptions.jvmTarget = "11"
-        }
-    }
+    jvm("desktop")
 
     // all items included here will be uploaded once isMainHost=true
     // ./gradlew publishAllPublicationsToSonatypeRepository -PisMainHost=true
@@ -114,6 +105,15 @@ android {
     defaultConfig {
         minSdk = 24
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlin {
+        jvmToolchain(11)
+    }
+
     publishing {
         multipleVariants {
             withSourcesJar()
