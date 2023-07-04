@@ -9,8 +9,6 @@ plugins {
 
 buildscript {
     dependencies {
-        // Use the same version in the error
-//        classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:${Versions.atomicfu}")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:${Versions.kotlin}")
     }
 }
@@ -18,8 +16,6 @@ buildscript {
 allprojects {
     group = "io.github.ronjunevaldoz"
     version = "1.0.0-SNAPSHOT"
-
-//    apply(plugin = "kotlinx-atomicfu")
 
     subprojects {
         apply(plugin = "org.jetbrains.dokka")

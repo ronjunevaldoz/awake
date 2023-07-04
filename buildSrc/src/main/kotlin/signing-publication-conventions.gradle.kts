@@ -1,12 +1,9 @@
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.tasks.bundling.Jar
-import org.gradle.kotlin.dsl.`maven-publish`
-import org.gradle.kotlin.dsl.signing
-import java.util.*
+import java.util.Properties
 
 plugins {
     `maven-publish`
     signing
+    id("org.jetbrains.dokka")
 }
 
 // Stub secrets to let the project sync and build without the publication values set up
@@ -34,9 +31,23 @@ if (secretPropsFile.exists()) {
     ext["ossrhPassword"] = System.getenv("OSSRH_PASSWORD")
 }
 
-val javadocJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("javadoc")
+
+val dokkaOutputDir = "$buildDir/dokka"
+
+tasks.getByName<org.jetbrains.dokka.gradle.DokkaTask>("dokkaHtml") {
+    outputDirectory.set(file(dokkaOutputDir))
 }
+
+val deleteDokkaOutputDir by tasks.register<Delete>("deleteDokkaOutputDirectory") {
+    delete(dokkaOutputDir)
+}
+
+val javadocJar = tasks.register<Jar>("javadocJar") {
+    dependsOn(deleteDokkaOutputDir, tasks.dokkaHtml)
+    archiveClassifier.set("javadoc")
+    from(dokkaOutputDir)
+}
+
 
 fun getExtraString(name: String) = ext[name]?.toString()
 
@@ -46,9 +57,12 @@ publishing {
     repositories {
         maven {
             name = "sonatype"
-            val releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            val releasesRepoUrl =
+                "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
             val snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            url =  uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
+            url = uri(
+                if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+            )
             credentials {
                 username = getExtraString("ossrhUsername")
                 password = getExtraString("ossrhPassword")

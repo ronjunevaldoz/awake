@@ -5,7 +5,7 @@ plugins {
     kotlin("multiplatform")
     id("com.android.library")
     id("org.jetbrains.compose")
-    id("convention.publication")
+    id("signing-publication-conventions")
 }
 
 kotlin {
