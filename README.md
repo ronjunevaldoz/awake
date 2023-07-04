@@ -8,9 +8,7 @@
 Awake is a cross-platform graphics wrapper and framework (OpenGL, Metal & Vulkan)
 
 > **Note**
-> The library is still experimental and might experience issues. The Android and iOS platform has an
-> stable and working opengl while the Desktop platform which uses lwjgl/glfw window is still under
-> development and experimental.
+> The library is still unstable and might encounter issues. While the Android and iOS platform have stable and functional opengl support, the Desktop platform that utilizes the lwjgl/glfw window is still in the development and experimental phase.
 
 ### Features Supported
 
