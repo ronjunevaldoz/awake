@@ -3,9 +3,9 @@
 [![Kotlin](https://img.shields.io/badge/kotlin-1.8.20-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-# Awake multiplatform
+# Awake
 
-Cross-platform OpenGL & Vulkan graphics
+Awake is a cross-platform graphics wrapper and framework (OpenGL, Metal & Vulkan)
 
 > **Note**
 > The library is still experimental and might experience issues. The Android and iOS platform has an
