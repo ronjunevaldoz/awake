@@ -51,7 +51,7 @@ class ShortBuffer(size: Int) : ShortBuf {
     override fun set(index: Int, value: Short) {
         buffer.put(index, value)
     }
-
+    @Suppress("UNCHECKED_CAST")
     override fun <B : Buffer> get(): B = buffer as B
 }
 
@@ -79,6 +79,7 @@ class IntBuffer(size: Int) : IntBuf {
         buffer.put(index, value)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun <B : Buffer> get(): B = buffer as B
 }
 
@@ -111,6 +112,7 @@ class FloatBuffer(size: Int) : FloatBuf {
         buffer.position(0)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun <B : Buffer> get(): B = buffer as B
 }
 
