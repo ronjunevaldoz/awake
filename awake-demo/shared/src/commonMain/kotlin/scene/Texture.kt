@@ -27,9 +27,9 @@ class Texture : Drawable, Disposable {
     private val aColor by lazy { shader.color }
     private val aTexCoords by lazy { shader.texCoords }
 
-    private val vao = BufferUtils.intBuffer(1)
-    private val vbo = BufferUtils.intBuffer(1)
-    private val ebo = BufferUtils.intBuffer(1)
+    private var vao = -1
+    private var vbo = -1
+    private var ebo = -1
 
     private val attributes: List<Attribute>
     private val indices = byteArrayOf(
@@ -71,12 +71,12 @@ class Texture : Drawable, Disposable {
 
     private fun createBuffers() {
         // VAO
-        gl.genVertexArrays(1, vao)
-        gl.bindVertexArray(vao[0])
+        vao = gl.genVertexArrays()
+        gl.bindVertexArray(vao)
 
         // VBO
-        gl.genBuffers(1, vbo)
-        gl.bindBuffer(OpenGL.BufferType.Array, vbo[0])
+        vbo = gl.genBuffers()
+        gl.bindBuffer(OpenGL.BufferType.Array, vbo)
         val numComponents =
             8 * Float.SIZE_BYTES // total number of components (3 position, 3 color, 2 uv)
         val vertices = mutableListOf<Float>()
@@ -101,8 +101,8 @@ class Texture : Drawable, Disposable {
             offset += attribute.data.size * Float.SIZE_BYTES
         }
         // EBO
-        gl.genBuffers(1, ebo)
-        gl.bindBuffer(OpenGL.BufferType.ElementArray, ebo[0])
+        ebo = gl.genBuffers()
+        gl.bindBuffer(OpenGL.BufferType.ElementArray, ebo)
         val indicesBuffer = BufferUtils.byteBuffer(indices.size)
         for (i in indices.indices) {
             indicesBuffer[i] = indices[i]
@@ -127,7 +127,7 @@ class Texture : Drawable, Disposable {
 
     override fun draw() {
         shader.use {
-            gl.bindVertexArray(vao[0])
+            gl.bindVertexArray(vao)
 
             gl.activeTexture(GL_TEXTURE0)
             gl.bindTexture(GL_TEXTURE_2D, AssetUtils.getTexture(textureKey))
@@ -145,9 +145,9 @@ class Texture : Drawable, Disposable {
 
     override fun dispose() {
         shader.delete()
-        gl.deleteVertexArrays(1, vao)
-        gl.deleteBuffers(1, vbo)
-        gl.deleteBuffers(1, ebo)
+        gl.deleteVertexArrays(vao)
+        gl.deleteBuffers(vbo)
+        gl.deleteBuffers(ebo)
         AssetUtils.removeTexture(textureKey)
     }
 

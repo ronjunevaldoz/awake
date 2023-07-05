@@ -25,6 +25,7 @@ class ByteBuffer(size: Int) : ByteBuf {
         buffer.put(index, value)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun <B : Buffer> get(): B = buffer as B
 }
 

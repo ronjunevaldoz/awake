@@ -6,22 +6,33 @@ import android.opengl.GLES20.glActiveTexture
 import android.opengl.GLES20.glAttachShader
 import android.opengl.GLES20.glBindAttribLocation
 import android.opengl.GLES20.glBindBuffer
+import android.opengl.GLES20.glBindFramebuffer
+import android.opengl.GLES20.glBindRenderbuffer
 import android.opengl.GLES20.glBindTexture
+import android.opengl.GLES20.glBlendFunc
 import android.opengl.GLES20.glBufferData
+import android.opengl.GLES20.glCheckFramebufferStatus
 import android.opengl.GLES20.glClear
 import android.opengl.GLES20.glClearColor
 import android.opengl.GLES20.glCompileShader
 import android.opengl.GLES20.glCreateProgram
 import android.opengl.GLES20.glCreateShader
 import android.opengl.GLES20.glDeleteBuffers
+import android.opengl.GLES20.glDeleteFramebuffers
 import android.opengl.GLES20.glDeleteProgram
+import android.opengl.GLES20.glDeleteRenderbuffers
 import android.opengl.GLES20.glDeleteShader
 import android.opengl.GLES20.glDeleteTextures
 import android.opengl.GLES20.glDisableVertexAttribArray
 import android.opengl.GLES20.glDrawArrays
 import android.opengl.GLES20.glDrawElements
+import android.opengl.GLES20.glEnable
 import android.opengl.GLES20.glEnableVertexAttribArray
+import android.opengl.GLES20.glFramebufferRenderbuffer
+import android.opengl.GLES20.glFramebufferTexture2D
 import android.opengl.GLES20.glGenBuffers
+import android.opengl.GLES20.glGenFramebuffers
+import android.opengl.GLES20.glGenRenderbuffers
 import android.opengl.GLES20.glGenTextures
 import android.opengl.GLES20.glGetAttribLocation
 import android.opengl.GLES20.glGetError
@@ -31,6 +42,8 @@ import android.opengl.GLES20.glGetShaderInfoLog
 import android.opengl.GLES20.glGetShaderiv
 import android.opengl.GLES20.glGetUniformLocation
 import android.opengl.GLES20.glLinkProgram
+import android.opengl.GLES20.glReadPixels
+import android.opengl.GLES20.glRenderbufferStorage
 import android.opengl.GLES20.glShaderSource
 import android.opengl.GLES20.glTexImage2D
 import android.opengl.GLES20.glTexParameteri
@@ -48,6 +61,7 @@ import io.github.ronjunevaldoz.awake.core.memory.Buffer
 import io.github.ronjunevaldoz.awake.core.memory.FloatBuf
 import io.github.ronjunevaldoz.awake.core.memory.IntBuf
 import io.github.ronjunevaldoz.awake.core.memory.createIntBuffer
+import io.github.ronjunevaldoz.awake.core.utils.BufferUtils
 
 internal actual object Agl : OpenGL {
     override fun clearColor(r: Float, g: Float, b: Float, a: Float) {
@@ -186,6 +200,13 @@ internal actual object Agl : OpenGL {
         glDisableVertexAttribArray(index)
     }
 
+    override fun genBuffers(): Int {
+        // TODO experimental performance
+        val buffer = BufferUtils.intBuffer(1)
+        glGenBuffers(1, buffer.get())
+        return buffer[0]
+    }
+
     override fun genBuffers(n: Int, buffers: IntBuf) {
         glGenBuffers(n, buffers.get())
     }
@@ -208,16 +229,51 @@ internal actual object Agl : OpenGL {
         )
     }
 
+    override fun genVertexArrays(): Int {
+        // TODO dispose buffer after?
+        val buffer = BufferUtils.intBuffer(1)
+        glGenVertexArrays(1, buffer.get())
+        return buffer[0]
+    }
+
     override fun deleteBuffers(n: Int, buffers: IntBuf) {
         glDeleteBuffers(n, buffers.get())
+    }
+
+    override fun deleteVertexArrays(arrays: Int) {
+        // TODO experimental performance
+        val buffer = BufferUtils.intBuffer(1)
+        buffer[0] = arrays
+        glDeleteVertexArrays(1, buffer.get())
     }
 
     override fun deleteVertexArrays(n: Int, arrays: IntBuf) {
         glDeleteVertexArrays(n, arrays.get())
     }
 
+    override fun deleteTextures(textures: Int) {
+        // TODO experimental performance
+        val buffer = BufferUtils.intBuffer(1)
+        buffer[0] = textures
+        glDeleteTextures(1, buffer.get())
+    }
+
     override fun deleteTextures(n: Int, textures: IntBuf) {
         glDeleteTextures(n, textures.get())
+    }
+
+    override fun deleteFrameBuffers(frameBuffer: Int) {
+        // TODO experimental performance
+        val buffer = BufferUtils.intBuffer(1)
+        buffer[0] = frameBuffer
+        glDeleteFramebuffers(1, buffer.get())
+    }
+
+    override fun deleteRenderBuffers(renderBuffer: Int) {
+        // TODO experimental performance
+        val buffer = BufferUtils.intBuffer(1)
+        buffer[0] = renderBuffer
+        glDeleteRenderbuffers(1, buffer.get())
     }
 
     override fun genVertexArrays(n: Int, arrays: IntBuf) {
@@ -236,6 +292,13 @@ internal actual object Agl : OpenGL {
         }
     }
 
+    override fun genTextures(): Int {
+        // TODO experimental performance
+        val buffer = BufferUtils.intBuffer(1)
+        glGenTextures(1, buffer.get())
+        return buffer[0]
+    }
+
     override fun genTextures(n: Int, textures: IntBuf) {
         glGenTextures(n, textures.get())
     }
@@ -246,6 +309,42 @@ internal actual object Agl : OpenGL {
 
     override fun activeTexture(texture: Int) {
         glActiveTexture(texture)
+    }
+
+    override fun readPixels(
+        x: Int,
+        y: Int,
+        width: Int,
+        height: Int,
+        format: Int,
+        type: Int,
+        pixels: Buffer
+    ) {
+        glReadPixels(x, y, width, height, format, type, pixels.get())
+    }
+
+    override fun texImage2D(
+        target: Int,
+        level: Int,
+        internalFormat: Int,
+        width: Int,
+        height: Int,
+        border: Int,
+        format: Int,
+        type: Int,
+        buffer: Buffer?
+    ) {
+        glTexImage2D(
+            target,
+            level,
+            internalFormat,
+            width,
+            height,
+            border,
+            format,
+            type,
+            buffer?.get()
+        )
     }
 
     override fun texImage2D(target: Int, level: Int, bitmap: Bitmap, border: Int) {
@@ -282,6 +381,67 @@ internal actual object Agl : OpenGL {
         value: FloatBuf
     ) {
         glUniformMatrix4fv(location, count, transpose, value.get())
+    }
+
+    override fun genFrameBuffers(): Int {
+        val buffer = BufferUtils.intBuffer(0)
+        glGenFramebuffers(1, buffer.get())
+        return buffer[0]
+    }
+
+    override fun bindFramebuffer(target: Int, frameBuffer: Int) {
+        glBindFramebuffer(target, frameBuffer)
+    }
+
+    override fun framebufferTexture2D(
+        target: Int,
+        attachment: Int,
+        texTarget: Int,
+        texture: Int,
+        level: Int
+    ) {
+        glFramebufferTexture2D(target, attachment, texTarget, texture, level)
+    }
+
+    override fun genRenderBuffers(): Int {
+        val buffer = BufferUtils.intBuffer(0)
+        glGenRenderbuffers(1, buffer.get())
+        return buffer[0]
+    }
+
+    override fun bindRenderBuffers(target: Int, renderBuffer: Int) {
+        glBindRenderbuffer(target, renderBuffer)
+    }
+
+    override fun renderBufferStorage(target: Int, internalFormat: Int, width: Int, height: Int) {
+        glRenderbufferStorage(target, internalFormat, width, height)
+    }
+
+    override fun framebufferRenderBuffer(
+        target: Int,
+        attachment: Int,
+        renderBufferTarget: Int,
+        renderBuffer: Int
+    ) {
+        glFramebufferRenderbuffer(target, attachment, renderBufferTarget, renderBuffer)
+    }
+
+    override fun checkFramebufferStatus(target: Int): Int {
+        return glCheckFramebufferStatus(target)
+    }
+
+    override fun enable(target: Int) {
+        glEnable(target)
+    }
+
+    override fun blendFunc(sFactor: Int, dFactor: Int) {
+        glBlendFunc(sFactor, dFactor)
+    }
+
+    override fun deleteBuffers(buffers: Int) {
+        val buffer = BufferUtils.intBuffer(0)
+        buffer[0] = buffers
+        glDeleteBuffers(1, buffer.get())
     }
 
     override fun getError(): Int {

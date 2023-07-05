@@ -11,10 +11,10 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun DemoScene(
-    init: DemoRenderer.() -> Unit
+    init: DemoApplication.() -> Unit
 ) {
     val renderer = remember {
-        mutableStateOf(DemoRenderer.apply(init))
+        mutableStateOf(DemoApplication.apply(init))
     }
     Box(Modifier.fillMaxWidth()) {
         AwakeCanvas(

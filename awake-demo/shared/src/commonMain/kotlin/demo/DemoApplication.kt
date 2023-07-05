@@ -5,7 +5,6 @@ import io.github.ronjunevaldoz.awake.core.AwakeContext.Companion.gl
 import io.github.ronjunevaldoz.awake.core.graphics.Disposable
 import io.github.ronjunevaldoz.awake.core.graphics.Drawable
 import io.github.ronjunevaldoz.awake.core.graphics.Renderer
-import io.github.ronjunevaldoz.awake.core.graphics.Shader
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.OpenGL
 import scene.ColoredTriangle
 import scene.Texture
@@ -13,7 +12,7 @@ import scene.Triangle
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
-object DemoRenderer : Renderer {
+object DemoApplication : Renderer {
 
     private var drawables = emptyList<Drawable>()
     val drawableLabels: List<String> = listOf(
@@ -35,7 +34,6 @@ object DemoRenderer : Renderer {
                 Texture(),
                 ColoredTriangle()
             )
-        drawables.filterIsInstance<Shader>().forEach { it.compile() }
     }
 
     override fun update(delta: Float) {

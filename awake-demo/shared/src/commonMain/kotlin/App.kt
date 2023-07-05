@@ -15,8 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import demo.DemoApplication
 import demo.DemoDrawer
-import demo.DemoRenderer
 import demo.DemoScene
 import io.github.ronjunevaldoz.awake.core.AwakeContext
 import io.github.ronjunevaldoz.awake.core.Greeting
@@ -27,7 +27,7 @@ fun App() {
         var greetingText by remember { mutableStateOf("Hello, World!") }
         // init awake context
         AwakeContext.init()
-        val items = remember { mutableStateOf(DemoRenderer.drawableLabels) }
+        val items = remember { mutableStateOf(DemoApplication.drawableLabels) }
         DemoDrawer(items.value) {
             Button(onClick = {
                 greetingText = Greeting().greet()

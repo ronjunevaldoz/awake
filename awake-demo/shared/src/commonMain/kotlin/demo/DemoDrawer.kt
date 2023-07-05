@@ -47,7 +47,7 @@ fun DemoDrawer(items: List<String>, content : @Composable () -> Unit) {
                         onClick = {
                             scope.launch { drawerState.close() }
                             selectedItem.value = item
-                            DemoRenderer.drawableIndex = items.indexOf(item)
+                            DemoApplication.drawableIndex = items.indexOf(item)
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )

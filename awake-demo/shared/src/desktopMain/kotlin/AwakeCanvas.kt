@@ -17,6 +17,7 @@ import io.github.ronjunevaldoz.awake.core.graphics.Renderer
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.Framebuffer
 import kotlinx.coroutines.delay
 import java.awt.image.BufferedImage
+import java.nio.ByteBuffer
 
 @Composable
 actual fun AwakeCanvas(modifier: Modifier, renderer: Renderer) {
@@ -26,11 +27,13 @@ actual fun AwakeCanvas(modifier: Modifier, renderer: Renderer) {
         // TODO "Fix Launch effect is not working mac m1 only??" using GlfwWindow
         renderer.create()
     }
+
     EachFrameUpdatingCanvas(Modifier.fillMaxSize()) { frameTime ->
         val width = size.width.toInt()
         val height = size.height.toInt()
         val fbo = Framebuffer(width, height)
         fbo.bind()
+
         gl.viewport(0, 0, size.width.toInt(), size.height.toInt())
         renderer.update(0f)
         fbo.unbind()
@@ -39,19 +42,12 @@ actual fun AwakeCanvas(modifier: Modifier, renderer: Renderer) {
 }
 
 private fun createBitmap(fbo: Framebuffer, width: Int, height: Int): ImageBitmap {
-    // experiment using bitmap utils
-//    val textureBuffer = fbo.retrievePixelData()
-//    val bytes = ByteArray(textureBuffer.remaining())
-//    textureBuffer.get(bytes)
-//    val bitmap = BitmapUtils.decode(bytes)
-//    val pixels = bitmap.pixels
     // stable
-    val pixelBuffer = fbo.retrievePixelData().asIntBuffer()
+    val pixelBuffer = fbo.getPixelBuffer().get<ByteBuffer>().asIntBuffer()
     val pixels = IntArray(pixelBuffer.remaining())
     pixelBuffer.get(pixels)
-    val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
-//    image.setRGB(0, 0, width, height, pixels, 0, width)
-// Flip rows
+    val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+    // Flip rows
     for (y in 0 until height) {
         val row = pixels.sliceArray(y * width until (y + 1) * width)
         image.setRGB(0, height - 1 - y, width, 1, row, 0, width)

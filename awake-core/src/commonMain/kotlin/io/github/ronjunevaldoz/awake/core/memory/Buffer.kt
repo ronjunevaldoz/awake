@@ -5,14 +5,17 @@ expect interface Buffer
 interface ByteBuf : Buffer {
     operator fun get(index: Int): Byte
     operator fun set(index: Int, value: Byte)
+    fun put(data: ByteArray)
 }
 interface ShortBuf : Buffer {
     operator fun get(index: Int): Short
     operator fun set(index: Int, value: Short)
+    fun put(data: ShortArray)
 }
 interface IntBuf : Buffer {
     operator fun get(index: Int): Int
     operator fun set(index: Int, value: Int)
+    fun put(data: IntArray)
 }
 interface FloatBuf : Buffer {
     operator fun get(index: Int): Float

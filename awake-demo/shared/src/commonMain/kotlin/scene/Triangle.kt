@@ -17,7 +17,7 @@ class Triangle : Drawable, Disposable {
         fragFile = if (isMobile) "triangle.mobile.frag" else "triangle.frag"
     )
 
-    val aPosition by lazy { shader.position }
+    private val aPosition by lazy { shader.position }
 
     var triangleVertices = floatArrayOf(
         0.0f, 1.0f,
@@ -25,39 +25,42 @@ class Triangle : Drawable, Disposable {
         1.0f, -1.0f
     )
 
-    val vao = BufferUtils.intBuffer(1)
-    val vbo = BufferUtils.intBuffer(1)
+    var vao = -1
+    var vbo = -1
 
     init {
         shader.compile()
         createBuffers()
     }
 
-    override fun dispose() {
-        // Disable the vertex attribute arrays
-        gl.disableVertexAttribArray(aPosition)
-        // Delete the shader program
-        shader.delete()
-    }
-
     override fun draw() {
         shader.use {
-            gl.bindVertexArray(vao[0])
+            gl.bindVertexArray(vao)
             gl.drawArrays(
                 GL_TRIANGLES,
                 0,
                 3
             )
+            gl.bindVertexArray(0)
         }
+    }
+
+    override fun dispose() {
+        // Disable the vertex attribute arrays
+        gl.disableVertexAttribArray(aPosition)
+        gl.deleteVertexArrays(vao)
+        gl.deleteBuffers(vbo)
+        // Delete the shader program
+        shader.delete()
     }
 
     private fun createBuffers() {
         // VAO
-        gl.genVertexArrays(1, vao)
-        gl.bindVertexArray(vao[0])
+        vao = gl.genVertexArrays()
+        gl.bindVertexArray(vao)
         // VBO
-        gl.genBuffers(1, vbo)
-        gl.bindBuffer(OpenGL.BufferType.Array, vbo[0])
+        vbo = gl.genBuffers()
+        gl.bindBuffer(OpenGL.BufferType.Array, vbo)
         val stride = 2 * Float.SIZE_BYTES // total component num
         val bufferSize = triangleVertices.size * stride
         val buffer = BufferUtils.floatBuffer(bufferSize)

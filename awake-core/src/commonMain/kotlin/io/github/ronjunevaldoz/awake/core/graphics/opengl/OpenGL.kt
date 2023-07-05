@@ -102,6 +102,7 @@ interface OpenGL {
     fun disableVertexAttribArray(index: Int)
 
     // buffers
+    fun genBuffers(): Int
     fun genBuffers(n: Int, buffers: IntBuf)
     fun bindBuffer(target: BufferType, buffer: BufferId)
     fun bufferData(
@@ -111,23 +112,58 @@ interface OpenGL {
         usage: DrawType
     )
 
-    fun deleteBuffers(n: Int, buffers: IntBuf)
-    fun deleteVertexArrays(n: Int, arrays: IntBuf)
-    fun deleteTextures(n: Int, textures: IntBuf)
-
     // available only for android gl 3.0 or up and for ios use EOS which available in 2.0
+    fun genVertexArrays(): Int
     fun genVertexArrays(n: Int, arrays: IntBuf)
     fun bindVertexArray(array: ArrayId)
     fun drawElements(mode: DrawMode, count: Int, type: Int, indices: Buffer? = null)
-
+    fun genTextures(): Int
     fun genTextures(n: Int, textures: IntBuf)
     fun bindTexture(target: Int, texture: Int)
     fun activeTexture(texture: Int)
+    fun readPixels(x: Int, y: Int, width: Int, height: Int, format: Int, type: Int, pixels: Buffer)
+
+    fun texImage2D(
+        target: Int,
+        level: Int,
+        internalFormat: Int,
+        width: Int,
+        height: Int,
+        border: Int,
+        format: Int,
+        type: Int,
+        buffer: Buffer?
+    )
+
     fun texImage2D(target: Int, level: Int, bitmap: Bitmap, border: Int)
     fun texParameteri(target: Int, pname: Int, param: Int)
     fun uniform1(location: Int, x: Int)
     fun uniform1(location: Int, x: Float)
     fun uniformMatrix4fv(location: Int, count: Int, transpose: Boolean, value: FloatBuf)
+    fun genFrameBuffers(): Int
+    fun bindFramebuffer(target: Int, frameBuffer: Int)
+    fun framebufferTexture2D(target: Int, attachment: Int, texTarget: Int, texture: Int, level: Int)
+    fun genRenderBuffers(): Int
+    fun bindRenderBuffers(target: Int, renderBuffer: Int)
+    fun renderBufferStorage(target: Int, internalFormat: Int, width: Int, height: Int)
+    fun framebufferRenderBuffer(
+        target: Int,
+        attachment: Int,
+        renderBufferTarget: Int,
+        renderBuffer: Int
+    )
+
+    fun checkFramebufferStatus(target: Int): Int
+    fun enable(target: Int)
+    fun blendFunc(sFactor: Int, dFactor: Int)
+    fun deleteBuffers(buffers: Int)
+    fun deleteBuffers(n: Int, buffers: IntBuf)
+    fun deleteVertexArrays(arrays: Int)
+    fun deleteVertexArrays(n: Int, arrays: IntBuf)
+    fun deleteTextures(textures: Int)
+    fun deleteTextures(n: Int, textures: IntBuf)
+    fun deleteFrameBuffers(frameBuffer: Int)
+    fun deleteRenderBuffers(renderBuffer: Int)
     fun getError(): Int
 }
 

@@ -23,11 +23,13 @@ import org.lwjgl.system.MemoryStack
 import java.nio.IntBuffer
 
 
-fun createCompose(window: Long, width: Int, height: Int, content : @Composable () -> Unit) {
+fun createCompose(window: Long, width: Int, height: Int, content: @Composable () -> Unit) {
     val context = DirectContext.makeGL()
-    var surface = createSurface(width , height  , context) // Skia Surface, bound to the OpenGL framebuffer
+    var surface =
+        createSurface(width, height, context) // Skia Surface, bound to the OpenGL framebuffer
 
-    val glfwDispatcher = GlfwCoroutineDispatcher() // a custom coroutine dispatcher, in which Compose will run
+    val glfwDispatcher =
+        GlfwCoroutineDispatcher() // a custom coroutine dispatcher, in which Compose will run
 
 
     GLFW.glfwSetWindowCloseCallback(window) {
@@ -50,7 +52,8 @@ fun createCompose(window: Long, width: Int, height: Int, content : @Composable (
     val frameDispatcher = FrameDispatcher(glfwDispatcher) { render() }
 
     val density = Density(windowDensity(window))
-    composeScene = ComposeScene(glfwDispatcher, density, invalidate = frameDispatcher::scheduleFrame)
+    composeScene =
+        ComposeScene(glfwDispatcher, density, invalidate = frameDispatcher::scheduleFrame)
     GLFW.glfwSetWindowSizeCallback(window) { _, windowWidth, windowHeight ->
         width = windowWidth * 2
         height = windowHeight * 2
@@ -72,11 +75,16 @@ fun createCompose(window: Long, width: Int, height: Int, content : @Composable (
 
 private fun createSurface(width: Int, height: Int, context: DirectContext): Surface {
     val fbId = GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING)
-    val renderTarget = BackendRenderTarget.makeGL(width, height, 0, 8, fbId,
+    val renderTarget = BackendRenderTarget.makeGL(
+        width, height, 0, 8, fbId,
         FramebufferFormat.GR_GL_RGBA8
     )
     return Surface.makeFromBackendRenderTarget(
-        context, renderTarget, SurfaceOrigin.BOTTOM_LEFT, SurfaceColorFormat.RGBA_8888, ColorSpace.sRGB
+        context,
+        renderTarget,
+        SurfaceOrigin.BOTTOM_LEFT,
+        SurfaceColorFormat.RGBA_8888,
+        ColorSpace.sRGB
     ) ?: throw Exception("Unable to create surface")
 }
 
@@ -156,12 +164,6 @@ fun createWindow(width: Int, height: Int, title: String): Long {
 
 fun initOpenGL() {
     GL.createCapabilities()
-//    glEnable(GL_DEPTH_TEST)
-
-//    glEnable(GL_BLEND);
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//    glClear(GL_COLOR_BUFFER_BIT);
-//    glViewport(0, 0, 800, 600);
     GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 }
 

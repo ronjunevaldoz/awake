@@ -8,6 +8,7 @@ import io.github.ronjunevaldoz.awake.core.memory.FloatBuffer
 import io.github.ronjunevaldoz.awake.core.memory.IntBuf
 import io.github.ronjunevaldoz.awake.core.memory.IntBuffer
 import io.github.ronjunevaldoz.awake.core.memory.ShortBuffer
+import io.github.ronjunevaldoz.awake.core.utils.BufferUtils
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.FloatVar
 import kotlinx.cinterop.IntVar
@@ -17,6 +18,18 @@ import kotlinx.cinterop.cstr
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.refTo
 import kotlinx.cinterop.toCPointer
+import platform.gles.glBindFramebufferOES
+import platform.gles.glBindRenderbufferOES
+import platform.gles.glBlendFunc
+import platform.gles.glCheckFramebufferStatusOES
+import platform.gles.glDeleteFramebuffersOES
+import platform.gles.glEnable
+import platform.gles.glFramebufferRenderbufferOES
+import platform.gles.glFramebufferTexture2DOES
+import platform.gles.glGenFramebuffersOES
+import platform.gles.glGenRenderbuffersOES
+import platform.gles.glReadPixels
+import platform.gles.glRenderbufferStorageOES
 import platform.gles2.GL_FALSE
 import platform.gles2.GL_INFO_LOG_LENGTH
 import platform.gles2.GL_RGBA
@@ -71,7 +84,6 @@ internal actual object Agl : OpenGL {
     }
 
     override fun clear(mask: Int) {
-//        val bitMask = mask.fold(0) { acc, m -> acc or m.value }
         glClear(mask.toUInt())
     }
 
@@ -173,7 +185,7 @@ internal actual object Agl : OpenGL {
         stride: Int,
         ptr: Buffer?
     ) {
-        val pointer = ptr?.get() ?:  0.toLong().toCPointer<ByteVar>()
+        val pointer = ptr?.get() ?: 0.toLong().toCPointer<ByteVar>()
         glVertexAttribPointer(
             indx = index.toUInt(),
             size = size,
@@ -214,6 +226,12 @@ internal actual object Agl : OpenGL {
         glDisableVertexAttribArray(index.toUInt())
     }
 
+    override fun genBuffers(): Int {
+        val buffer = BufferUtils.intBuffer(1)
+        glGenBuffers(1, buffer.get())
+        return buffer[0]
+    }
+
     override fun genBuffers(n: Int, buffers: IntBuf) {
         glGenBuffers(n, buffers.get())
     }
@@ -222,8 +240,13 @@ internal actual object Agl : OpenGL {
         glBindBuffer(target.value.toUInt(), buffer.toUInt())
     }
 
-    override fun bufferData(target: OpenGL.BufferType, size: Long, data: Buffer, usage: OpenGL.DrawType) {
-        val buffer = when(data) {
+    override fun bufferData(
+        target: OpenGL.BufferType,
+        size: Long,
+        data: Buffer,
+        usage: OpenGL.DrawType
+    ) {
+        val buffer = when (data) {
             is ByteBuffer -> data.get<ByteVar>()
             is ShortBuffer -> data.get<ShortVar>()
             is IntBuffer -> data.get<IntVar>()
@@ -233,16 +256,46 @@ internal actual object Agl : OpenGL {
         glBufferData(target.value.toUInt(), size, buffer, usage.value.toUInt())
     }
 
+    override fun genVertexArrays(): Int {
+        val buffer = BufferUtils.intBuffer(1)
+        glGenVertexArraysOES(1, buffer.get())
+        return buffer[0]
+    }
+
     override fun deleteBuffers(n: Int, buffers: IntBuf) {
         glDeleteBuffers(n, buffers.get())
+    }
+
+    override fun deleteVertexArrays(arrays: Int) {
+        val buffer = BufferUtils.intBuffer(1)
+        buffer[0] = arrays
+        glDeleteVertexArraysOES(1, buffer.get())
     }
 
     override fun deleteVertexArrays(n: Int, arrays: IntBuf) {
         glDeleteVertexArraysOES(n, arrays.get())
     }
 
+    override fun deleteTextures(textures: Int) {
+        val buffer = BufferUtils.intBuffer(1)
+        buffer[0] = textures
+        glDeleteTextures(1, buffer.get())
+    }
+
     override fun deleteTextures(n: Int, textures: IntBuf) {
         glDeleteTextures(n, textures.get())
+    }
+
+    override fun deleteFrameBuffers(frameBuffer: Int) {
+        val buffer = BufferUtils.intBuffer(1)
+        buffer[0] = frameBuffer
+        glDeleteFramebuffersOES(1, buffer.get())
+    }
+
+    override fun deleteRenderBuffers(renderBuffer: Int) {
+        val buffer = BufferUtils.intBuffer(1)
+        buffer[0] = renderBuffer
+        glDeleteFramebuffersOES(1, buffer.get())
     }
 
     override fun genVertexArrays(n: Int, arrays: IntBuf) {
@@ -255,8 +308,13 @@ internal actual object Agl : OpenGL {
 
     override fun drawElements(mode: OpenGL.DrawMode, count: Int, type: Int, indices: Buffer?) {
         val buffer = indices?.get() ?: 0.toLong().toCPointer<ByteVar>()
-
         glDrawElements(mode.value.toUInt(), count, type.toUInt(), buffer)
+    }
+
+    override fun genTextures(): Int {
+        val buffer = BufferUtils.intBuffer(1)
+        glGenTextures(1, buffer.get())
+        return buffer[0]
     }
 
     override fun genTextures(n: Int, textures: IntBuf) {
@@ -269,6 +327,44 @@ internal actual object Agl : OpenGL {
 
     override fun activeTexture(texture: Int) {
         glActiveTexture(texture.toUInt())
+    }
+
+    override fun readPixels(
+        x: Int,
+        y: Int,
+        width: Int,
+        height: Int,
+        format: Int,
+        type: Int,
+        pixels: Buffer
+    ) {
+        val pixelBuffer = pixels.get<ByteVar>()
+        glReadPixels(x, y, width, height, format.toUInt(), type.toUInt(), pixelBuffer)
+    }
+
+    override fun texImage2D(
+        target: Int,
+        level: Int,
+        internalFormat: Int,
+        border: Int,
+        width: Int,
+        height: Int,
+        format: Int,
+        type: Int,
+        buffer: Buffer?
+    ) {
+        val pixelBuffer = buffer?.get() ?: 0.toLong().toCPointer<ByteVar>()
+        glTexImage2D(
+            target.toUInt(),
+            level,
+            internalFormat,
+            width,
+            height,
+            border,
+            format.toUInt(),
+            type.toUInt(),
+            pixelBuffer
+        )
     }
 
     override fun texImage2D(target: Int, level: Int, bitmap: Bitmap, border: Int) {
@@ -303,7 +399,84 @@ internal actual object Agl : OpenGL {
         transpose: Boolean,
         value: FloatBuf
     ) {
-        glUniformMatrix4fv(location, count, if (transpose) GL_TRUE.toUByte() else GL_FALSE.toUByte(), value.get())
+        glUniformMatrix4fv(
+            location,
+            count,
+            if (transpose) GL_TRUE.toUByte() else GL_FALSE.toUByte(),
+            value.get()
+        )
+    }
+
+    override fun genFrameBuffers(): Int {
+        val buffer = BufferUtils.intBuffer(1)
+        glGenFramebuffersOES(1, buffer.get())
+        return buffer[0]
+    }
+
+    override fun bindFramebuffer(target: Int, frameBuffer: Int) {
+        glBindFramebufferOES(target.toUInt(), frameBuffer.toUInt())
+    }
+
+    override fun framebufferTexture2D(
+        target: Int,
+        attachment: Int,
+        texTarget: Int,
+        texture: Int,
+        level: Int
+    ) {
+        glFramebufferTexture2DOES(
+            target.toUInt(),
+            attachment.toUInt(),
+            texTarget.toUInt(),
+            texture.toUInt(),
+            level
+        )
+    }
+
+    override fun genRenderBuffers(): Int {
+        val buffer = BufferUtils.intBuffer(1)
+        glGenRenderbuffersOES(1, buffer.get())
+        return buffer[0]
+    }
+
+    override fun bindRenderBuffers(target: Int, renderBuffer: Int) {
+        glBindRenderbufferOES(target.toUInt(), renderBuffer.toUInt())
+    }
+
+    override fun renderBufferStorage(target: Int, internalFormat: Int, width: Int, height: Int) {
+        glRenderbufferStorageOES(target.toUInt(), internalFormat.toUInt(), width, height)
+    }
+
+    override fun framebufferRenderBuffer(
+        target: Int,
+        attachment: Int,
+        renderBufferTarget: Int,
+        renderBuffer: Int
+    ) {
+        glFramebufferRenderbufferOES(
+            target.toUInt(),
+            attachment.toUInt(),
+            renderBufferTarget.toUInt(),
+            renderBuffer.toUInt()
+        )
+    }
+
+    override fun checkFramebufferStatus(target: Int): Int {
+        return glCheckFramebufferStatusOES(target.toUInt()).toInt()
+    }
+
+    override fun enable(target: Int) {
+        glEnable(target.toUInt())
+    }
+
+    override fun blendFunc(sFactor: Int, dFactor: Int) {
+        glBlendFunc(sFactor.toUInt(), dFactor.toUInt())
+    }
+
+    override fun deleteBuffers(buffers: Int) {
+        val buffer = BufferUtils.intBuffer(1)
+        buffer[0] = buffers
+        glDeleteBuffers(1, buffer.get())
     }
 
     override fun getError(): Int {

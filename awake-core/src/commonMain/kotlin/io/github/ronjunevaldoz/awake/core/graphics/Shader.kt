@@ -12,15 +12,17 @@ import kotlin.reflect.KProperty
 interface Shader {
     val program: Int
     fun compile()
-    fun use()
+    fun begin()
+    fun end()
     fun delete()
 }
 
-fun Shader.use(shader: Shader.() -> Unit) {
+fun Shader.use(content: Shader.() -> Unit) {
     when {
         program > 0 -> {
-            use()
-            shader()
+            begin()
+            content()
+            end()
         }
 
         else -> AwakeLogger.warn("Invalid shader program id: $program")
@@ -39,8 +41,12 @@ abstract class BaseShader : Shader {
         )
     }
 
-    override fun use() {
+    override fun begin() {
         gl.useProgram(program)
+    }
+
+    override fun end() {
+        gl.useProgram(0)
     }
 
     override fun delete() {

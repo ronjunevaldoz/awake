@@ -3,15 +3,14 @@ package io.github.ronjunevaldoz.awake.core.graphics.opengl
 import io.github.ronjunevaldoz.awake.core.graphics.image.Bitmap
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.Constants.GL_RGBA
 import io.github.ronjunevaldoz.awake.core.memory.Buffer
-import io.github.ronjunevaldoz.awake.core.memory.ByteBuffer
 import io.github.ronjunevaldoz.awake.core.memory.FloatBuf
-import io.github.ronjunevaldoz.awake.core.memory.FloatBuffer
 import io.github.ronjunevaldoz.awake.core.memory.IntBuf
-import io.github.ronjunevaldoz.awake.core.memory.IntBuffer
-import io.github.ronjunevaldoz.awake.core.memory.ShortBuffer
 import io.github.ronjunevaldoz.awake.core.memory.createIntBuffer
+import io.github.ronjunevaldoz.awake.core.memory.`when`
+import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.glDeleteTextures
 import org.lwjgl.opengl.GL11.glGetError
+import org.lwjgl.opengl.GL11.glReadPixels
 import org.lwjgl.opengl.GL20.GL_UNSIGNED_BYTE
 import org.lwjgl.opengl.GL20.glActiveTexture
 import org.lwjgl.opengl.GL20.glAttachShader
@@ -49,9 +48,19 @@ import org.lwjgl.opengl.GL20.glUniformMatrix4fv
 import org.lwjgl.opengl.GL20.glUseProgram
 import org.lwjgl.opengl.GL20.glVertexAttribPointer
 import org.lwjgl.opengl.GL20.glViewport
+import org.lwjgl.opengl.GL30.glBindFramebuffer
+import org.lwjgl.opengl.GL30.glBindRenderbuffer
 import org.lwjgl.opengl.GL30.glBindVertexArray
+import org.lwjgl.opengl.GL30.glCheckFramebufferStatus
+import org.lwjgl.opengl.GL30.glDeleteFramebuffers
+import org.lwjgl.opengl.GL30.glDeleteRenderbuffers
 import org.lwjgl.opengl.GL30.glDeleteVertexArrays
+import org.lwjgl.opengl.GL30.glFramebufferRenderbuffer
+import org.lwjgl.opengl.GL30.glFramebufferTexture2D
+import org.lwjgl.opengl.GL30.glGenFramebuffers
+import org.lwjgl.opengl.GL30.glGenRenderbuffers
 import org.lwjgl.opengl.GL30.glGenVertexArrays
+import org.lwjgl.opengl.GL30.glRenderbufferStorage
 
 internal actual object Agl : OpenGL {
     override fun clearColor(r: Float, g: Float, b: Float, a: Float) {
@@ -146,7 +155,7 @@ internal actual object Agl : OpenGL {
                     type,
                     normalized,
                     stride,
-                    this
+                    this!!
                 )
             },
             short = {
@@ -156,7 +165,7 @@ internal actual object Agl : OpenGL {
                     type,
                     normalized,
                     stride,
-                    this
+                    this!!
                 )
             },
             int = {
@@ -166,7 +175,7 @@ internal actual object Agl : OpenGL {
                     type,
                     normalized,
                     stride,
-                    this
+                    this!!
                 )
             },
             float = {
@@ -176,7 +185,7 @@ internal actual object Agl : OpenGL {
                     type,
                     normalized,
                     stride,
-                    this
+                    this!!
                 )
             }
         ) ?: glVertexAttribPointer(
@@ -219,6 +228,10 @@ internal actual object Agl : OpenGL {
         glDisableVertexAttribArray(index)
     }
 
+    override fun genBuffers(): Int {
+        return glGenBuffers()
+    }
+
     override fun genBuffers(n: Int, buffers: IntBuf) {
         glGenBuffers(buffers.get())
     }
@@ -237,44 +250,64 @@ internal actual object Agl : OpenGL {
             byte = {
                 glBufferData(
                     target.value,
-                    this,
+                    this!!,
                     usage.value
                 )
             },
             short = {
                 glBufferData(
                     target.value,
-                    this,
+                    this!!,
                     usage.value
                 )
             },
             int = {
                 glBufferData(
                     target.value,
-                    this,
+                    this!!,
                     usage.value
                 )
             },
             float = {
                 glBufferData(
                     target.value,
-                    this,
+                    this!!,
                     usage.value
                 )
             }
         )
     }
 
+    override fun genVertexArrays(): Int {
+        return glGenVertexArrays()
+    }
+
     override fun deleteBuffers(n: Int, buffers: IntBuf) {
         glDeleteBuffers(buffers.get())
+    }
+
+    override fun deleteVertexArrays(arrays: Int) {
+        glDeleteVertexArrays(arrays)
     }
 
     override fun deleteVertexArrays(n: Int, arrays: IntBuf) {
         glDeleteVertexArrays(arrays.get())
     }
 
+    override fun deleteTextures(textures: Int) {
+        glDeleteTextures(textures)
+    }
+
     override fun deleteTextures(n: Int, textures: IntBuf) {
         glDeleteTextures(textures.get())
+    }
+
+    override fun deleteFrameBuffers(frameBuffer: Int) {
+        glDeleteFramebuffers(frameBuffer)
+    }
+
+    override fun deleteRenderBuffers(renderBuffer: Int) {
+        glDeleteRenderbuffers(renderBuffer)
     }
 
     override fun genVertexArrays(n: Int, arrays: IntBuf) {
@@ -287,10 +320,14 @@ internal actual object Agl : OpenGL {
 
     override fun drawElements(mode: OpenGL.DrawMode, count: Int, type: Int, indices: Buffer?) {
         indices?.`when`(
-            byte = { glDrawElements(mode.value, this) },
-            short = { glDrawElements(mode.value, this) },
-            int = { glDrawElements(mode.value, this) }
+            byte = { glDrawElements(mode.value, this!!) },
+            short = { glDrawElements(mode.value, this!!) },
+            int = { glDrawElements(mode.value, this!!) }
         ) ?: glDrawElements(mode.value, count, type, 0)
+    }
+
+    override fun genTextures(): Int {
+        return glGenTextures()
     }
 
     override fun genTextures(n: Int, textures: IntBuf) {
@@ -303,6 +340,104 @@ internal actual object Agl : OpenGL {
 
     override fun activeTexture(texture: Int) {
         glActiveTexture(texture)
+    }
+
+    override fun readPixels(
+        x: Int,
+        y: Int,
+        width: Int,
+        height: Int,
+        format: Int,
+        type: Int,
+        pixels: Buffer
+    ) {
+        pixels.`when`(
+            byte = { glReadPixels(x, y, width, height, format, type, this!!) },
+            int = { glReadPixels(x, y, width, height, format, type, this!!) },
+            short = { glReadPixels(x, y, width, height, format, type, this!!) },
+            float = { glReadPixels(x, y, width, height, format, type, this!!) },
+        )
+    }
+
+    override fun texImage2D(
+        target: Int,
+        level: Int,
+        internalFormat: Int,
+        width: Int,
+        height: Int,
+        border: Int,
+        format: Int,
+        type: Int,
+        buffer: Buffer?
+    ) {
+        if (buffer == null) {
+            glTexImage2D(
+                target,
+                level,
+                internalFormat,
+                width,
+                height,
+                border,
+                format,
+                type,
+                null as java.nio.ByteBuffer?
+            )
+        } else {
+            buffer.`when`(
+                byte = {
+                    glTexImage2D(
+                        target,
+                        level,
+                        internalFormat,
+                        width,
+                        height,
+                        border,
+                        format,
+                        type,
+                        this
+                    )
+                },
+                short = {
+                    glTexImage2D(
+                        target,
+                        level,
+                        internalFormat,
+                        width,
+                        height,
+                        border,
+                        format,
+                        type,
+                        this
+                    )
+                },
+                int = {
+                    glTexImage2D(
+                        target,
+                        level,
+                        internalFormat,
+                        width,
+                        height,
+                        border,
+                        format,
+                        type,
+                        this
+                    )
+                },
+                float = {
+                    glTexImage2D(
+                        target,
+                        level,
+                        internalFormat,
+                        width,
+                        height,
+                        border,
+                        format,
+                        type,
+                        this
+                    )
+                }
+            )
+        }
     }
 
     override fun texImage2D(target: Int, level: Int, bitmap: Bitmap, border: Int) {
@@ -384,21 +519,62 @@ internal actual object Agl : OpenGL {
         glUniformMatrix4fv(location, transpose, value.get())
     }
 
-    override fun getError() : Int {
-        return glGetError()
+    override fun genFrameBuffers(): Int {
+        return glGenFramebuffers()
     }
-}
 
-fun Buffer.`when`(
-    byte: java.nio.ByteBuffer.() -> Unit = {},
-    short: java.nio.ShortBuffer.() -> Unit = {},
-    int: java.nio.IntBuffer.() -> Unit = {},
-    float: java.nio.FloatBuffer.() -> Unit = {},
-) {
-    when (this) {
-        is ByteBuffer -> byte(get())
-        is ShortBuffer -> short(get())
-        is IntBuffer -> int(get())
-        is FloatBuffer -> float(get())
+    override fun bindFramebuffer(target: Int, frameBuffer: Int) {
+        glBindFramebuffer(target, frameBuffer)
+    }
+
+    override fun framebufferTexture2D(
+        target: Int,
+        attachment: Int,
+        texTarget: Int,
+        texture: Int,
+        level: Int
+    ) {
+        glFramebufferTexture2D(target, attachment, texTarget, texture, level)
+    }
+
+    override fun genRenderBuffers(): Int {
+        return glGenRenderbuffers()
+    }
+
+    override fun bindRenderBuffers(target: Int, renderBuffer: Int) {
+        glBindRenderbuffer(target, renderBuffer)
+    }
+
+    override fun renderBufferStorage(target: Int, internalFormat: Int, width: Int, height: Int) {
+        glRenderbufferStorage(target, internalFormat, width, height)
+    }
+
+    override fun framebufferRenderBuffer(
+        target: Int,
+        attachment: Int,
+        renderBufferTarget: Int,
+        renderBuffer: Int
+    ) {
+        glFramebufferRenderbuffer(target, attachment, renderBufferTarget, renderBuffer)
+    }
+
+    override fun checkFramebufferStatus(target: Int): Int {
+        return glCheckFramebufferStatus(target)
+    }
+
+    override fun enable(target: Int) {
+        GL11.glEnable(target)
+    }
+
+    override fun blendFunc(sFactor: Int, dFactor: Int) {
+        GL11.glBlendFunc(sFactor, dFactor)
+    }
+
+    override fun deleteBuffers(buffers: Int) {
+        glDeleteBuffers(buffers)
+    }
+
+    override fun getError(): Int {
+        return glGetError()
     }
 }

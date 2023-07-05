@@ -14,13 +14,12 @@ import io.github.ronjunevaldoz.awake.core.utils.BufferUtils
 class ColoredTriangle : Drawable, Disposable {
 
     private val shader = SimpleShader(
-        vertFile =  if(isMobile) "colored-triangle.mobile.vert" else "colored-triangle.vert",
-        fragFile =  if(isMobile) "colored-triangle.mobile.frag" else "colored-triangle.frag"
+        vertFile = if (isMobile) "colored-triangle.mobile.vert" else "colored-triangle.vert",
+        fragFile = if (isMobile) "colored-triangle.mobile.frag" else "colored-triangle.frag"
     )
 
-    val aPosition  by lazy { shader.position  }
-    val aColor  by lazy { shader.color }
-
+    private val aPosition by lazy { shader.position }
+    private val aColor by lazy { shader.color }
 
     data class Vertex(
         var x: Float,
@@ -43,9 +42,9 @@ class ColoredTriangle : Drawable, Disposable {
         2, 3, 0
     )
 
-    val vao = BufferUtils.intBuffer(1)
-    val vbo = BufferUtils.intBuffer(1)
-    val ebo = BufferUtils.intBuffer(1)
+    var vao = -1
+    var vbo = -1
+    var ebo = -1
 
     init {
         shader.compile()
@@ -59,11 +58,11 @@ class ColoredTriangle : Drawable, Disposable {
             Float.SIZE_BYTES * 3 // Offset: Skip position (3 for position), 4 bytes  per element
 
         // VAO
-        gl.genVertexArrays(1, vao)
-        gl.bindVertexArray(vao[0])
+        vao = gl.genVertexArrays()
+        gl.bindVertexArray(vao)
         // VBO
-        gl.genBuffers(1, vbo)
-        gl.bindBuffer(OpenGL.BufferType.Array, vbo[0])
+        vbo = gl.genBuffers()
+        gl.bindBuffer(OpenGL.BufferType.Array, vbo)
         val bufferSize = vertices.size * stride
         val buffer = BufferUtils.floatBuffer(bufferSize)
         for (i in vertices.indices) {
@@ -109,8 +108,8 @@ class ColoredTriangle : Drawable, Disposable {
         // End VBO
 
         // EBO
-        gl.genBuffers(1, ebo)
-        gl.bindBuffer(OpenGL.BufferType.ElementArray, ebo[0])
+        ebo = gl.genBuffers()
+        gl.bindBuffer(OpenGL.BufferType.ElementArray, ebo)
         // fill buffer
         val indicesBuffer = BufferUtils.byteBuffer(indices.size)
         for (i in indices.indices) {
@@ -129,28 +128,9 @@ class ColoredTriangle : Drawable, Disposable {
         gl.bindBuffer(OpenGL.BufferType.ElementArray, 0)
     }
 
-//    override fun dispose() {
-//        // Disable the vertex attribute arrays
-//        gl.disableVertexAttribArray(aPosition)
-//        gl.disableVertexAttribArray(aColor)
-//
-//        // Delete the vertex array object (VAO)
-//        gl.deleteVertexArrays(1, vao)
-//
-//        // Delete the vertex buffer object (VBO)
-//        gl.deleteBuffers(1, vbo)
-//
-//        // Delete the element buffer object (EBO)
-//        gl.deleteBuffers(1, ebo)
-//
-//        // Delete the shader program
-//        gl.deleteProgram(program)
-//        program = -1
-//    }
-
     override fun draw() {
         shader.use {
-            gl.bindVertexArray(vao[0])
+            gl.bindVertexArray(vao)
             gl.drawElements(
                 OpenGL.DrawMode.Triangles,
                 indices.size,
@@ -163,5 +143,13 @@ class ColoredTriangle : Drawable, Disposable {
 
     override fun dispose() {
         shader.delete()
+        gl.disableVertexAttribArray(aPosition)
+        gl.disableVertexAttribArray(aColor)
+        // Delete the vertex array object (VAO)
+        gl.deleteVertexArrays(vao)
+        // Delete the vertex buffer object (VBO)
+        gl.deleteBuffers(vbo)
+        // Delete the element buffer object (EBO)
+        gl.deleteBuffers(ebo)
     }
 }

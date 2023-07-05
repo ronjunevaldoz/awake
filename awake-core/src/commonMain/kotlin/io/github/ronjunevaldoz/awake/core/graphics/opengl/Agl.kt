@@ -148,6 +148,12 @@ internal object AglDebuggable : OpenGL {
         checkGL()
     }
 
+    override fun genBuffers(): Int {
+        return Agl.genBuffers().also {
+            checkGL()
+        }
+    }
+
     override fun genBuffers(n: Int, buffers: IntBuf) {
         Agl.genBuffers(n, buffers)
         checkGL()
@@ -168,8 +174,19 @@ internal object AglDebuggable : OpenGL {
         checkGL()
     }
 
+    override fun genVertexArrays(): Int {
+        return Agl.genVertexArrays().also {
+            checkGL()
+        }
+    }
+
     override fun deleteBuffers(n: Int, buffers: IntBuf) {
         Agl.deleteBuffers(n, buffers)
+        checkGL()
+    }
+
+    override fun deleteVertexArrays(arrays: Int) {
+        Agl.deleteVertexArrays(arrays)
         checkGL()
     }
 
@@ -178,8 +195,23 @@ internal object AglDebuggable : OpenGL {
         checkGL()
     }
 
+    override fun deleteTextures(textures: Int) {
+        Agl.deleteTextures(textures)
+        checkGL()
+    }
+
     override fun deleteTextures(n: Int, textures: IntBuf) {
         Agl.deleteTextures(n, textures)
+        checkGL()
+    }
+
+    override fun deleteFrameBuffers(frameBuffer: Int) {
+        Agl.deleteFrameBuffers(frameBuffer)
+        checkGL()
+    }
+
+    override fun deleteRenderBuffers(renderBuffer: Int) {
+        Agl.deleteRenderBuffers(renderBuffer)
         checkGL()
     }
 
@@ -198,6 +230,12 @@ internal object AglDebuggable : OpenGL {
         checkGL()
     }
 
+    override fun genTextures(): Int {
+        return Agl.genTextures().also {
+            checkGL()
+        }
+    }
+
     override fun genTextures(n: Int, textures: IntBuf) {
         Agl.genTextures(n, textures)
         checkGL()
@@ -210,6 +248,40 @@ internal object AglDebuggable : OpenGL {
 
     override fun activeTexture(texture: Int) {
         Agl.activeTexture(texture)
+        checkGL()
+    }
+
+    override fun readPixels(
+        x: Int,
+        y: Int,
+        width: Int,
+        height: Int,
+        format: Int,
+        type: Int,
+        pixels: Buffer
+    ) {
+        Agl.readPixels(x, y, width, height, format, type, pixels)
+        checkGL()
+    }
+
+//    @Deprecated("use readPixels instead", replaceWith = ReplaceWith("readPixels"))
+//    override fun getTexImage(tex: Int, level: Int, format: Int, type: Int, pixels: Buffer) {
+//        Agl.getTexImage(tex, level, format, type, pixels)
+//        checkGL()
+//    }
+
+    override fun texImage2D(
+        target: Int,
+        level: Int,
+        internalFormat: Int,
+        border: Int,
+        width: Int,
+        height: Int,
+        format: Int,
+        type: Int,
+        buffer: Buffer?
+    ) {
+        Agl.texImage2D(target, level, internalFormat, border, width, height, format, type, buffer)
         checkGL()
     }
 
@@ -235,6 +307,75 @@ internal object AglDebuggable : OpenGL {
 
     override fun uniformMatrix4fv(location: Int, count: Int, transpose: Boolean, value: FloatBuf) {
         Agl.uniformMatrix4fv(location, count, transpose, value)
+        checkGL()
+    }
+
+    override fun genFrameBuffers(): Int {
+        return Agl.genFrameBuffers().also {
+            checkGL()
+        }
+    }
+
+    override fun bindFramebuffer(target: Int, frameBuffer: Int) {
+        Agl.bindFramebuffer(target, frameBuffer)
+        checkGL()
+    }
+
+    override fun framebufferTexture2D(
+        target: Int,
+        attachment: Int,
+        texTarget: Int,
+        texture: Int,
+        level: Int
+    ) {
+        Agl.framebufferTexture2D(target, attachment, texTarget, texture, level)
+        checkGL()
+    }
+
+    override fun genRenderBuffers(): Int {
+        return Agl.genRenderBuffers().also {
+            checkGL()
+        }
+    }
+
+    override fun bindRenderBuffers(target: Int, renderBuffer: Int) {
+        Agl.bindRenderBuffers(target, renderBuffer)
+        checkGL()
+    }
+
+    override fun renderBufferStorage(target: Int, internalFormat: Int, width: Int, height: Int) {
+        Agl.renderBufferStorage(target, internalFormat, width, height)
+        checkGL()
+    }
+
+    override fun framebufferRenderBuffer(
+        target: Int,
+        attachment: Int,
+        renderBufferTarget: Int,
+        renderBuffer: Int
+    ) {
+        Agl.framebufferRenderBuffer(target, attachment, renderBufferTarget, renderBuffer)
+        checkGL()
+    }
+
+    override fun checkFramebufferStatus(target: Int): Int {
+        return Agl.checkFramebufferStatus(target).also {
+            checkGL()
+        }
+    }
+
+    override fun enable(target: Int) {
+        Agl.enable(target)
+        checkGL()
+    }
+
+    override fun blendFunc(sFactor: Int, dFactor: Int) {
+        Agl.blendFunc(sFactor, dFactor)
+        checkGL()
+    }
+
+    override fun deleteBuffers(buffers: Int) {
+        Agl.deleteBuffers(buffers)
         checkGL()
     }
 

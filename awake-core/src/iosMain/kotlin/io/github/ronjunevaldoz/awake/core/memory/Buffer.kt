@@ -18,16 +18,16 @@ class ByteBuffer(size: Int) : ByteBuf {
         data.copyInto(this.buffer)
     }
 
-    constructor(data: Array<Byte>) : this(data.size) {
-        data.toByteArray().copyInto(this.buffer)
-    }
-
     override fun get(index: Int): Byte {
         return buffer[index]
     }
 
     override fun set(index: Int, value: Byte) {
         buffer[index] = value
+    }
+
+    override fun put(data: ByteArray) {
+        data.copyInto(this.buffer)
     }
 
     override fun <C : CPointed> get(): CValuesRef<C> {
@@ -42,18 +42,16 @@ class ShortBuffer(size: Int) : ShortBuf {
         data.copyInto(buffer)
     }
 
-    constructor(data: Array<Short>) : this(data.size) {
-        data.forEachIndexed { index, value ->
-            buffer[index] = value
-        }
-    }
-
     override fun get(index: Int): Short {
         return buffer[index]
     }
 
     override fun set(index: Int, value: Short) {
         buffer[index] = value
+    }
+
+    override fun put(data: ShortArray) {
+        data.copyInto(buffer)
     }
 
     override fun <C : CPointed> get(): CValuesRef<C> {
@@ -68,18 +66,16 @@ class IntBuffer(size: Int) : IntBuf {
         data.copyInto(buffer)
     }
 
-    constructor(data: Array<Int>) : this(data.size) {
-        data.forEachIndexed { index, value ->
-            buffer[index] = value
-        }
-    }
-
     override fun get(index: Int): Int {
         return buffer[index]
     }
 
     override fun set(index: Int, value: Int) {
         buffer[index] = value
+    }
+
+    override fun put(data: IntArray) {
+        data.copyInto(buffer)
     }
 
     override fun <C : CPointed> get(): CValuesRef<C> {
