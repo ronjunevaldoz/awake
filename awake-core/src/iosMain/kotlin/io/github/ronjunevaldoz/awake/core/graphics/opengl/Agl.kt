@@ -346,9 +346,9 @@ internal actual object Agl : OpenGL {
         target: Int,
         level: Int,
         internalFormat: Int,
-        border: Int,
         width: Int,
         height: Int,
+        border: Int,
         format: Int,
         type: Int,
         buffer: Buffer?
