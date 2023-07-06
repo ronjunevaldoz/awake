@@ -12,17 +12,17 @@ class ByteBuffer(size: Int) : ByteBuf {
         buffer.position(0)
     }
 
-    constructor(data: Array<Byte>) : this(data.size) {
-        buffer.put(data.toByteArray())
-        buffer.position(0)
-    }
-
     override fun get(index: Int): Byte {
         return buffer.get(index)
     }
 
     override fun set(index: Int, value: Byte) {
         buffer.put(index, value)
+    }
+
+    override fun put(data: ByteArray) {
+        buffer.put(data)
+        buffer.position(0)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -40,11 +40,6 @@ class ShortBuffer(size: Int) : ShortBuf {
         buffer.position(0)
     }
 
-    constructor(data: Array<Short>) : this(data.size) {
-        buffer.put(data.toShortArray())
-        buffer.position(0)
-    }
-
     override fun get(index: Int): Short {
         return buffer.get(index)
     }
@@ -52,6 +47,12 @@ class ShortBuffer(size: Int) : ShortBuf {
     override fun set(index: Int, value: Short) {
         buffer.put(index, value)
     }
+
+    override fun put(data: ShortArray) {
+        buffer.put(data)
+        buffer.position(0)
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun <B : Buffer> get(): B = buffer as B
 }
@@ -67,17 +68,17 @@ class IntBuffer(size: Int) : IntBuf {
         buffer.position(0)
     }
 
-    constructor(data: Array<Int>) : this(data.size) {
-        buffer.put(data.toIntArray())
-        buffer.position(0)
-    }
-
     override fun get(index: Int): Int {
         return buffer.get(index)
     }
 
     override fun set(index: Int, value: Int) {
         buffer.put(index, value)
+    }
+
+    override fun put(data: IntArray) {
+        buffer.put(data)
+        buffer.position(0)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -92,11 +93,6 @@ class FloatBuffer(size: Int) : FloatBuf {
 
     constructor(data: FloatArray) : this(data.size) {
         buffer.put(data)
-        buffer.position(0)
-    }
-
-    constructor(data: Array<Float>) : this(data.size) {
-        buffer.put(data.toFloatArray())
         buffer.position(0)
     }
 
