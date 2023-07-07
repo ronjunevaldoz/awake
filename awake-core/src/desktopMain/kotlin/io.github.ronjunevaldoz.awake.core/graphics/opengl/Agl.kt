@@ -44,6 +44,9 @@ import org.lwjgl.opengl.GL20.glTexImage2D
 import org.lwjgl.opengl.GL20.glTexParameteri
 import org.lwjgl.opengl.GL20.glUniform1f
 import org.lwjgl.opengl.GL20.glUniform1i
+import org.lwjgl.opengl.GL20.glUniform3f
+import org.lwjgl.opengl.GL20.glUniform3i
+import org.lwjgl.opengl.GL20.glUniform4f
 import org.lwjgl.opengl.GL20.glUniformMatrix4fv
 import org.lwjgl.opengl.GL20.glUseProgram
 import org.lwjgl.opengl.GL20.glVertexAttribPointer
@@ -502,12 +505,24 @@ internal actual object Agl : OpenGL {
         glTexParameteri(target, pname, param)
     }
 
-    override fun uniform1(location: Int, x: Int) {
+    override fun uniform(location: Int, x: Int) {
         glUniform1i(location, x)
     }
 
-    override fun uniform1(location: Int, x: Float) {
+    override fun uniform(location: Int, x: Float) {
         glUniform1f(location, x)
+    }
+
+    override fun uniform(location: Int, x: Int, y: Int, z: Int) {
+        glUniform3i(location, x, y, z)
+    }
+
+    override fun uniform(location: Int, x: Float, y: Float, z: Float) {
+        glUniform3f(location, x, y, z)
+    }
+
+    override fun uniform(location: Int, x: Float, y: Float, z: Float, w: Float) {
+        glUniform4f(location, x, y, z, w)
     }
 
     override fun uniformMatrix4fv(

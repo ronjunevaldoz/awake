@@ -72,6 +72,9 @@ import platform.gles2.glTexImage2D
 import platform.gles2.glTexParameteri
 import platform.gles2.glUniform1f
 import platform.gles2.glUniform1i
+import platform.gles2.glUniform3f
+import platform.gles2.glUniform3i
+import platform.gles2.glUniform4f
 import platform.gles2.glUniformMatrix4fv
 import platform.gles2.glUseProgram
 import platform.gles2.glVertexAttribPointer
@@ -385,12 +388,24 @@ internal actual object Agl : OpenGL {
         glTexParameteri(target.toUInt(), pname.toUInt(), param)
     }
 
-    override fun uniform1(location: Int, x: Int) {
+    override fun uniform(location: Int, x: Int) {
         glUniform1i(location, x)
     }
 
-    override fun uniform1(location: Int, x: Float) {
+    override fun uniform(location: Int, x: Float) {
         glUniform1f(location, x)
+    }
+
+    override fun uniform(location: Int, x: Int, y: Int, z: Int) {
+        glUniform3i(location, x, y, z)
+    }
+
+    override fun uniform(location: Int, x: Float, y: Float, z: Float) {
+        glUniform3f(location, x, y, z)
+    }
+
+    override fun uniform(location: Int, x: Float, y: Float, z: Float, w: Float) {
+        glUniform4f(location, x, y, z, w)
     }
 
     override fun uniformMatrix4fv(

@@ -290,13 +290,28 @@ internal object AglDebuggable : OpenGL {
         checkGL()
     }
 
-    override fun uniform1(location: Int, x: Int) {
-        Agl.uniform1(location, x)
+    override fun uniform(location: Int, x: Int) {
+        Agl.uniform(location, x)
         checkGL()
     }
 
-    override fun uniform1(location: Int, x: Float) {
-        Agl.uniform1(location, x)
+    override fun uniform(location: Int, x: Float) {
+        Agl.uniform(location, x)
+        checkGL()
+    }
+
+    override fun uniform(location: Int, x: Int, y: Int, z: Int) {
+        Agl.uniform(location, x, y, z)
+        checkGL()
+    }
+
+    override fun uniform(location: Int, x: Float, y: Float, z: Float) {
+        Agl.uniform(location, x, y, z)
+        checkGL()
+    }
+
+    override fun uniform(location: Int, x: Float, y: Float, z: Float, w: Float) {
+        Agl.uniform(location, x, y, z, w)
         checkGL()
     }
 

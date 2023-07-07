@@ -48,6 +48,9 @@ import android.opengl.GLES20.glTexImage2D
 import android.opengl.GLES20.glTexParameteri
 import android.opengl.GLES20.glUniform1f
 import android.opengl.GLES20.glUniform1i
+import android.opengl.GLES20.glUniform3f
+import android.opengl.GLES20.glUniform3i
+import android.opengl.GLES20.glUniform4f
 import android.opengl.GLES20.glUniformMatrix4fv
 import android.opengl.GLES20.glUseProgram
 import android.opengl.GLES20.glVertexAttribPointer
@@ -366,12 +369,24 @@ internal actual object Agl : OpenGL {
         glTexParameteri(target, pname, param)
     }
 
-    override fun uniform1(location: Int, x: Int) {
+    override fun uniform(location: Int, x: Int) {
         glUniform1i(location, x)
     }
 
-    override fun uniform1(location: Int, x: Float) {
+    override fun uniform(location: Int, x: Float) {
         glUniform1f(location, x)
+    }
+
+    override fun uniform(location: Int, x: Int, y: Int, z: Int) {
+        glUniform3i(location, x, y, z)
+    }
+
+    override fun uniform(location: Int, x: Float, y: Float, z: Float) {
+        glUniform3f(location, x, y, z)
+    }
+
+    override fun uniform(location: Int, x: Float, y: Float, z: Float, w: Float) {
+        glUniform4f(location, x, y, z, w)
     }
 
     override fun uniformMatrix4fv(

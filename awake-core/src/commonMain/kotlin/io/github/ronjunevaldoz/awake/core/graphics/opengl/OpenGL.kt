@@ -132,8 +132,11 @@ interface OpenGL {
 
     fun texImage2D(target: Int, level: Int, bitmap: Bitmap, border: Int)
     fun texParameteri(target: Int, pname: Int, param: Int)
-    fun uniform1(location: Int, x: Int)
-    fun uniform1(location: Int, x: Float)
+    fun uniform(location: Int, x: Int)
+    fun uniform(location: Int, x: Float)
+    fun uniform(location: Int, x: Int, y: Int, z: Int)
+    fun uniform(location: Int, x: Float, y: Float, z: Float)
+    fun uniform(location: Int, x: Float, y: Float, z: Float, w: Float)
     fun uniformMatrix4fv(location: Int, count: Int, transpose: Boolean, value: FloatBuf)
     fun genFrameBuffers(): Int
     fun bindFramebuffer(target: Int, frameBuffer: Int)
