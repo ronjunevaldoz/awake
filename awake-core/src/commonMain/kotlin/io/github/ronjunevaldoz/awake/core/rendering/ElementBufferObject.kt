@@ -23,8 +23,7 @@ class ElementBufferObject : BufferObject, IndexBufferData {
     fun storeData() {
         AwakeContext.gl.bufferData(
             OpenGL.BufferType.ElementArray,
-            elements.size.toLong(),
-            BufferUtils.byteBuffer(elements.toByteArray()),
+            BufferUtils.allocateByte(elements.toByteArray()),
             OpenGL.DrawType.Static
         )
     }

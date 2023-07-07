@@ -9,6 +9,7 @@ import io.github.ronjunevaldoz.awake.core.memory.IntBuf
 import io.github.ronjunevaldoz.awake.core.memory.IntBuffer
 import io.github.ronjunevaldoz.awake.core.memory.ShortBuffer
 import io.github.ronjunevaldoz.awake.core.utils.BufferUtils
+import io.github.ronjunevaldoz.awake.core.utils.sizeBytes
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.FloatVar
 import kotlinx.cinterop.IntVar
@@ -230,7 +231,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun genBuffers(): Int {
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         glGenBuffers(1, buffer.get())
         return buffer[0]
     }
@@ -243,12 +244,7 @@ internal actual object Agl : OpenGL {
         glBindBuffer(target.value.toUInt(), buffer.toUInt())
     }
 
-    override fun bufferData(
-        target: OpenGL.BufferType,
-        size: Long,
-        data: Buffer,
-        usage: OpenGL.DrawType
-    ) {
+    override fun bufferData(target: OpenGL.BufferType, data: Buffer, usage: OpenGL.DrawType) {
         val buffer = when (data) {
             is ByteBuffer -> data.get<ByteVar>()
             is ShortBuffer -> data.get<ShortVar>()
@@ -256,11 +252,16 @@ internal actual object Agl : OpenGL {
             is FloatBuffer -> data.get<FloatVar>()
             else -> throw Exception("Buffer not supported")
         }
-        glBufferData(target.value.toUInt(), size, buffer, usage.value.toUInt())
+        glBufferData(
+            target.value.toUInt(),
+            data.size * data.sizeBytes().toLong(),
+            buffer,
+            usage.value.toUInt()
+        )
     }
 
     override fun genVertexArrays(): Int {
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         glGenVertexArraysOES(1, buffer.get())
         return buffer[0]
     }
@@ -270,7 +271,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun deleteVertexArrays(arrays: Int) {
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         buffer[0] = arrays
         glDeleteVertexArraysOES(1, buffer.get())
     }
@@ -280,7 +281,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun deleteTextures(textures: Int) {
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         buffer[0] = textures
         glDeleteTextures(1, buffer.get())
     }
@@ -290,13 +291,13 @@ internal actual object Agl : OpenGL {
     }
 
     override fun deleteFrameBuffers(frameBuffer: Int) {
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         buffer[0] = frameBuffer
         glDeleteFramebuffersOES(1, buffer.get())
     }
 
     override fun deleteRenderBuffers(renderBuffer: Int) {
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         buffer[0] = renderBuffer
         glDeleteFramebuffersOES(1, buffer.get())
     }
@@ -315,7 +316,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun genTextures(): Int {
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         glGenTextures(1, buffer.get())
         return buffer[0]
     }
@@ -423,7 +424,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun genFrameBuffers(): Int {
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         glGenFramebuffersOES(1, buffer.get())
         return buffer[0]
     }
@@ -449,7 +450,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun genRenderBuffers(): Int {
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         glGenRenderbuffersOES(1, buffer.get())
         return buffer[0]
     }
@@ -489,7 +490,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun deleteBuffers(buffers: Int) {
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         buffer[0] = buffers
         glDeleteBuffers(1, buffer.get())
     }

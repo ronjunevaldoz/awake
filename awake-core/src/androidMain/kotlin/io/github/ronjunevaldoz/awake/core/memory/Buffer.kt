@@ -25,6 +25,11 @@ class ByteBuffer(size: Int) : ByteBuf {
         buffer.position(0)
     }
 
+    override val size: Int = buffer.capacity()
+    override fun clear() {
+        buffer.clear()
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun <B : Buffer> get(): B = buffer as B
 }
@@ -53,6 +58,11 @@ class ShortBuffer(size: Int) : ShortBuf {
         buffer.position(0)
     }
 
+    override val size: Int = buffer.capacity()
+    override fun clear() {
+        buffer.clear()
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun <B : Buffer> get(): B = buffer as B
 }
@@ -79,6 +89,11 @@ class IntBuffer(size: Int) : IntBuf {
     override fun put(data: IntArray) {
         buffer.put(data)
         buffer.position(0)
+    }
+
+    override val size: Int = buffer.capacity()
+    override fun clear() {
+        buffer.clear()
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -111,10 +126,16 @@ class FloatBuffer(size: Int) : FloatBuf {
 
     @Suppress("UNCHECKED_CAST")
     override fun <B : Buffer> get(): B = buffer as B
+    override val size: Int = buffer.capacity()
+    override fun clear() {
+        buffer.clear()
+    }
 }
 
 actual interface Buffer {
-    fun <B : Buffer> get() : B
+    fun <B : Buffer> get(): B
+    actual val size: Int
+    actual fun clear()
 }
 
 actual fun createByteBuffer(data: ByteArray): ByteBuf {

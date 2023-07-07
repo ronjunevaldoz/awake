@@ -58,13 +58,13 @@ abstract class DefaultShader : BaseShader() {
     }
 
     override fun set(location: Int, value: Matrix4f) {
-        val buffer = BufferUtils.floatBuffer(16)
+        val buffer = BufferUtils.allocateFloat(16)
         buffer.put(value.data)
         gl.uniformMatrix4fv(location, 0, false, buffer)
     }
 
     override fun set(location: Int, matrices: List<Matrix4f>) {
-        val buffer = BufferUtils.floatBuffer(16 * matrices.size)
+        val buffer = BufferUtils.allocateFloat(16 * matrices.size)
         matrices.forEachIndexed { i, mat ->
             mat[16 * i, buffer]
         }

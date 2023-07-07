@@ -1,6 +1,9 @@
 package io.github.ronjunevaldoz.awake.core.memory
 
-expect interface Buffer
+expect interface Buffer {
+    val size: Int
+    fun clear()
+}
 
 interface ByteBuf : Buffer {
     operator fun get(index: Int): Byte

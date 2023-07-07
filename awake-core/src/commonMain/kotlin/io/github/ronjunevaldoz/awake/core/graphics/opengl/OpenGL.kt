@@ -102,7 +102,6 @@ interface OpenGL {
     fun bindBuffer(target: BufferType, buffer: BufferId)
     fun bufferData(
         target: BufferType,
-        size: Long,
         data: Buffer,
         usage: DrawType
     )

@@ -48,7 +48,7 @@ class FrameBuffer(private val width: Int, private val height: Int) : BufferObjec
     }
 
     fun getPixelBuffer(): ByteBuf {
-        val pixelBuffer = BufferUtils.byteBuffer(width * height * 4)
+        val pixelBuffer = BufferUtils.allocateByte(width * height * 4)
         use {
             gl.readPixels(
                 0,

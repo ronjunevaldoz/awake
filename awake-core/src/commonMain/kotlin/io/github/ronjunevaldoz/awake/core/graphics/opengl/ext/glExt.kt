@@ -39,7 +39,7 @@ fun OpenGL.tryCompileShader(type: OpenGL.ShaderType, content: String): Int {
 }
 
 fun OpenGL.checkShaderCompilation(shader: Int) {
-    val compileStatus = BufferUtils.intBuffer(1)
+    val compileStatus = BufferUtils.allocateInt(1)
     getShaderiv(shader, OpenGL.Status.Compile, compileStatus)
     check(compileStatus[0] == CommonGL.GL_TRUE) {
         val infoLog = getShaderInfoLog(shader)
@@ -64,7 +64,7 @@ fun OpenGL.tryLinkProgram(
 }
 
 fun OpenGL.checkProgramLinking(programId: Int) {
-    val linkStatus = BufferUtils.intBuffer(1)
+    val linkStatus = BufferUtils.allocateInt(1)
     getProgramiv(programId, OpenGL.Status.Link, linkStatus)
     check(linkStatus[0] == CommonGL.GL_TRUE) {
         val infoLog = getProgramInfoLog(programId)

@@ -65,6 +65,7 @@ import io.github.ronjunevaldoz.awake.core.memory.FloatBuf
 import io.github.ronjunevaldoz.awake.core.memory.IntBuf
 import io.github.ronjunevaldoz.awake.core.memory.createIntBuffer
 import io.github.ronjunevaldoz.awake.core.utils.BufferUtils
+import io.github.ronjunevaldoz.awake.core.utils.sizeBytes
 
 internal actual object Agl : OpenGL {
     override fun clearColor(r: Float, g: Float, b: Float, a: Float) {
@@ -205,7 +206,7 @@ internal actual object Agl : OpenGL {
 
     override fun genBuffers(): Int {
         // TODO experimental performance
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         glGenBuffers(1, buffer.get())
         return buffer[0]
     }
@@ -218,15 +219,10 @@ internal actual object Agl : OpenGL {
         glBindBuffer(target.value, buffer)
     }
 
-    override fun bufferData(
-        target: OpenGL.BufferType,
-        size: Long,
-        data: Buffer,
-        usage: OpenGL.DrawType
-    ) {
+    override fun bufferData(target: OpenGL.BufferType, data: Buffer, usage: OpenGL.DrawType) {
         glBufferData(
             target.value,
-            size.toInt(),
+            data.size * data.sizeBytes(),
             data.get(),
             usage.value
         )
@@ -234,7 +230,7 @@ internal actual object Agl : OpenGL {
 
     override fun genVertexArrays(): Int {
         // TODO dispose buffer after?
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         glGenVertexArrays(1, buffer.get())
         return buffer[0]
     }
@@ -245,7 +241,7 @@ internal actual object Agl : OpenGL {
 
     override fun deleteVertexArrays(arrays: Int) {
         // TODO experimental performance
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         buffer[0] = arrays
         glDeleteVertexArrays(1, buffer.get())
     }
@@ -256,7 +252,7 @@ internal actual object Agl : OpenGL {
 
     override fun deleteTextures(textures: Int) {
         // TODO experimental performance
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         buffer[0] = textures
         glDeleteTextures(1, buffer.get())
     }
@@ -267,14 +263,14 @@ internal actual object Agl : OpenGL {
 
     override fun deleteFrameBuffers(frameBuffer: Int) {
         // TODO experimental performance
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         buffer[0] = frameBuffer
         glDeleteFramebuffers(1, buffer.get())
     }
 
     override fun deleteRenderBuffers(renderBuffer: Int) {
         // TODO experimental performance
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         buffer[0] = renderBuffer
         glDeleteRenderbuffers(1, buffer.get())
     }
@@ -297,7 +293,7 @@ internal actual object Agl : OpenGL {
 
     override fun genTextures(): Int {
         // TODO experimental performance
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         glGenTextures(1, buffer.get())
         return buffer[0]
     }
@@ -399,7 +395,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun genFrameBuffers(): Int {
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         glGenFramebuffers(1, buffer.get())
         return buffer[0]
     }
@@ -419,7 +415,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun genRenderBuffers(): Int {
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         glGenRenderbuffers(1, buffer.get())
         return buffer[0]
     }
@@ -454,7 +450,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun deleteBuffers(buffers: Int) {
-        val buffer = BufferUtils.intBuffer(1)
+        val buffer = BufferUtils.allocateInt(1)
         buffer[0] = buffers
         glDeleteBuffers(1, buffer.get())
     }

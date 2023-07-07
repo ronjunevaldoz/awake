@@ -30,14 +30,11 @@ class VertexBufferObject(val data: VertexBufferData) : BufferObject {
 
     fun storeData() {
         with(data) {
-            val stride = size * Float.SIZE_BYTES
-            // TODO investigate why do I need to use stride here???
-            val bufferSize = data.size * stride
-            val buffer = BufferUtils.floatBuffer(bufferSize)
+            val bufferSize = data.size * Float.SIZE_BYTES
+            val buffer = BufferUtils.allocateFloat(bufferSize)
             buffer.put(data.toFloatArray())
             AwakeContext.gl.bufferData(
                 OpenGL.BufferType.Array,
-                bufferSize.toLong(),
                 buffer,
                 OpenGL.DrawType.Static
             )
@@ -46,7 +43,7 @@ class VertexBufferObject(val data: VertexBufferData) : BufferObject {
                 size,
                 CommonGL.GL_FLOAT,
                 false,
-                stride,
+                0,
                 offset
             )
         }

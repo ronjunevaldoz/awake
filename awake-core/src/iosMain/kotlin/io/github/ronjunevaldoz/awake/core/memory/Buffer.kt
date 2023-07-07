@@ -9,6 +9,8 @@ import kotlinx.cinterop.usePinned
 
 actual interface Buffer {
     fun <C : CPointed> get(): CValuesRef<C>
+    actual val size: Int
+    actual fun clear()
 }
 
 class ByteBuffer(size: Int) : ByteBuf {
@@ -32,6 +34,12 @@ class ByteBuffer(size: Int) : ByteBuf {
 
     override fun <C : CPointed> get(): CValuesRef<C> {
         return buffer.usePinned { it.addressOf(0).reinterpret() }
+    }
+
+    override val size: Int = buffer.size
+
+    override fun clear() {
+        // TODO clear buffer on iOS
     }
 }
 
@@ -57,6 +65,12 @@ class ShortBuffer(size: Int) : ShortBuf {
     override fun <C : CPointed> get(): CValuesRef<C> {
         return buffer.usePinned { it.addressOf(0).reinterpret() }
     }
+
+    override val size: Int = buffer.size
+
+    override fun clear() {
+        // TODO clear buffer on iOS
+    }
 }
 
 class IntBuffer(size: Int) : IntBuf {
@@ -81,6 +95,12 @@ class IntBuffer(size: Int) : IntBuf {
     override fun <C : CPointed> get(): CValuesRef<C> {
         return buffer.usePinned { it.addressOf(0).reinterpret() }
     }
+
+    override val size: Int = buffer.size
+
+    override fun clear() {
+        // TODO clear buffer on iOS
+    }
 }
 
 class FloatBuffer(size: Int) : FloatBuf {
@@ -88,12 +108,6 @@ class FloatBuffer(size: Int) : FloatBuf {
 
     constructor(data: FloatArray) : this(data.size) {
         data.copyInto(buffer)
-    }
-
-    constructor(data: Array<Float>) : this(data.size) {
-        data.forEachIndexed { index, value ->
-            buffer[index] = value
-        }
     }
 
     override fun get(index: Int): Float {
@@ -110,6 +124,12 @@ class FloatBuffer(size: Int) : FloatBuf {
 
     override fun <C : CPointed> get(): CValuesRef<C> {
         return buffer.usePinned { it.addressOf(0).reinterpret() }
+    }
+
+    override val size: Int = buffer.size
+
+    override fun clear() {
+        // TODO clear buffer on iOS
     }
 }
 

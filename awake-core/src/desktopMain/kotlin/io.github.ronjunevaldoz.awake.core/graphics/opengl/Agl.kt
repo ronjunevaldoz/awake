@@ -245,7 +245,6 @@ internal actual object Agl : OpenGL {
 
     override fun bufferData(
         target: OpenGL.BufferType,
-        size: Long,
         data: Buffer,
         usage: OpenGL.DrawType
     ) {

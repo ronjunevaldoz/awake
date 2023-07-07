@@ -167,11 +167,10 @@ internal object AglDebuggable : OpenGL {
 
     override fun bufferData(
         target: OpenGL.BufferType,
-        size: Long,
         data: Buffer,
         usage: OpenGL.DrawType
     ) {
-        Agl.bufferData(target, size, data, usage)
+        Agl.bufferData(target, data, usage)
         checkGL()
     }
 
