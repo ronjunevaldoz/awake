@@ -1,6 +1,8 @@
-package io.github.ronjunevaldoz.awake.core.graphics.opengl
+package io.github.ronjunevaldoz.awake.core.graphics.opengl.ext
 
 import androidx.compose.ui.graphics.Color
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.Constants
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.OpenGL
 import io.github.ronjunevaldoz.awake.core.utils.BufferUtils
 
 /**

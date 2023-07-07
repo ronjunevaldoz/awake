@@ -1,7 +1,7 @@
-package io.github.ronjunevaldoz.awake.core.graphics
+package io.github.ronjunevaldoz.awake.core.shader
 
 import io.github.ronjunevaldoz.awake.core.AwakeContext.Companion.gl
-import io.github.ronjunevaldoz.awake.core.graphics.opengl.tryCreateShader
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.ext.tryCreateShader
 import io.github.ronjunevaldoz.awake.core.utils.AwakeLogger
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.ExperimentalResourceApi

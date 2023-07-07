@@ -10,7 +10,6 @@ import android.opengl.GLES20.glBindFramebuffer
 import android.opengl.GLES20.glBindRenderbuffer
 import android.opengl.GLES20.glBindTexture
 import android.opengl.GLES20.glBlendFunc
-import android.opengl.GLES20.glBufferData
 import android.opengl.GLES20.glCheckFramebufferStatus
 import android.opengl.GLES20.glClear
 import android.opengl.GLES20.glClearColor
@@ -54,6 +53,7 @@ import android.opengl.GLES20.glUseProgram
 import android.opengl.GLES20.glVertexAttribPointer
 import android.opengl.GLES20.glViewport
 import android.opengl.GLES30.glBindVertexArray
+import android.opengl.GLES30.glBufferData
 import android.opengl.GLES30.glDeleteVertexArrays
 import android.opengl.GLES30.glGenVertexArrays
 import io.github.ronjunevaldoz.awake.core.graphics.image.Bitmap
@@ -150,7 +150,7 @@ internal actual object Agl : OpenGL {
         ptr: Buffer?
     ) {
         if (ptr == null) {
-            glVertexAttribPointer(
+            vertexAttribPointer(
                 index,
                 size,
                 type,
@@ -384,7 +384,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun genFrameBuffers(): Int {
-        val buffer = BufferUtils.intBuffer(0)
+        val buffer = BufferUtils.intBuffer(1)
         glGenFramebuffers(1, buffer.get())
         return buffer[0]
     }
@@ -404,7 +404,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun genRenderBuffers(): Int {
-        val buffer = BufferUtils.intBuffer(0)
+        val buffer = BufferUtils.intBuffer(1)
         glGenRenderbuffers(1, buffer.get())
         return buffer[0]
     }
@@ -439,7 +439,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun deleteBuffers(buffers: Int) {
-        val buffer = BufferUtils.intBuffer(0)
+        val buffer = BufferUtils.intBuffer(1)
         buffer[0] = buffers
         glDeleteBuffers(1, buffer.get())
     }

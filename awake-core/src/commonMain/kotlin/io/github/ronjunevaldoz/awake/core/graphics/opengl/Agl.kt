@@ -1,6 +1,7 @@
 package io.github.ronjunevaldoz.awake.core.graphics.opengl
 
 import io.github.ronjunevaldoz.awake.core.graphics.image.Bitmap
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.ext.checkGL
 import io.github.ronjunevaldoz.awake.core.memory.Buffer
 import io.github.ronjunevaldoz.awake.core.memory.FloatBuf
 import io.github.ronjunevaldoz.awake.core.memory.IntBuf
@@ -263,12 +264,6 @@ internal object AglDebuggable : OpenGL {
         Agl.readPixels(x, y, width, height, format, type, pixels)
         checkGL()
     }
-
-//    @Deprecated("use readPixels instead", replaceWith = ReplaceWith("readPixels"))
-//    override fun getTexImage(tex: Int, level: Int, format: Int, type: Int, pixels: Buffer) {
-//        Agl.getTexImage(tex, level, format, type, pixels)
-//        checkGL()
-//    }
 
     override fun texImage2D(
         target: Int,

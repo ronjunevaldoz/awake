@@ -51,7 +51,8 @@ interface OpenGL {
     }
 
     enum class DrawType(val value: Int) {
-        Static(Constants.GL_STATIC_DRAW)
+        Static(Constants.GL_STATIC_DRAW),
+        Dynamic(Constants.GL_DYNAMIC_DRAW)
     }
 
     fun clearColor(r: Float, g: Float, b: Float, a: Float)

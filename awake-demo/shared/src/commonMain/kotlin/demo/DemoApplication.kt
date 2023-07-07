@@ -6,9 +6,9 @@ import io.github.ronjunevaldoz.awake.core.graphics.Disposable
 import io.github.ronjunevaldoz.awake.core.graphics.Drawable
 import io.github.ronjunevaldoz.awake.core.graphics.Renderer
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.OpenGL
-import scene.ColoredTriangle
-import scene.Texture
-import scene.Triangle
+import scene.DemoColoredTriangle
+import scene.DemoTexture
+import scene.DemoTriangle
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
@@ -30,9 +30,9 @@ object DemoApplication : Renderer {
     override fun create() {
         drawables =
             listOf(
-                Triangle(),
-                Texture(),
-                ColoredTriangle()
+                DemoTriangle(),
+                DemoTexture(),
+                DemoColoredTriangle()
             )
     }
 
@@ -42,7 +42,7 @@ object DemoApplication : Renderer {
             colorVelocity = -colorVelocity
         }
         color += colorVelocity
-//        Agl.clearColor(colorObject)
+//        gl.clearColor(Color.Green)
         gl.clearColor(color * 0.5f, color, color, 1f)
         gl.clear(OpenGL.BufferBit.Color.value or OpenGL.BufferBit.Depth.value)
         drawables[drawableIndex].draw()
