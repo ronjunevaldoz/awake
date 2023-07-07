@@ -2,7 +2,7 @@ package io.github.ronjunevaldoz.awake.core.rendering
 
 import io.github.ronjunevaldoz.awake.core.AwakeContext.Companion.gl
 import io.github.ronjunevaldoz.awake.core.graphics.Disposable
-import io.github.ronjunevaldoz.awake.core.graphics.opengl.Constants
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL
 import io.github.ronjunevaldoz.awake.core.memory.ByteBuf
 import io.github.ronjunevaldoz.awake.core.utils.BufferUtils
 
@@ -22,9 +22,9 @@ class FrameBufferObject(private val width: Int, private val height: Int) : Buffe
             texture.create()
             // store texture to frame buffer
             gl.framebufferTexture2D(
-                Constants.GL_FRAMEBUFFER,
-                Constants.GL_COLOR_ATTACHMENT0,
-                Constants.GL_TEXTURE_2D,
+                CommonGL.GL_FRAMEBUFFER,
+                CommonGL.GL_COLOR_ATTACHMENT0,
+                CommonGL.GL_TEXTURE_2D,
                 texture.id,
                 0
             )
@@ -39,11 +39,11 @@ class FrameBufferObject(private val width: Int, private val height: Int) : Buffe
     }
 
     override fun bind() {
-        gl.bindFramebuffer(Constants.GL_FRAMEBUFFER, id)
+        gl.bindFramebuffer(CommonGL.GL_FRAMEBUFFER, id)
     }
 
     override fun unbind() {
-        gl.bindFramebuffer(Constants.GL_FRAMEBUFFER, 0)
+        gl.bindFramebuffer(CommonGL.GL_FRAMEBUFFER, 0)
     }
 
     fun getPixelBuffer(): ByteBuf {
@@ -54,8 +54,8 @@ class FrameBufferObject(private val width: Int, private val height: Int) : Buffe
                 0,
                 width,
                 height,
-                Constants.GL_RGBA,
-                Constants.GL_UNSIGNED_BYTE,
+                CommonGL.GL_RGBA,
+                CommonGL.GL_UNSIGNED_BYTE,
                 pixelBuffer
             )
         }
@@ -73,8 +73,8 @@ class FrameBufferObject(private val width: Int, private val height: Int) : Buffe
     }
 
     private fun checkComplete() {
-        val status = gl.checkFramebufferStatus(Constants.GL_FRAMEBUFFER)
-        check(status == Constants.GL_FRAMEBUFFER_COMPLETE) {
+        val status = gl.checkFramebufferStatus(CommonGL.GL_FRAMEBUFFER)
+        check(status == CommonGL.GL_FRAMEBUFFER_COMPLETE) {
             "Framebuffer is not complete!"
         }
     }

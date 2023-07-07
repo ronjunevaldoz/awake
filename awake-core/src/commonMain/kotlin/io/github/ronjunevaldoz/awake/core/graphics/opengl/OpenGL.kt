@@ -4,17 +4,11 @@ import io.github.ronjunevaldoz.awake.core.graphics.image.Bitmap
 import io.github.ronjunevaldoz.awake.core.memory.Buffer
 import io.github.ronjunevaldoz.awake.core.memory.FloatBuf
 import io.github.ronjunevaldoz.awake.core.memory.IntBuf
-import kotlin.jvm.JvmInline
 
 typealias ProgramId = Int
 typealias ShaderId = Int
 typealias BufferId = Int
 typealias ArrayId = Int
-
-// treated as typealias
-@JvmInline
-value class Id(val value: Int)
-
 
 interface OpenGL {
     enum class Version {
@@ -24,35 +18,35 @@ interface OpenGL {
     }
 
     enum class Status(val value: Int) {
-        Compile(Constants.GL_COMPILE_STATUS),
-        Link(Constants.GL_LINK_STATUS),
-        Delete(Constants.GL_DELETE_STATUS),
-        Validate(Constants.GL_VALIDATE_STATUS)
+        Compile(CommonGL.GL_COMPILE_STATUS),
+        Link(CommonGL.GL_LINK_STATUS),
+        Delete(CommonGL.GL_DELETE_STATUS),
+        Validate(CommonGL.GL_VALIDATE_STATUS)
     }
 
     enum class BufferBit(val value: Int) {
-        Color(Constants.GL_COLOR_BUFFER_BIT),
-        Depth(Constants.GL_DEPTH_BUFFER_BIT),
-        Stencil(Constants.GL_STENCIL_BUFFER_BIT)
+        Color(CommonGL.GL_COLOR_BUFFER_BIT),
+        Depth(CommonGL.GL_DEPTH_BUFFER_BIT),
+        Stencil(CommonGL.GL_STENCIL_BUFFER_BIT)
     }
 
     enum class DrawMode(val value: Int) {
-        Triangles(Constants.GL_TRIANGLES)
+        Triangles(CommonGL.GL_TRIANGLES)
     }
 
     enum class ShaderType(val value: Int) {
-        Vertex(Constants.GL_VERTEX_SHADER),
-        Fragment(Constants.GL_FRAGMENT_SHADER)
+        Vertex(CommonGL.GL_VERTEX_SHADER),
+        Fragment(CommonGL.GL_FRAGMENT_SHADER)
     }
 
     enum class BufferType(val value: Int) {
-        Array(Constants.GL_ARRAY_BUFFER),
-        ElementArray(Constants.GL_ELEMENT_ARRAY_BUFFER)
+        Array(CommonGL.GL_ARRAY_BUFFER),
+        ElementArray(CommonGL.GL_ELEMENT_ARRAY_BUFFER)
     }
 
     enum class DrawType(val value: Int) {
-        Static(Constants.GL_STATIC_DRAW),
-        Dynamic(Constants.GL_DYNAMIC_DRAW)
+        Static(CommonGL.GL_STATIC_DRAW),
+        Dynamic(CommonGL.GL_DYNAMIC_DRAW)
     }
 
     fun clearColor(r: Float, g: Float, b: Float, a: Float)
@@ -99,7 +93,7 @@ interface OpenGL {
     )
 
     fun enableVertexAttribArray(index: Int)
-    fun drawArrays(mode: Int, first: Int, count: Int)
+    fun drawArrays(mode: DrawMode, first: Int, count: Int)
     fun disableVertexAttribArray(index: Int)
 
     // buffers

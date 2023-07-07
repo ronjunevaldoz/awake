@@ -1,7 +1,7 @@
 package io.github.ronjunevaldoz.awake.core.rendering
 
 import io.github.ronjunevaldoz.awake.core.AwakeContext
-import io.github.ronjunevaldoz.awake.core.graphics.opengl.Constants
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL
 
 class RenderBufferObject : BufferObject {
     override var id: Int = -1
@@ -11,26 +11,26 @@ class RenderBufferObject : BufferObject {
     }
 
     override fun bind() {
-        AwakeContext.gl.bindRenderBuffers(Constants.GL_RENDERBUFFER, id)
+        AwakeContext.gl.bindRenderBuffers(CommonGL.GL_RENDERBUFFER, id)
     }
 
     fun storeData(width: Int, height: Int) {
         AwakeContext.gl.renderBufferStorage(
-            Constants.GL_RENDERBUFFER,
-            Constants.GL_DEPTH24_STENCIL8,
+            CommonGL.GL_RENDERBUFFER,
+            CommonGL.GL_DEPTH24_STENCIL8,
             width,
             height
         )
         AwakeContext.gl.framebufferRenderBuffer(
-            Constants.GL_FRAMEBUFFER,
-            Constants.GL_DEPTH_STENCIL_ATTACHMENT,
-            Constants.GL_RENDERBUFFER,
+            CommonGL.GL_FRAMEBUFFER,
+            CommonGL.GL_DEPTH_STENCIL_ATTACHMENT,
+            CommonGL.GL_RENDERBUFFER,
             id
         )
     }
 
     override fun unbind() {
-        AwakeContext.gl.bindRenderBuffers(Constants.GL_RENDERBUFFER, 0)
+        AwakeContext.gl.bindRenderBuffers(CommonGL.GL_RENDERBUFFER, 0)
     }
 
     override fun delete() {

@@ -4,9 +4,9 @@ import io.github.ronjunevaldoz.awake.core.AwakeContext.Companion.gl
 import io.github.ronjunevaldoz.awake.core.geometry.Attribute
 import io.github.ronjunevaldoz.awake.core.graphics.Disposable
 import io.github.ronjunevaldoz.awake.core.graphics.Drawable
-import io.github.ronjunevaldoz.awake.core.graphics.opengl.Constants.GL_TEXTURE0
-import io.github.ronjunevaldoz.awake.core.graphics.opengl.Constants.GL_TEXTURE_2D
-import io.github.ronjunevaldoz.awake.core.graphics.opengl.Constants.GL_UNSIGNED_BYTE
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL.GL_TEXTURE0
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL.GL_TEXTURE_2D
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL.GL_UNSIGNED_BYTE
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.OpenGL
 import io.github.ronjunevaldoz.awake.core.isMobile
 import io.github.ronjunevaldoz.awake.core.rendering.VertexArrayObject

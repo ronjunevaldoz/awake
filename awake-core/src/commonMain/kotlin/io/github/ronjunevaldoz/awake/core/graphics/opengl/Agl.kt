@@ -139,7 +139,7 @@ internal object AglDebuggable : OpenGL {
         checkGL()
     }
 
-    override fun drawArrays(mode: Int, first: Int, count: Int) {
+    override fun drawArrays(mode: OpenGL.DrawMode, first: Int, count: Int) {
         Agl.drawArrays(mode, first, count)
         checkGL()
     }

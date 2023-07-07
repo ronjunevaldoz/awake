@@ -3,7 +3,7 @@ package io.github.ronjunevaldoz.awake.core.utils
 import io.github.ronjunevaldoz.awake.core.AwakeContext.Companion.gl
 import io.github.ronjunevaldoz.awake.core.graphics.Disposable
 import io.github.ronjunevaldoz.awake.core.graphics.image.Bitmap
-import io.github.ronjunevaldoz.awake.core.graphics.opengl.Constants
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL
 import io.github.ronjunevaldoz.awake.core.memory.IntBuf
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -28,29 +28,29 @@ object AssetUtils : Disposable {
         val tbo = BufferUtils.intBuffer(1)
         textures[textureName] = tbo
         gl.genTextures(1, tbo)
-        gl.bindTexture(Constants.GL_TEXTURE_2D, tbo[0])
+        gl.bindTexture(CommonGL.GL_TEXTURE_2D, tbo[0])
         gl.texParameteri(
-            Constants.GL_TEXTURE_2D,
-            Constants.GL_TEXTURE_WRAP_S,
-            Constants.GL_REPEAT
+            CommonGL.GL_TEXTURE_2D,
+            CommonGL.GL_TEXTURE_WRAP_S,
+            CommonGL.GL_REPEAT
         )
         gl.texParameteri(
-            Constants.GL_TEXTURE_2D,
-            Constants.GL_TEXTURE_WRAP_T,
-            Constants.GL_REPEAT
+            CommonGL.GL_TEXTURE_2D,
+            CommonGL.GL_TEXTURE_WRAP_T,
+            CommonGL.GL_REPEAT
         )
         gl.texParameteri(
-            Constants.GL_TEXTURE_2D,
-            Constants.GL_TEXTURE_MAG_FILTER,
-            Constants.GL_LINEAR
+            CommonGL.GL_TEXTURE_2D,
+            CommonGL.GL_TEXTURE_MAG_FILTER,
+            CommonGL.GL_LINEAR
         )
         gl.texParameteri(
-            Constants.GL_TEXTURE_2D,
-            Constants.GL_TEXTURE_MIN_FILTER,
-            Constants.GL_LINEAR
+            CommonGL.GL_TEXTURE_2D,
+            CommonGL.GL_TEXTURE_MIN_FILTER,
+            CommonGL.GL_LINEAR
         )
-        gl.texImage2D(Constants.GL_TEXTURE_2D, 0, bitmap, 0)
-        gl.bindTexture(Constants.GL_TEXTURE_2D, 0)
+        gl.texImage2D(CommonGL.GL_TEXTURE_2D, 0, bitmap, 0)
+        gl.bindTexture(CommonGL.GL_TEXTURE_2D, 0)
     }
 
     fun getTexture(textureName: String): Int {

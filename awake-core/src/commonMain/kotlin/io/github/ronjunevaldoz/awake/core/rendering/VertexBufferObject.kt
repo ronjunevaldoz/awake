@@ -1,7 +1,7 @@
 package io.github.ronjunevaldoz.awake.core.rendering
 
 import io.github.ronjunevaldoz.awake.core.AwakeContext
-import io.github.ronjunevaldoz.awake.core.graphics.opengl.Constants
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.OpenGL
 import io.github.ronjunevaldoz.awake.core.utils.BufferUtils
 
@@ -44,7 +44,7 @@ class VertexBufferObject(val data: VertexBufferData) : BufferObject {
             AwakeContext.gl.vertexAttribPointer(
                 index,
                 size,
-                Constants.GL_FLOAT,
+                CommonGL.GL_FLOAT,
                 false,
                 stride,
                 offset

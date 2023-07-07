@@ -1,7 +1,7 @@
 package io.github.ronjunevaldoz.awake.core.graphics.opengl.ext
 
 import androidx.compose.ui.graphics.Color
-import io.github.ronjunevaldoz.awake.core.graphics.opengl.Constants
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.OpenGL
 import io.github.ronjunevaldoz.awake.core.utils.BufferUtils
 
@@ -41,7 +41,7 @@ fun OpenGL.tryCompileShader(type: OpenGL.ShaderType, content: String): Int {
 fun OpenGL.checkShaderCompilation(shader: Int) {
     val compileStatus = BufferUtils.intBuffer(1)
     getShaderiv(shader, OpenGL.Status.Compile, compileStatus)
-    check(compileStatus[0] == Constants.GL_TRUE) {
+    check(compileStatus[0] == CommonGL.GL_TRUE) {
         val infoLog = getShaderInfoLog(shader)
         deleteShader(shader)
         infoLog
@@ -66,7 +66,7 @@ fun OpenGL.tryLinkProgram(
 fun OpenGL.checkProgramLinking(programId: Int) {
     val linkStatus = BufferUtils.intBuffer(1)
     getProgramiv(programId, OpenGL.Status.Link, linkStatus)
-    check(linkStatus[0] == Constants.GL_TRUE) {
+    check(linkStatus[0] == CommonGL.GL_TRUE) {
         val infoLog = getProgramInfoLog(programId)
         deleteProgram(programId)
         infoLog

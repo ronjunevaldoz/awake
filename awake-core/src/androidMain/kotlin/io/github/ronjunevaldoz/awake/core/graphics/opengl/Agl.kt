@@ -192,8 +192,8 @@ internal actual object Agl : OpenGL {
         glEnableVertexAttribArray(index)
     }
 
-    override fun drawArrays(mode: Int, first: Int, count: Int) {
-        glDrawArrays(mode, first, count)
+    override fun drawArrays(mode: OpenGL.DrawMode, first: Int, count: Int) {
+        glDrawArrays(mode.value, first, count)
     }
 
     override fun disableVertexAttribArray(index: Int) {

@@ -1,6 +1,6 @@
 package io.github.ronjunevaldoz.awake.core.graphics.opengl
 
-object Constants {
+object CommonGL {
     /**
      * Initial copy from GLES20
      */

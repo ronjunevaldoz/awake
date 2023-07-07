@@ -1,7 +1,7 @@
 package io.github.ronjunevaldoz.awake.core.graphics.opengl
 
 import io.github.ronjunevaldoz.awake.core.graphics.image.Bitmap
-import io.github.ronjunevaldoz.awake.core.graphics.opengl.Constants.GL_RGBA
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL.GL_RGBA
 import io.github.ronjunevaldoz.awake.core.memory.Buffer
 import io.github.ronjunevaldoz.awake.core.memory.FloatBuf
 import io.github.ronjunevaldoz.awake.core.memory.IntBuf
@@ -220,8 +220,8 @@ internal actual object Agl : OpenGL {
         glEnableVertexAttribArray(index)
     }
 
-    override fun drawArrays(mode: Int, first: Int, count: Int) {
-        glDrawArrays(mode, first, count)
+    override fun drawArrays(mode: OpenGL.DrawMode, first: Int, count: Int) {
+        glDrawArrays(mode.value, first, count)
     }
 
     override fun disableVertexAttribArray(index: Int) {

@@ -4,7 +4,7 @@ import io.github.ronjunevaldoz.awake.core.AwakeContext.Companion.gl
 import io.github.ronjunevaldoz.awake.core.geometry.Attribute
 import io.github.ronjunevaldoz.awake.core.graphics.Disposable
 import io.github.ronjunevaldoz.awake.core.graphics.Drawable
-import io.github.ronjunevaldoz.awake.core.graphics.opengl.Constants
+import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.OpenGL
 import io.github.ronjunevaldoz.awake.core.isMobile
 import io.github.ronjunevaldoz.awake.core.rendering.VertexArrayObject
@@ -69,7 +69,7 @@ class DemoColoredTriangle : Drawable, Disposable {
             gl.drawElements(
                 OpenGL.DrawMode.Triangles,
                 indices.size,
-                Constants.GL_UNSIGNED_BYTE,
+                CommonGL.GL_UNSIGNED_BYTE,
                 null
             )
             vao.unbind()
