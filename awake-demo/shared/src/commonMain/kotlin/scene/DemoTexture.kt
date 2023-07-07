@@ -41,7 +41,7 @@ class DemoTexture : Drawable, Disposable {
 
     init {
         shader.compile()
-        AssetUtils.loadTexture(textureKey, "assets/fonts/calibri.png")
+        AssetUtils.texture.load(textureKey, "assets/fonts/calibri.png")
         attributes = listOf(
             Attribute(
                 aPosition, floatArrayOf(
@@ -82,7 +82,7 @@ class DemoTexture : Drawable, Disposable {
         shader.use {
             vao.bind()
             gl.activeTexture(GL_TEXTURE0)
-            gl.bindTexture(GL_TEXTURE_2D, AssetUtils.getTexture(textureKey))
+            gl.bindTexture(GL_TEXTURE_2D, AssetUtils.texture.get(textureKey))
             gl.drawElements(
                 OpenGL.DrawMode.Triangles,
                 indices.size,
@@ -97,7 +97,7 @@ class DemoTexture : Drawable, Disposable {
     override fun dispose() {
         shader.delete()
         vao.delete()
-        AssetUtils.removeTexture(textureKey)
+        AssetUtils.texture.remove(textureKey)
     }
 
     companion object {

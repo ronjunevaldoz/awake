@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import io.github.ronjunevaldoz.awake.core.AwakeContext.Companion.gl
 import io.github.ronjunevaldoz.awake.core.graphics.Renderer
-import io.github.ronjunevaldoz.awake.core.rendering.FrameBufferObject
+import io.github.ronjunevaldoz.awake.core.rendering.FrameBuffer
 import kotlinx.coroutines.delay
 import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
@@ -31,7 +31,7 @@ actual fun AwakeCanvas(modifier: Modifier, renderer: Renderer) {
     EachFrameUpdatingCanvas(Modifier.fillMaxSize()) { frameTime ->
         val width = size.width.toInt()
         val height = size.height.toInt()
-        val fbo = FrameBufferObject(width, height)
+        val fbo = FrameBuffer(width, height)
         fbo.bind()
 
         gl.viewport(0, 0, size.width.toInt(), size.height.toInt())
@@ -41,7 +41,7 @@ actual fun AwakeCanvas(modifier: Modifier, renderer: Renderer) {
     }
 }
 
-private fun createBitmap(fbo: FrameBufferObject, width: Int, height: Int): ImageBitmap {
+private fun createBitmap(fbo: FrameBuffer, width: Int, height: Int): ImageBitmap {
     // stable
     val pixelBuffer = fbo.getPixelBuffer().get<ByteBuffer>().asIntBuffer()
     val pixels = IntArray(pixelBuffer.remaining())

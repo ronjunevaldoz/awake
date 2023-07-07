@@ -7,10 +7,10 @@ import io.github.ronjunevaldoz.awake.core.memory.ByteBuf
 import io.github.ronjunevaldoz.awake.core.utils.BufferUtils
 
 
-class FrameBufferObject(private val width: Int, private val height: Int) : BufferObject,
+class FrameBuffer(private val width: Int, private val height: Int) : BufferObject,
     Disposable {
     override var id: Int = -1
-    private val texture = Texture(width, height)
+    private var texture: Texture? = null
     private val rbo = RenderBufferObject()
 
     override fun create() {
@@ -19,15 +19,16 @@ class FrameBufferObject(private val width: Int, private val height: Int) : Buffe
         // bind framebuffer
         use {
             // Create a texture for rendering
-            texture.create()
-            // store texture to frame buffer
-            gl.framebufferTexture2D(
-                CommonGL.GL_FRAMEBUFFER,
-                CommonGL.GL_COLOR_ATTACHMENT0,
-                CommonGL.GL_TEXTURE_2D,
-                texture.id,
-                0
-            )
+            texture = Texture.load(width, height).apply {
+                // store texture to frame buffer
+                gl.framebufferTexture2D(
+                    CommonGL.GL_FRAMEBUFFER,
+                    CommonGL.GL_COLOR_ATTACHMENT0,
+                    CommonGL.GL_TEXTURE_2D,
+                    id, // texture id
+                    0
+                )
+            }
             // Create a renderBuffer for depth and stencil
             rbo.create()
             rbo.bind()
@@ -66,6 +67,7 @@ class FrameBufferObject(private val width: Int, private val height: Int) : Buffe
         // Release resources
         gl.deleteFrameBuffers(id)
         rbo.delete()
+        texture?.delete()
     }
 
     override fun dispose() {
