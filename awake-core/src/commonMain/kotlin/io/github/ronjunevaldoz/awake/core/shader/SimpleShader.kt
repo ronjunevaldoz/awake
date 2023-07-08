@@ -14,6 +14,8 @@ class SimpleShader(
 
     private val shaderDir = "assets/shader"
 
+    var transformMatrix by uniform
+
     @OptIn(ExperimentalResourceApi::class)
     override fun getVertexSource(): String {
         val vertString = resource("$shaderDir/$vertFile").let {

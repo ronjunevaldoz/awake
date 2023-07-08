@@ -9,6 +9,7 @@ import io.github.ronjunevaldoz.awake.core.graphics.opengl.OpenGL
 import scene.DemoColoredTriangle
 import scene.DemoTexture
 import scene.DemoTriangle
+import scene.TransformTriangle
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
@@ -19,6 +20,7 @@ object DemoApplication : Renderer {
         "Triangle",
         "Texture",
         "Colored",
+        "Transform"
     )
 
     var drawableIndex: Int = 0
@@ -32,7 +34,8 @@ object DemoApplication : Renderer {
             listOf(
                 DemoTriangle(),
                 DemoTexture(),
-                DemoColoredTriangle()
+                DemoColoredTriangle(),
+                TransformTriangle()
             )
     }
 
