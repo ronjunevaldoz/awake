@@ -8,3 +8,4 @@ interface Platform {
 expect fun getPlatform(): Platform
 
 val isMobile = getPlatform().isMobile
+val isDesktop = getPlatform().name.contains("Desktop")

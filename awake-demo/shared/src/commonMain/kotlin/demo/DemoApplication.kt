@@ -2,11 +2,11 @@ package demo
 
 import androidx.compose.ui.graphics.Color
 import io.github.ronjunevaldoz.awake.core.AwakeContext.Companion.gl
-import io.github.ronjunevaldoz.awake.core.getPlatform
 import io.github.ronjunevaldoz.awake.core.graphics.Disposable
 import io.github.ronjunevaldoz.awake.core.graphics.Drawable
 import io.github.ronjunevaldoz.awake.core.graphics.Renderer
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.OpenGL
+import io.github.ronjunevaldoz.awake.core.isDesktop
 import scene.DemoColoredTriangle
 import scene.DemoTexture
 import scene.DemoTriangle
@@ -43,7 +43,6 @@ object DemoApplication : Renderer {
 
     private var totalElapsedTime = 0f
     override fun update(delta: Float) {
-        totalElapsedTime += delta
         // Redraw background color
         if (color > 1 || color < 0) {
             colorVelocity = -colorVelocity
@@ -53,12 +52,14 @@ object DemoApplication : Renderer {
         gl.clearColor(color * 0.5f, color, color, 1f)
         gl.clear(OpenGL.BufferBit.Color.value or OpenGL.BufferBit.Depth.value)
 
-        if (totalElapsedTime >= 1f) {
-            if (!getPlatform().isMobile) {
+        if (isDesktop) {
+            totalElapsedTime += delta
+            if (totalElapsedTime >= 1f) {
                 drawableIndex = Random.nextInt(0, drawables.size)
+                totalElapsedTime = 0f
             }
-            totalElapsedTime = 0f
         }
+
         drawables[drawableIndex].draw()
     }
 

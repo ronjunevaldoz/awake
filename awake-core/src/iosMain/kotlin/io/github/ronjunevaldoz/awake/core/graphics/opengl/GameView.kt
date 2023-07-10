@@ -14,9 +14,12 @@ import platform.EAGL.EAGLContext
 import platform.EAGL.kEAGLRenderingAPIOpenGLES1
 import platform.EAGL.kEAGLRenderingAPIOpenGLES2
 import platform.EAGL.kEAGLRenderingAPIOpenGLES3
+import platform.Foundation.NSDate
 import platform.Foundation.NSRunLoop
 import platform.Foundation.NSRunLoopCommonModes
 import platform.Foundation.NSSelectorFromString
+import platform.Foundation.dateWithTimeIntervalSinceNow
+import platform.Foundation.runUntilDate
 import platform.GLKit.GLKView
 import platform.GLKit.GLKViewDelegateProtocol
 import platform.GLKit.GLKViewDrawableColorFormatRGBA8888
@@ -31,6 +34,8 @@ class GameView(frame: CValue<CGRect>, val renderer: Renderer) : GLKView(frame),
     GLKViewDelegateProtocol {
 
     private var displayLink: CADisplayLink? = null
+    private val targetFPS: Int = AwakeContext.config.fps
+    private val preferredFrameDuration = 1.0 / targetFPS.toDouble()
     private var previousTimestamp: CFTimeInterval = 0.0
 
     init {
@@ -65,6 +70,21 @@ class GameView(frame: CValue<CGRect>, val renderer: Renderer) : GLKView(frame),
         Time.Delta = deltaTime
         display()
         Time.Fps = 1.0 / deltaTime
+        limitFrame(displayLink)
+    }
+
+    private fun limitFrame(displayLink: CADisplayLink) {
+        // Calculate the elapsed time since the previous frame
+        val elapsedTime = displayLink.duration
+
+        // Check if the elapsed time is less than the preferred frame duration
+        if (elapsedTime < preferredFrameDuration) {
+            // Calculate the remaining time to wait
+            val remainingTime = preferredFrameDuration - elapsedTime
+
+            // Run the run loop until the remaining time has elapsed
+            NSRunLoop.currentRunLoop.runUntilDate(NSDate.dateWithTimeIntervalSinceNow(remainingTime))
+        }
     }
 
     override fun layoutSubviews() {
