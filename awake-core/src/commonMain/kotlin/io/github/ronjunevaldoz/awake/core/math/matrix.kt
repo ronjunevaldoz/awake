@@ -1,8 +1,10 @@
 package io.github.ronjunevaldoz.awake.core.math
 
 import io.github.ronjunevaldoz.awake.core.memory.FloatBuf
+import kotlin.math.cos
+import kotlin.math.sin
 
-class Matrix4f {
+class Mat4f {
     val data: FloatArray = FloatArray(16)
 
     var m00: Float
@@ -111,74 +113,124 @@ class Matrix4f {
         }
     }
 
+    fun translate(x: Float, y: Float, z: Float) {
+        val translationMatrix = obtain()
+        translationMatrix.identity()
+        translationMatrix.m30 = x
+        translationMatrix.m31 = y
+        translationMatrix.m32 = z
+
+        this * translationMatrix
+
+        recycle(translationMatrix)
+    }
+
+    fun rotate(angleRad: Float) {
+        val rotationMatrix = obtain()
+        rotationMatrix.identity()
+        val cos = cos(angleRad)
+        val sin = sin(angleRad)
+        rotationMatrix.m00 = cos
+        rotationMatrix.m01 = -sin
+        rotationMatrix.m10 = sin
+        rotationMatrix.m11 = cos
+
+        this * rotationMatrix
+
+        recycle(rotationMatrix)
+    }
+
+    // Rotate around the x-axis
+    fun rotateX(angleRad: Float) {
+        val rotationMatrix = obtain()
+        rotationMatrix.identity()
+        val sin = sin(angleRad)
+        val cos = cos(angleRad)
+
+        rotationMatrix.m11 = cos
+        rotationMatrix.m12 = sin
+        rotationMatrix.m21 = -sin
+        rotationMatrix.m22 = cos
+
+        this * rotationMatrix
+
+        recycle(rotationMatrix)
+    }
+
+    // Rotate around the y-axis
+    fun rotateY(angleRad: Float) {
+        val rotationMatrix = obtain()
+        rotationMatrix.identity()
+        val sin = sin(angleRad)
+        val cos = cos(angleRad)
+
+        rotationMatrix.m00 = cos
+        rotationMatrix.m02 = -sin
+        rotationMatrix.m20 = sin
+        rotationMatrix.m22 = cos
+
+        this * rotationMatrix
+
+        recycle(rotationMatrix)
+    }
+
+    // Rotate around the z-axis
+    fun rotateZ(angleRad: Float) {
+        val rotationMatrix = obtain()
+        rotationMatrix.identity()
+        val sin = sin(angleRad)
+        val cos = cos(angleRad)
+
+        rotationMatrix.m00 = cos
+        rotationMatrix.m01 = -sin
+        rotationMatrix.m10 = sin
+        rotationMatrix.m11 = cos
+
+        this * rotationMatrix
+
+        recycle(rotationMatrix)
+    }
+
+    fun translateAndRotate(x: Float, y: Float, z: Float, angleRad: Float) {
+        translate(x, y, z)
+        rotate(angleRad)
+    }
+
     operator fun get(i: Int, buffer: FloatBuf) {
         for (j in 0 until 16) {
             buffer[16 * i + j] = data[j]
         }
     }
-}
 
-fun degreesToRadians(degrees: Float): Float {
-    return degrees * (kotlin.math.PI.toFloat() / 180.0f)
-}
+    operator fun Mat4f.times(other: Mat4f): Mat4f {
+        for (i in 0 until 4) {
+            for (j in 0 until 4) {
+                data[i * 4 + j] =
+                    this.data[i * 4] * other.data[j] +
+                            this.data[i * 4 + 1] * other.data[j + 4] +
+                            this.data[i * 4 + 2] * other.data[j + 8] +
+                            this.data[i * 4 + 3] * other.data[j + 12]
+            }
+        }
+        return this
+    }
 
-fun Matrix4f.translateAndRotate(x: Float, y: Float, z: Float, angle: Float) {
-    val translationMatrix = Matrix4f()
-    translationMatrix.identity()
-    translationMatrix.m30 = x
-    translationMatrix.m31 = y
-    translationMatrix.m32 = z
+    companion object {
+        private val pool: MutableList<Mat4f> = mutableListOf()
 
-    val rotationMatrix = Matrix4f()
-    rotationMatrix.identity()
-    val cos = kotlin.math.cos(angle)
-    val sin = kotlin.math.sin(angle)
-    rotationMatrix.m00 = cos
-    rotationMatrix.m01 = -sin
-    rotationMatrix.m10 = sin
-    rotationMatrix.m11 = cos
+        fun obtain(): Mat4f {
+            return if (pool.isNotEmpty()) {
+                pool.removeAt(pool.lastIndex).apply {
+                    identity()
+                }
+            } else {
+                Mat4f()
+            }
+        }
 
-    val resultMatrix = Matrix4f()
-
-    // Multiply the current matrix by the translation matrix
-    resultMatrix.m00 =
-        this.m00 * translationMatrix.m00 + this.m10 * translationMatrix.m01 + this.m20 * translationMatrix.m02 + this.m30 * translationMatrix.m03
-    resultMatrix.m01 =
-        this.m01 * translationMatrix.m00 + this.m11 * translationMatrix.m01 + this.m21 * translationMatrix.m02 + this.m31 * translationMatrix.m03
-    resultMatrix.m02 =
-        this.m02 * translationMatrix.m00 + this.m12 * translationMatrix.m01 + this.m22 * translationMatrix.m02 + this.m32 * translationMatrix.m03
-    resultMatrix.m03 =
-        this.m03 * translationMatrix.m00 + this.m13 * translationMatrix.m01 + this.m23 * translationMatrix.m02 + this.m33 * translationMatrix.m03
-
-    resultMatrix.m10 =
-        this.m00 * translationMatrix.m10 + this.m10 * translationMatrix.m11 + this.m20 * translationMatrix.m12 + this.m30 * translationMatrix.m13
-    resultMatrix.m11 =
-        this.m01 * translationMatrix.m10 + this.m11 * translationMatrix.m11 + this.m21 * translationMatrix.m12 + this.m31 * translationMatrix.m13
-    resultMatrix.m12 =
-        this.m02 * translationMatrix.m10 + this.m12 * translationMatrix.m11 + this.m22 * translationMatrix.m12 + this.m32 * translationMatrix.m13
-    resultMatrix.m13 =
-        this.m03 * translationMatrix.m10 + this.m13 * translationMatrix.m11 + this.m23 * translationMatrix.m12 + this.m33 * translationMatrix.m13
-
-    resultMatrix.m20 =
-        this.m00 * translationMatrix.m20 + this.m10 * translationMatrix.m21 + this.m20 * translationMatrix.m22 + this.m30 * translationMatrix.m23
-    resultMatrix.m21 =
-        this.m01 * translationMatrix.m20 + this.m11 * translationMatrix.m21 + this.m21 * translationMatrix.m22 + this.m31 * translationMatrix.m23
-    resultMatrix.m22 =
-        this.m02 * translationMatrix.m20 + this.m12 * translationMatrix.m21 + this.m22 * translationMatrix.m22 + this.m32 * translationMatrix.m23
-    resultMatrix.m23 =
-        this.m03 * translationMatrix.m20 + this.m13 * translationMatrix.m21 + this.m23 * translationMatrix.m22 + this.m33 * translationMatrix.m23
-
-    resultMatrix.m30 =
-        this.m00 * translationMatrix.m30 + this.m10 * translationMatrix.m31 + this.m20 * translationMatrix.m32 + this.m30 * translationMatrix.m33
-    resultMatrix.m31 =
-        this.m01 * translationMatrix.m30 + this.m11 * translationMatrix.m31 + this.m21 * translationMatrix.m32 + this.m31 * translationMatrix.m33
-    resultMatrix.m32 =
-        this.m02 * translationMatrix.m30 + this.m12 * translationMatrix.m31 + this.m22 * translationMatrix.m32 + this.m32 * translationMatrix.m33
-    resultMatrix.m33 =
-        this.m03 * translationMatrix.m30 + this.m13 * translationMatrix.m31 + this.m23 * translationMatrix.m32 + this.m33 * translationMatrix.m33
-
-    // Assign the result matrix to the current matrix
-    for (i in 0 until 16) {
-        this.data[i] = resultMatrix.data[i]
+        fun recycle(matrix: Mat4f) {
+            matrix.identity()
+            pool.add(matrix)
+        }
     }
 }

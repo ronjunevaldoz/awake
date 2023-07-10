@@ -13,6 +13,7 @@ import io.github.ronjunevaldoz.awake.core.rendering.VertexArrayObject
 import io.github.ronjunevaldoz.awake.core.rendering.addIndexBuffer
 import io.github.ronjunevaldoz.awake.core.rendering.addVertexBuffer
 import io.github.ronjunevaldoz.awake.core.rendering.createVAO
+import io.github.ronjunevaldoz.awake.core.rendering.use
 import io.github.ronjunevaldoz.awake.core.shader.SimpleShader
 import io.github.ronjunevaldoz.awake.core.shader.use
 import io.github.ronjunevaldoz.awake.core.utils.AssetUtils
@@ -80,17 +81,17 @@ class DemoTexture : Drawable, Disposable {
 
     override fun draw() {
         shader.use {
-            vao.bind()
-            gl.activeTexture(GL_TEXTURE0)
-            gl.bindTexture(GL_TEXTURE_2D, AssetUtils.texture.get(textureKey))
-            gl.drawElements(
-                OpenGL.DrawMode.Triangles,
-                indices.size,
-                GL_UNSIGNED_BYTE,
-                null
-            )
-            gl.bindTexture(GL_TEXTURE_2D, 0)
-            vao.unbind()
+            vao.use {
+                gl.activeTexture(GL_TEXTURE0)
+                gl.bindTexture(GL_TEXTURE_2D, AssetUtils.texture.get(textureKey))
+                gl.drawElements(
+                    OpenGL.DrawMode.Triangles,
+                    indices.size,
+                    GL_UNSIGNED_BYTE,
+                    null
+                )
+                gl.bindTexture(GL_TEXTURE_2D, 0)
+            }
         }
     }
 

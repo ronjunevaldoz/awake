@@ -166,9 +166,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun getUniformLocation(program: Int, name: String): Int {
-        return glGetUniformLocation(program.toUInt(), name).also { location ->
-            if (location == -1) throw Exception("Invalid value")
-        }
+        return glGetUniformLocation(program.toUInt(), name)
     }
 
     override fun bindAttribLocation(program: ProgramId, index: Int, name: String) {
@@ -176,9 +174,7 @@ internal actual object Agl : OpenGL {
     }
 
     override fun getAttribLocation(program: Int, name: String): Int {
-        return glGetAttribLocation(program.toUInt(), name).also { location ->
-            if (location == -1) throw Exception("Invalid value")
-        }
+        return glGetAttribLocation(program.toUInt(), name)
     }
 
     override fun vertexAttribPointer(

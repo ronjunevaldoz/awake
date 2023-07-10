@@ -1,23 +1,26 @@
 package io.github.ronjunevaldoz.awake.core.shader
 
+import io.github.aakira.napier.Napier
 import io.github.ronjunevaldoz.awake.core.AwakeContext
 
 class AttributeBinderImpl(private val programId: Int) : AttributeBinder {
     private val attributes: MutableMap<String, Int> = mutableMapOf()
-    private var nextAvailableLocation: Int = 0
     override fun bind(name: String, location: Int) {
-        if (location != nextAvailableLocation) {
-            throw IllegalArgumentException("Attribute location $location for `$name` is not incremental. Expected value `${nextAvailableLocation}`")
+        val attributeLocation = AwakeContext.gl.getAttribLocation(programId, name)
+        if (attributeLocation != -1) {
+            Napier.w("Attribute `$name`, location is explicitly specified using layout qualifier.")
+            // Attribute location is explicitly specified using layout qualifier
+            attributes[name] = attributeLocation
+        } else {
+            // Attribute location is not explicitly specified using layout qualifier
+            attributes[name] = location
+            AwakeContext.gl.bindAttribLocation(programId, location, name)
         }
-        attributes[name] = location
-        AwakeContext.gl.bindAttribLocation(programId, location, name)
-        nextAvailableLocation++
     }
 
     override fun getLocation(name: String): Int {
-        return attributes[name]
-            ?: throw IllegalArgumentException(
-                "Attribute location not found: `$name`"
-            )
+        return checkNotNull(attributes[name]) {
+            "Attribute location not found: `$name`"
+        }
     }
 }

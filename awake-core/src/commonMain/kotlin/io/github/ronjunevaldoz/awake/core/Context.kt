@@ -1,10 +1,11 @@
 package io.github.ronjunevaldoz.awake.core
 
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
 import io.github.ronjunevaldoz.awake.core.graphics.Config
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.Agl
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.AglDebuggable
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.OpenGL
-import io.github.ronjunevaldoz.awake.core.utils.AwakeLogger
 import kotlin.native.concurrent.ThreadLocal
 
 interface Context {
@@ -22,7 +23,8 @@ class AwakeContext(override val gl: OpenGL, override val config: Config) : Conte
             get() = checkNotNull(instance?.config) { "Awake Context not yet created!" }
 
         fun init(debug: Boolean = false, config: Config.() -> Unit = {}): Context {
-            AwakeLogger.info("Awake Context initiated")
+            Napier.base(DebugAntilog())
+            Napier.i("Awake Context initiated")
             if (instance == null) {
                 val gl = if (debug) Agl else AglDebuggable
                 instance = AwakeContext(

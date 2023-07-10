@@ -11,6 +11,8 @@ kotlin {
         val jvmMain by getting  {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                // awake-core in intended for compose project, should be remove in the future
+                implementation(project(":awake-core"))
                 implementation(project(":awake-demo:shared"))
             }
         }

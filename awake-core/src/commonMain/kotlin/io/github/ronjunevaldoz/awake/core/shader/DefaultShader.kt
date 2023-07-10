@@ -15,6 +15,7 @@ abstract class DefaultShader : BaseShader() {
     var position by attribute
     var color by attribute
     var texCoords by attribute
+
     override fun compile() {
         super.compile()
         bindAttributes()

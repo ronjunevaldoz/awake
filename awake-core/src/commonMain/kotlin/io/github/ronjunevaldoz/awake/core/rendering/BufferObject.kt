@@ -1,7 +1,7 @@
 package io.github.ronjunevaldoz.awake.core.rendering
 
+import io.github.aakira.napier.Napier
 import io.github.ronjunevaldoz.awake.core.geometry.Attribute
-import io.github.ronjunevaldoz.awake.core.utils.AwakeLogger
 
 interface BufferObject {
     val id: Int
@@ -70,7 +70,7 @@ fun VertexArrayData.addIndexBuffer(elements: ByteArray) {
 }
 
 fun VertexArrayObject.build(): VertexArrayObject {
-    AwakeLogger.debug("creating VAO")
+    Napier.d("building VAO")
     create()
     bind()
     indexBuffer.build {
@@ -83,7 +83,7 @@ fun VertexArrayObject.build(): VertexArrayObject {
 }
 
 fun VertexBufferObject.build() {
-    AwakeLogger.debug("creating VBO")
+    Napier.d("building VBO")
     create()
     bind()
     storeData()
@@ -92,7 +92,7 @@ fun VertexBufferObject.build() {
 
 fun ElementBufferObject.build(block: () -> Unit) {
     if (elements.isEmpty()) return
-    AwakeLogger.debug("creating EBO")
+    Napier.d("building EBO")
     create()
     bind()
     storeData()

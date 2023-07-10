@@ -1,6 +1,6 @@
 package io.github.ronjunevaldoz.awake.core.shader
 
-import io.github.ronjunevaldoz.awake.core.utils.AwakeLogger
+import io.github.aakira.napier.Napier
 
 interface Shader {
     val program: Int
@@ -18,6 +18,6 @@ fun Shader.use(content: Shader.() -> Unit) {
             end()
         }
 
-        else -> AwakeLogger.warn("Invalid shader program id: $program")
+        else -> Napier.w("Invalid shader program id: $program")
     }
 }

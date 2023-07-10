@@ -1,6 +1,6 @@
 package io.github.ronjunevaldoz.awake.core.shader
 
-import io.github.ronjunevaldoz.awake.core.math.Matrix4f
+import io.github.ronjunevaldoz.awake.core.math.Mat4f
 import io.github.ronjunevaldoz.awake.core.math.Vec3f
 import io.github.ronjunevaldoz.awake.core.math.Vec4f
 
@@ -13,6 +13,6 @@ interface UniformBinder {
     fun set(location: Int, value: Vec3f)
     fun set(location: Int, value: Vec4f)
     fun set(location: Int, value: Boolean)
-    fun set(location: Int, value: Matrix4f)
-    fun set(location: Int, matrices: List<Matrix4f>)
+    fun set(location: Int, value: Mat4f)
+    fun set(location: Int, matrices: List<Mat4f>)
 }

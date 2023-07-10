@@ -94,80 +94,107 @@ private fun windowDensity(window: Long): Float {
     return array[0]
 }
 
-fun disposeWindow(window: Long) {
-    // Free the window callbacks and destroy the window
-    Callbacks.glfwFreeCallbacks(window)
-    GLFW.glfwDestroyWindow(window)
+class GlfwWindow(width: Int, height: Int, title: String) {
 
-    GLFW.glfwTerminate()
-    GLFW.glfwSetErrorCallback(null)!!.free()
-}
+    val window: Long
 
-fun initGlfw() {
-    GLFWErrorCallback.createPrint(System.err).set()
-    check(GLFW.glfwInit()) { "Unable to initialize GLFW" }
-
-    // Configure GLFW
-    GLFW.glfwDefaultWindowHints() // optional, the current window hints are already the default
-    GLFW.glfwWindowHint(
-        GLFW.GLFW_VISIBLE,
-        GLFW.GLFW_FALSE
-    ) // the window will stay hidden after creation
-    GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE) // the window will be resizable
-    GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3)
-    GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2)
-    GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE)
-    GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE)
-}
-
-fun createWindow(width: Int, height: Int, title: String): Long {
-    val window = GLFW.glfwCreateWindow(width, height, title, 0, 0)
-
-    // add listeners here
-    GLFW.glfwSetKeyCallback(
-        window
-    ) { window: Long, key: Int, scancode: Int, action: Int, mods: Int ->
-        if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE) GLFW.glfwSetWindowShouldClose(
-            window,
-            true
-        ) // We will detect this in the rendering loop
-    }
-    GLFW.glfwSetFramebufferSizeCallback(window) { window: Long, w: Int, h: Int ->
-//        GL11.glViewport(0, 0, w, h)
-    }
-    MemoryStack.stackPush().use { stack ->
-        val pWidth: IntBuffer = stack.mallocInt(1) // int*
-        val pHeight: IntBuffer = stack.mallocInt(1) // int*
-
-        // Get the window size passed to glfwCreateWindow
-        GLFW.glfwGetWindowSize(window, pWidth, pHeight)
-
-        // Get the resolution of the primary monitor
-        val vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor())
-
-        // Center the window
-        GLFW.glfwSetWindowPos(
-            window,
-            (vidmode!!.width() - pWidth.get(0)) / 2,
-            (vidmode.height() - pHeight.get(0)) / 2
-        )
+    interface WindowListener {
+        fun resize(width: Int, height: Int)
     }
 
-    // Make the OpenGL context current
-    GLFW.glfwMakeContextCurrent(window)
-    // Enable v-sync
-    GLFW.glfwSwapInterval(1)
-    // Make the window visible
-    GLFW.glfwShowWindow(window)
-    return window
-}
+    var listener: WindowListener? = null
 
-fun initOpenGL() {
-    GL.createCapabilities()
-    GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
-}
+    init {
+        initGlfw()
+        window = createWindow(width, height, title)
+        initOpenGL()
+    }
 
-fun swap(window: Long) {
-    GLFW.glfwSwapBuffers(window)
-    GLFW.glfwPollEvents()
+
+    private fun initGlfw() {
+        GLFWErrorCallback.createPrint(System.err).set()
+        check(GLFW.glfwInit()) { "Unable to initialize GLFW" }
+
+        // Configure GLFW
+        GLFW.glfwDefaultWindowHints() // optional, the current window hints are already the default
+        GLFW.glfwWindowHint(
+            GLFW.GLFW_VISIBLE,
+            GLFW.GLFW_FALSE
+        ) // the window will stay hidden after creation
+        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE) // the window will be resizable
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3)
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3)
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE)
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE)
+    }
+
+    private fun createWindow(width: Int, height: Int, title: String): Long {
+        val window = GLFW.glfwCreateWindow(width, height, title, 0, 0)
+
+        // add listeners here
+        GLFW.glfwSetKeyCallback(
+            window
+        ) { _: Long, key: Int, scancode: Int, action: Int, mods: Int ->
+            if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE) GLFW.glfwSetWindowShouldClose(
+                window,
+                true
+            ) // We will detect this in the rendering loop
+        }
+        GLFW.glfwSetFramebufferSizeCallback(window) { _: Long, w: Int, h: Int ->
+            listener?.resize(w, h)
+        }
+        MemoryStack.stackPush().use { stack ->
+            val pWidth: IntBuffer = stack.mallocInt(1) // int*
+            val pHeight: IntBuffer = stack.mallocInt(1) // int*
+
+            // Get the window size passed to glfwCreateWindow
+            GLFW.glfwGetWindowSize(window, pWidth, pHeight)
+
+            // Get the resolution of the primary monitor
+            val vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor())
+
+            // Center the window
+            GLFW.glfwSetWindowPos(
+                window,
+                (vidMode!!.width() - pWidth.get(0)) / 2,
+                (vidMode.height() - pHeight.get(0)) / 2
+            )
+        }
+
+        // Make the OpenGL context current
+        GLFW.glfwMakeContextCurrent(window)
+        // Enable v-sync
+        GLFW.glfwSwapInterval(1)
+        // Make the window visible
+        GLFW.glfwShowWindow(window)
+        return window
+    }
+
+
+    private fun initOpenGL() {
+        GL.createCapabilities()
+        GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
+    }
+
+    fun shouldClose(): Boolean {
+        return GLFW.glfwWindowShouldClose(window)
+    }
+
+    fun time(): Double {
+        return GLFW.glfwGetTime()
+    }
+
+    fun swap() {
+        GLFW.glfwSwapBuffers(window)
+        GLFW.glfwPollEvents()
+    }
+
+    fun dispose() {
+        // Free the window callbacks and destroy the window
+        Callbacks.glfwFreeCallbacks(window)
+        GLFW.glfwDestroyWindow(window)
+
+        GLFW.glfwTerminate()
+        GLFW.glfwSetErrorCallback(null)!!.free()
+    }
 }

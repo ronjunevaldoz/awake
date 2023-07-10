@@ -1,7 +1,7 @@
 package io.github.ronjunevaldoz.awake.core.shader
 
 import io.github.ronjunevaldoz.awake.core.AwakeContext
-import io.github.ronjunevaldoz.awake.core.math.Matrix4f
+import io.github.ronjunevaldoz.awake.core.math.Mat4f
 import io.github.ronjunevaldoz.awake.core.math.Vec3f
 import io.github.ronjunevaldoz.awake.core.math.Vec4f
 import io.github.ronjunevaldoz.awake.core.utils.BufferUtils
@@ -48,17 +48,17 @@ class UniformBinderImpl(val program: Int) : UniformBinder {
         set(location, if (value) 1 else 0)
     }
 
-    override fun set(location: Int, value: Matrix4f) {
+    override fun set(location: Int, value: Mat4f) {
         val buffer = BufferUtils.allocateFloat(16)
         buffer.put(value.data)
-        AwakeContext.gl.uniformMatrix4fv(location, 0, false, buffer)
+        AwakeContext.gl.uniformMatrix4fv(location, 1, false, buffer)
     }
 
-    override fun set(location: Int, matrices: List<Matrix4f>) {
+    override fun set(location: Int, matrices: List<Mat4f>) {
         val buffer = BufferUtils.allocateFloat(16 * matrices.size)
         matrices.forEachIndexed { i, mat ->
             mat[16 * i, buffer]
         }
-        AwakeContext.gl.uniformMatrix4fv(location, 0, false, buffer)
+        AwakeContext.gl.uniformMatrix4fv(location, matrices.size, false, buffer)
     }
 }
