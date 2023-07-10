@@ -1,4 +1,5 @@
 import demo.DemoApplication
+import io.github.ronjunevaldoz.awake.core.AwakeContext
 import io.github.ronjunevaldoz.awake.core.application.glfwWindow
 
 //fun main() = application {
@@ -8,6 +9,7 @@ import io.github.ronjunevaldoz.awake.core.application.glfwWindow
 //}
 
 fun main() {
+    AwakeContext.init() // manually set
     val application = DemoApplication
     glfwWindow(
         onInit = { window, width, height ->
@@ -18,6 +20,9 @@ fun main() {
         },
         onUpdate = { time ->
             application.update(time)
+        },
+        onDispose = {
+            application.dispose()
         }
     )
 }

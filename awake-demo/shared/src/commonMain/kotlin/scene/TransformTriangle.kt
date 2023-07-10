@@ -2,6 +2,7 @@ package scene
 
 import io.github.ronjunevaldoz.awake.core.AwakeContext.Companion.gl
 import io.github.ronjunevaldoz.awake.core.geometry.Attribute
+import io.github.ronjunevaldoz.awake.core.getPlatform
 import io.github.ronjunevaldoz.awake.core.graphics.Disposable
 import io.github.ronjunevaldoz.awake.core.graphics.Drawable
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL
@@ -21,7 +22,8 @@ class TransformTriangle : Drawable, Disposable {
 
     private val shader = SimpleShader(
         vertFile = "transform.vert",
-        fragFile = "transform.frag"
+        fragFile = "transform.frag",
+        define = if (getPlatform().isMobile) "#version 300 es\n" else "#version 330 core\n"
     )
 
     private val aPosition by lazy { shader.position }

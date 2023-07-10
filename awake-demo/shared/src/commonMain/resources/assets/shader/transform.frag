@@ -1,7 +1,7 @@
-//#version 300 es
-#version 330 core
-
+#if defined(GL_ES)
 precision mediump float;
+#else
+#endif
 
 // Input variables
 in vec3 v_Color;
@@ -11,8 +11,7 @@ in vec2 v_TexCoords;
 uniform sampler2D u_Texture;
 
 // Output
-layout (location = 0)
-out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
 
 void main() {
     // Sample the texture using the provided texture coordinates

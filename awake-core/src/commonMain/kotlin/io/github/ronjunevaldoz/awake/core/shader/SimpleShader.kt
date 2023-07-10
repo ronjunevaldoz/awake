@@ -10,6 +10,7 @@ import org.jetbrains.compose.resources.resource
 class SimpleShader(
     private val vertFile: String,
     private val fragFile: String,
+    private val define: String = "",
 ) : DefaultShader() {
 
     private val shaderDir = "assets/shader"
@@ -24,7 +25,7 @@ class SimpleShader(
         val vertString = resource("$shaderDir/$vertFile").let {
             runBlocking { it.readBytes().decodeToString() }
         }
-        return vertString
+        return define + vertString
     }
 
     @OptIn(ExperimentalResourceApi::class)
@@ -32,6 +33,6 @@ class SimpleShader(
         val fragString = resource("$shaderDir/$fragFile").let {
             runBlocking { it.readBytes().decodeToString() }
         }
-        return fragString
+        return define + fragString
     }
 }

@@ -1,5 +1,6 @@
 package io.github.ronjunevaldoz.awake.core.graphics.opengl
 
+import io.github.aakira.napier.Napier
 import io.github.ronjunevaldoz.awake.core.AwakeContext
 import io.github.ronjunevaldoz.awake.core.graphics.Renderer
 import io.github.ronjunevaldoz.awake.core.utils.Time
@@ -7,6 +8,8 @@ import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ObjCAction
 import platform.CoreFoundation.CFTimeInterval
 import platform.CoreGraphics.CGRect
+import platform.CoreGraphics.CGRectGetHeight
+import platform.CoreGraphics.CGRectGetWidth
 import platform.EAGL.EAGLContext
 import platform.EAGL.kEAGLRenderingAPIOpenGLES1
 import platform.EAGL.kEAGLRenderingAPIOpenGLES2
@@ -21,13 +24,14 @@ import platform.GLKit.GLKViewDrawableDepthFormat24
 import platform.GLKit.GLKViewDrawableStencilFormat8
 import platform.QuartzCore.CADisplayLink
 import platform.UIKit.UIScreen
+import platform.UIKit.UIWindow
 
 
 class GameView(frame: CValue<CGRect>, val renderer: Renderer) : GLKView(frame),
     GLKViewDelegateProtocol {
 
-    var previousTimestamp: CFTimeInterval = 0.0
-    private var displayLink: CADisplayLink
+    private var displayLink: CADisplayLink? = null
+    private var previousTimestamp: CFTimeInterval = 0.0
 
     init {
         val context = when (AwakeContext.config.glVersion) {
@@ -43,16 +47,10 @@ class GameView(frame: CValue<CGRect>, val renderer: Renderer) : GLKView(frame),
         drawableDepthFormat = GLKViewDrawableDepthFormat24
         drawableStencilFormat = GLKViewDrawableStencilFormat8
 
-        renderer.create()
         // avoid redraw component on component update
         enableSetNeedsDisplay = false
-        displayLink = UIScreen.mainScreen.displayLinkWithTarget(
-            this,
-            NSSelectorFromString("update:")
-        )!!
-        displayLink.preferredFramesPerSecond = AwakeContext.config.fps.toLong()
-        displayLink.addToRunLoop(NSRunLoop.currentRunLoop, NSRunLoopCommonModes)
-        delegate = this
+
+        renderer.create()
     }
 
     @ObjCAction
@@ -68,6 +66,55 @@ class GameView(frame: CValue<CGRect>, val renderer: Renderer) : GLKView(frame),
         display()
         Time.Fps = 1.0 / deltaTime
     }
+
+    override fun layoutSubviews() {
+        super.layoutSubviews()
+        updateViewport()
+    }
+
+    private fun updateViewport() {
+        val scale = UIScreen.mainScreen.scale
+        val width = CGRectGetWidth(bounds)
+        val height = CGRectGetHeight(bounds)
+        val viewportWidth = width * scale
+        val viewportHeight = height * scale
+
+        Napier.i("Resize $viewportWidth | $viewportHeight")
+        renderer.resize(0, 0, viewportWidth.toInt(), viewportHeight.toInt())
+    }
+
+    override fun willMoveToWindow(newWindow: UIWindow?) {
+        super.willMoveToWindow(newWindow)
+        if (newWindow != null) {
+            startRenderLoop()
+        } else {
+            stopRenderLoop()
+        }
+    }
+
+
+    private fun startRenderLoop() {
+        if (displayLink == null) {
+            Napier.i("start render")
+            renderer.resume()
+            displayLink = UIScreen.mainScreen.displayLinkWithTarget(
+                this,
+                NSSelectorFromString("update:")
+            )?.apply {
+                preferredFramesPerSecond = AwakeContext.config.fps.toLong()
+                addToRunLoop(NSRunLoop.currentRunLoop, NSRunLoopCommonModes)
+            }
+            delegate = this
+        }
+    }
+
+    private fun stopRenderLoop() {
+        Napier.i("stop render")
+        renderer.pause()
+        displayLink?.invalidate()
+        displayLink = null
+    }
+
 
     override fun glkView(view: GLKView, drawInRect: CValue<CGRect>) {
         renderer.update(Time.Delta.toFloat())
