@@ -4,6 +4,7 @@ object Versions {
     const val kotlin = "1.8.20"
     const val lwjgl = "3.3.3-SNAPSHOT"
     const val napier = "2.6.1"
+    const val detekt = "1.23.0"
 
 }
 

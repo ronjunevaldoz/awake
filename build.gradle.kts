@@ -10,6 +10,7 @@ plugins {
 buildscript {
     dependencies {
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:${Versions.kotlin}")
+        classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:${Versions.detekt}")
     }
 }
 
@@ -19,5 +20,6 @@ allprojects {
 
     subprojects {
         apply(plugin = "org.jetbrains.dokka")
+        apply(plugin = "io.gitlab.arturbosch.detekt")
     }
 }
