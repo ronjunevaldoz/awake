@@ -113,35 +113,35 @@ class Mat4f {
         }
     }
 
-    fun translate(x: Float, y: Float, z: Float) {
+    fun scale(x: Float, y: Float, z: Float): Mat4f {
+        val scaleMatrix = obtain()
+        scaleMatrix.identity()
+        scaleMatrix.m00 = x
+        scaleMatrix.m11 = y
+        scaleMatrix.m22 = z
+
+        this * scaleMatrix
+
+        recycle(scaleMatrix)
+        return this
+    }
+
+    fun translate(x: Float, y: Float, z: Float): Mat4f {
         val translationMatrix = obtain()
         translationMatrix.identity()
-        translationMatrix.m30 = x
-        translationMatrix.m31 = y
-        translationMatrix.m32 = z
+        translationMatrix.m03 = x
+        translationMatrix.m13 = y
+        translationMatrix.m23 = z
 
         this * translationMatrix
 
         recycle(translationMatrix)
-    }
 
-    fun rotate(angleRad: Float) {
-        val rotationMatrix = obtain()
-        rotationMatrix.identity()
-        val cos = cos(angleRad)
-        val sin = sin(angleRad)
-        rotationMatrix.m00 = cos
-        rotationMatrix.m01 = -sin
-        rotationMatrix.m10 = sin
-        rotationMatrix.m11 = cos
-
-        this * rotationMatrix
-
-        recycle(rotationMatrix)
+        return this
     }
 
     // Rotate around the x-axis
-    fun rotateX(angleRad: Float) {
+    fun rotateX(angleRad: Float): Mat4f {
         val rotationMatrix = obtain()
         rotationMatrix.identity()
         val sin = sin(angleRad)
@@ -155,10 +155,12 @@ class Mat4f {
         this * rotationMatrix
 
         recycle(rotationMatrix)
+
+        return this
     }
 
     // Rotate around the y-axis
-    fun rotateY(angleRad: Float) {
+    fun rotateY(angleRad: Float): Mat4f {
         val rotationMatrix = obtain()
         rotationMatrix.identity()
         val sin = sin(angleRad)
@@ -172,10 +174,12 @@ class Mat4f {
         this * rotationMatrix
 
         recycle(rotationMatrix)
+
+        return this
     }
 
     // Rotate around the z-axis
-    fun rotateZ(angleRad: Float) {
+    fun rotateZ(angleRad: Float): Mat4f {
         val rotationMatrix = obtain()
         rotationMatrix.identity()
         val sin = sin(angleRad)
@@ -189,11 +193,76 @@ class Mat4f {
         this * rotationMatrix
 
         recycle(rotationMatrix)
+
+        return this
     }
 
-    fun translateAndRotate(x: Float, y: Float, z: Float, angleRad: Float) {
-        translate(x, y, z)
-        rotate(angleRad)
+    fun frustum(
+        left: Float,
+        right: Float,
+        bottom: Float,
+        top: Float,
+        near: Float,
+        far: Float
+    ): Mat4f {
+        identity()
+
+        val width = right - left
+        val height = top - bottom
+        val depth = far - near
+
+        m00 = 2.0f * near / width
+        m11 = 2.0f * near / height
+        m20 = (right + left) / width
+        m21 = (top + bottom) / height
+        m22 = -(far + near) / depth
+        m23 = -1.0f
+        m32 = -2.0f * far * near / depth
+
+        return this
+    }
+
+    fun setLookAt(
+        eyeX: Float,
+        eyeY: Float,
+        eyeZ: Float,
+        centerX: Float,
+        centerY: Float,
+        centerZ: Float,
+        upX: Float,
+        upY: Float,
+        upZ: Float
+    ): Mat4f {
+        return setLookAt(
+            Vec3f(eyeX, eyeY, eyeZ),
+            Vec3f(centerX, centerY, centerZ),
+            Vec3f(upX, upY, upZ)
+        )
+    }
+
+    fun setLookAt(
+        eye: Vec3f, center: Vec3f, up: Vec3f
+    ): Mat4f {
+        identity()
+
+        val f = (center - eye).normalize() // forward
+        val s = f.cross(up).normalize() // side
+        val u = s.cross(f) // up
+
+        m00 = s.x
+        m01 = s.y
+        m02 = s.z
+        m10 = u.x
+        m11 = u.y
+        m12 = u.z
+        m20 = -f.x
+        m21 = -f.y
+        m22 = -f.z
+        m30 = -s.dot(eye)
+        m31 = -u.dot(eye)
+        m32 = f.dot(eye)
+
+        return this
     }
 
     operator fun get(i: Int, buffer: FloatBuf) {

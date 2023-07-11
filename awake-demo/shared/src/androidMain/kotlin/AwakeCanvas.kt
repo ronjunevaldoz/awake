@@ -6,7 +6,10 @@ import io.github.ronjunevaldoz.awake.core.graphics.opengl.AndroidRenderer
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.GameView
 
 @Composable
-actual fun AwakeCanvas(modifier: Modifier, renderer: Renderer) {
+actual fun AwakeCanvas(
+    modifier: Modifier,
+    renderer: Renderer
+) {
     AndroidView(
         modifier = modifier,
         factory = { context ->

@@ -1,6 +1,5 @@
 package io.github.ronjunevaldoz.awake.core.graphics.opengl
 
-import android.opengl.GLES20.GL_RGBA
 import android.opengl.GLES20.GL_UNSIGNED_BYTE
 import android.opengl.GLES20.glActiveTexture
 import android.opengl.GLES20.glAttachShader
@@ -22,6 +21,7 @@ import android.opengl.GLES20.glDeleteProgram
 import android.opengl.GLES20.glDeleteRenderbuffers
 import android.opengl.GLES20.glDeleteShader
 import android.opengl.GLES20.glDeleteTextures
+import android.opengl.GLES20.glDisable
 import android.opengl.GLES20.glDisableVertexAttribArray
 import android.opengl.GLES20.glDrawArrays
 import android.opengl.GLES20.glDrawElements
@@ -33,6 +33,7 @@ import android.opengl.GLES20.glGenBuffers
 import android.opengl.GLES20.glGenFramebuffers
 import android.opengl.GLES20.glGenRenderbuffers
 import android.opengl.GLES20.glGenTextures
+import android.opengl.GLES20.glGenerateMipmap
 import android.opengl.GLES20.glGetAttribLocation
 import android.opengl.GLES20.glGetError
 import android.opengl.GLES20.glGetProgramInfoLog
@@ -46,6 +47,7 @@ import android.opengl.GLES20.glRenderbufferStorage
 import android.opengl.GLES20.glShaderSource
 import android.opengl.GLES20.glTexImage2D
 import android.opengl.GLES20.glTexParameteri
+import android.opengl.GLES20.glTexSubImage2D
 import android.opengl.GLES20.glUniform1f
 import android.opengl.GLES20.glUniform1i
 import android.opengl.GLES20.glUniform3f
@@ -64,8 +66,10 @@ import io.github.ronjunevaldoz.awake.core.memory.Buffer
 import io.github.ronjunevaldoz.awake.core.memory.FloatBuf
 import io.github.ronjunevaldoz.awake.core.memory.IntBuf
 import io.github.ronjunevaldoz.awake.core.memory.createIntBuffer
+import io.github.ronjunevaldoz.awake.core.rendering.toFormat
 import io.github.ronjunevaldoz.awake.core.utils.BufferUtils
 import io.github.ronjunevaldoz.awake.core.utils.sizeBytes
+import io.github.ronjunevaldoz.awake.core.utils.toUType
 
 internal actual object Agl : OpenGL {
     override fun clearColor(r: Float, g: Float, b: Float, a: Float) {
@@ -346,23 +350,79 @@ internal actual object Agl : OpenGL {
         )
     }
 
-    override fun texImage2D(target: Int, level: Int, bitmap: Bitmap, border: Int) {
+    override fun texImage2D(
+        target: Int,
+        level: Int,
+        internalFormat: Int,
+        bitmap: Bitmap,
+        border: Int
+    ) {
         val buffer = createIntBuffer(bitmap.pixels)
         glTexImage2D(
             target,
             level,
-            GL_RGBA,
+            internalFormat,
             bitmap.width,
             bitmap.height,
             border,
-            GL_RGBA,
+            internalFormat.toFormat(),
             GL_UNSIGNED_BYTE,
+            buffer.get()
+        )
+    }
+
+    override fun texSubImage2D(
+        target: Int,
+        level: Int,
+        xOffset: Int,
+        yOffset: Int,
+        width: Int,
+        height: Int,
+        format: Int,
+        type: Int,
+        buffer: Buffer?
+    ) {
+        glTexSubImage2D(
+            target,
+            level,
+            xOffset,
+            yOffset,
+            width,
+            height,
+            format,
+            type,
+            buffer?.get()
+        )
+    }
+
+    override fun texSubImage2D(
+        target: Int,
+        level: Int,
+        xOffset: Int,
+        yOffset: Int,
+        bitmap: Bitmap,
+        format: Int
+    ) {
+        val buffer = createIntBuffer(bitmap.pixels)
+        glTexSubImage2D(
+            target,
+            level,
+            xOffset,
+            yOffset,
+            bitmap.width,
+            bitmap.height,
+            format,
+            buffer.toUType(),
             buffer.get()
         )
     }
 
     override fun texParameteri(target: Int, pname: Int, param: Int) {
         glTexParameteri(target, pname, param)
+    }
+
+    override fun generateMipmap(target: Int) {
+        glGenerateMipmap(target)
     }
 
     override fun uniform(location: Int, x: Int) {
@@ -441,8 +501,12 @@ internal actual object Agl : OpenGL {
         return glCheckFramebufferStatus(target)
     }
 
-    override fun enable(target: Int) {
-        glEnable(target)
+    override fun enable(cap: Int) {
+        glEnable(cap)
+    }
+
+    override fun disable(cap: Int) {
+        glDisable(cap)
     }
 
     override fun blendFunc(sFactor: Int, dFactor: Int) {

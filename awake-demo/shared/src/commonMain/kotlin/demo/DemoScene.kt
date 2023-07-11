@@ -1,9 +1,7 @@
 package demo
 
 import AwakeCanvas
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,10 +14,8 @@ fun DemoScene(
     val renderer = remember {
         mutableStateOf(DemoApplication.apply(init))
     }
-    Box(Modifier.fillMaxWidth()) {
-        AwakeCanvas(
-            modifier = Modifier.fillMaxSize(),
-            renderer = renderer.value
-        )
-    }
+    AwakeCanvas(
+        modifier = Modifier.fillMaxSize(),
+        renderer = renderer.value
+    )
 }

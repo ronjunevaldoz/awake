@@ -3,28 +3,47 @@ package io.github.ronjunevaldoz.awake.core.application
 import io.github.ronjunevaldoz.awake.core.AwakeContext
 import io.github.ronjunevaldoz.awake.core.utils.Time
 
-object AndroidGameLoop : GameLoop {
-    private var desiredFrameTimeNanos: Long = 0
-    private var previousFrameTime: Long = 0
 
-    override fun initTime() {
-        val desiredFrameRate = AwakeContext.config.fps
-        desiredFrameTimeNanos = (1e9 / desiredFrameRate).toLong()
-        previousFrameTime = System.currentTimeMillis()
-    }
+object AndroidGameLoop : GameLoop {
+    private val desiredFrameRate = AwakeContext.config.fps
+    private val desiredFrameTimeMillis = (1000 / desiredFrameRate).toLong()
+    private var previousFrameTime = System.nanoTime()
+    private var fpsTimer = 0L
+    private var frames = 0
+    private var fps = 0
+
 
     override fun startLoop(onUpdate: (deltaTime: Double) -> Unit) {
-        val currentFrameTime = System.currentTimeMillis()
-        val deltaTime = (currentFrameTime - previousFrameTime) / 1000.0
+        // Measure the current time using nanoseconds
+        val currentFrameTime = System.nanoTime()
 
-        previousFrameTime = currentFrameTime
+        // Calculate the elapsed time since the previous frame in seconds
+        val deltaTime = (currentFrameTime - previousFrameTime) / 1e9
+
+        // Update game logic
         Time.Delta = deltaTime
         onUpdate(deltaTime)
-        Time.Fps = 1.0 / deltaTime
 
-        val sleepTimeNanos = desiredFrameTimeNanos - (System.currentTimeMillis() - currentFrameTime)
-        if (sleepTimeNanos > 0) {
-            Thread.sleep(sleepTimeNanos / 1_000_000, (sleepTimeNanos % 1_000_000).toInt())
+        // Calculate FPS
+        frames++
+        fpsTimer += currentFrameTime - previousFrameTime
+        if (fpsTimer >= 1e9) { // 1 second in nanoseconds
+            // Calculate frames per second (FPS)
+            fps = frames
+            frames = 0
+            fpsTimer = 0
         }
+        Time.FpsString = "$fps"
+
+        // Delay to limit FPS
+        val sleepTimeMillis =
+            desiredFrameTimeMillis - (System.nanoTime() - currentFrameTime) / 1_000_000
+        if (sleepTimeMillis > 0) {
+            // Sleep the thread to achieve the desired frame rate
+            Thread.sleep(sleepTimeMillis)
+        }
+
+        // Update the previous frame time for the next iteration
+        previousFrameTime = currentFrameTime
     }
 }

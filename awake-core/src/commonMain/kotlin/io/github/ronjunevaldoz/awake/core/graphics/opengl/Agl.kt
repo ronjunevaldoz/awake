@@ -275,17 +275,55 @@ internal object AglDebuggable : OpenGL {
         type: Int,
         buffer: Buffer?
     ) {
-        Agl.texImage2D(target, level, internalFormat, border, width, height, format, type, buffer)
+        Agl.texImage2D(target, level, internalFormat, width, height, border, format, type, buffer)
         checkGL()
     }
 
-    override fun texImage2D(target: Int, level: Int, bitmap: Bitmap, border: Int) {
-        Agl.texImage2D(target, level, bitmap, border)
+    override fun texImage2D(
+        target: Int,
+        level: Int,
+        internalFormat: Int,
+        bitmap: Bitmap,
+        border: Int
+    ) {
+        Agl.texImage2D(target, level, internalFormat, bitmap, border)
+        checkGL()
+    }
+
+    override fun texSubImage2D(
+        target: Int,
+        level: Int,
+        xOffset: Int,
+        yOffset: Int,
+        width: Int,
+        height: Int,
+        format: Int,
+        type: Int,
+        buffer: Buffer?
+    ) {
+        Agl.texSubImage2D(target, level, xOffset, yOffset, width, height, format, type, buffer)
+        checkGL()
+    }
+
+    override fun texSubImage2D(
+        target: Int,
+        level: Int,
+        xOffset: Int,
+        yOffset: Int,
+        bitmap: Bitmap,
+        format: Int
+    ) {
+        Agl.texSubImage2D(target, level, xOffset, yOffset, bitmap, format)
         checkGL()
     }
 
     override fun texParameteri(target: Int, pname: Int, param: Int) {
         Agl.texParameteri(target, pname, param)
+        checkGL()
+    }
+
+    override fun generateMipmap(target: Int) {
+        Agl.generateMipmap(target)
         checkGL()
     }
 
@@ -375,6 +413,11 @@ internal object AglDebuggable : OpenGL {
 
     override fun enable(target: Int) {
         Agl.enable(target)
+        checkGL()
+    }
+
+    override fun disable(cap: Int) {
+        Agl.disable(cap)
         checkGL()
     }
 

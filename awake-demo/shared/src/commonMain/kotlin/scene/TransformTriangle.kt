@@ -70,8 +70,8 @@ class TransformTriangle : Drawable, Disposable {
         shader.use {
             shader.transformMatrix =
                 Mat4f.obtain().apply {
-//                    translateAndRotate(0.5f, -0.5f, 0.5f, 45.angleDeg)
-                    translate(0.25f, 0.25f, 0.25f)
+                    scale(0.25f, 0.25f, 0.25f)
+                    translate(0.25f, 0.25f, 10.25f)
                     rotateY(45.angleDeg)
                 }
 

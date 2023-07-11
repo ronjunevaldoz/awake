@@ -16,9 +16,8 @@ class SimpleShader(
     private val shaderDir = "assets/shader"
 
     var transformMatrix by uniform
-//    override fun getVertexSource(): String = vertFile
-//
-//    override fun getFragmentSource(): String = fragFile
+    var modelViewMatrix by uniform
+    var projectionViewMatrix by uniform
 
     @OptIn(ExperimentalResourceApi::class)
     override fun getVertexSource(): String {

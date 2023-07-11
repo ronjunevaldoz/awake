@@ -31,7 +31,9 @@ interface OpenGL {
     }
 
     enum class DrawMode(val value: Int) {
-        Triangles(CommonGL.GL_TRIANGLES)
+        Triangles(CommonGL.GL_TRIANGLES),
+        TriangleFan(CommonGL.GL_TRIANGLE_FAN),
+        TriangleStrip(CommonGL.GL_TRIANGLE_STRIP),
     }
 
     enum class ShaderType(val value: Int) {
@@ -129,8 +131,30 @@ interface OpenGL {
         buffer: Buffer?
     )
 
-    fun texImage2D(target: Int, level: Int, bitmap: Bitmap, border: Int)
+    fun texImage2D(target: Int, level: Int, internalFormat: Int, bitmap: Bitmap, border: Int)
+    fun texSubImage2D(
+        target: Int,
+        level: Int,
+        xOffset: Int,
+        yOffset: Int,
+        width: Int,
+        height: Int,
+        format: Int,
+        type: Int,
+        buffer: Buffer?
+    )
+
+    fun texSubImage2D(
+        target: Int,
+        level: Int,
+        xOffset: Int,
+        yOffset: Int,
+        bitmap: Bitmap,
+        format: Int
+    )
+
     fun texParameteri(target: Int, pname: Int, param: Int)
+    fun generateMipmap(target: Int)
     fun uniform(location: Int, x: Int)
     fun uniform(location: Int, x: Float)
     fun uniform(location: Int, x: Int, y: Int, z: Int)
@@ -151,7 +175,8 @@ interface OpenGL {
     )
 
     fun checkFramebufferStatus(target: Int): Int
-    fun enable(target: Int)
+    fun enable(cap: Int)
+    fun disable(cap: Int)
     fun blendFunc(sFactor: Int, dFactor: Int)
     fun deleteBuffers(buffers: Int)
     fun deleteBuffers(n: Int, buffers: IntBuf)

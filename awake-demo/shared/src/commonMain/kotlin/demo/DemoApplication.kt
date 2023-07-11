@@ -10,6 +10,7 @@ import io.github.ronjunevaldoz.awake.core.isDesktop
 import scene.DemoColoredTriangle
 import scene.DemoTexture
 import scene.DemoTriangle
+import scene.TextSample
 import scene.TransformTriangle
 import kotlin.native.concurrent.ThreadLocal
 import kotlin.random.Random
@@ -22,7 +23,8 @@ object DemoApplication : Renderer {
         "Triangle",
         "Texture",
         "Colored",
-        "Transform"
+        "Transform",
+        "Text"
     )
 
     var drawableIndex: Int = 0
@@ -37,7 +39,8 @@ object DemoApplication : Renderer {
                 DemoTriangle(),
                 DemoTexture(),
                 DemoColoredTriangle(),
-                TransformTriangle()
+                TransformTriangle(),
+                TextSample()
             )
     }
 

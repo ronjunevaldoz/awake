@@ -4,6 +4,7 @@ import io.github.ronjunevaldoz.awake.core.AwakeContext.Companion.gl
 import io.github.ronjunevaldoz.awake.core.graphics.image.Bitmap
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL
 import io.github.ronjunevaldoz.awake.core.memory.Buffer
+import io.github.ronjunevaldoz.awake.core.memory.createIntBuffer
 import io.github.ronjunevaldoz.awake.core.utils.toUType
 
 fun Int.toFormat(): Int {
@@ -19,14 +20,17 @@ fun Int.toFormat(): Int {
 class Texture(
     val width: Int,
     val height: Int,
-    private val internalFormat: Int = CommonGL.GL_RGBA8,
+    internalFormat: Int = CommonGL.GL_RGBA8,
     private val options: Options = Options(),
+    private val mipmap: Boolean = false,
     private val buffer: Buffer? = null
 ) : BufferObject {
     override var id: Int = -1
+    val format = internalFormat.toFormat()
 
     enum class Filter(val value: Int) {
         Linear(CommonGL.GL_LINEAR),
+        MipmapLinear(CommonGL.GL_LINEAR_MIPMAP_LINEAR),
         Nearest(CommonGL.GL_NEAREST),
     }
 
@@ -43,28 +47,32 @@ class Texture(
         val mag: Filter = Filter.Linear
     )
 
+    fun setParameter(name: Int, value: Int) {
+        gl.texParameteri(
+            CommonGL.GL_TEXTURE_2D,
+            name,
+            value
+        )
+    }
+
     private fun withOptions(image: () -> Unit) {
         create()
         use {
             image()
             with(options) {
-                gl.texParameteri(
-                    CommonGL.GL_TEXTURE_2D,
+                setParameter(
                     CommonGL.GL_TEXTURE_WRAP_S,
                     wrapS.value
                 )
-                gl.texParameteri(
-                    CommonGL.GL_TEXTURE_2D,
+                setParameter(
                     CommonGL.GL_TEXTURE_WRAP_T,
                     wrapT.value
                 )
-                gl.texParameteri(
-                    CommonGL.GL_TEXTURE_2D,
+                setParameter(
                     CommonGL.GL_TEXTURE_MIN_FILTER,
                     min.value
                 )
-                gl.texParameteri(
-                    CommonGL.GL_TEXTURE_2D,
+                setParameter(
                     CommonGL.GL_TEXTURE_MAG_FILTER,
                     mag.value
                 )
@@ -88,43 +96,78 @@ class Texture(
         gl.deleteTextures(id)
     }
 
+    fun setSubData(xOffset: Int = 0, yOffset: Int = 0, bitmap: Bitmap) {
+        use {
+            val buffer = createIntBuffer(bitmap.pixels)
+            gl.texSubImage2D(
+                target = CommonGL.GL_TEXTURE_2D,
+                level = 0,
+                xOffset = xOffset,
+                yOffset = yOffset,
+                width = width,
+                height = height,
+                format = format,
+                type = buffer.toUType(),
+                buffer
+            )
+            if (mipmap) {
+                gl.generateMipmap(CommonGL.GL_TEXTURE_2D)
+            }
+        }
+    }
+
     companion object {
         fun load(
             width: Int,
             height: Int,
             internalFormat: Int = CommonGL.GL_RGBA8,
-            options: Options = Options()
+            options: Options = Options(),
+            mipmap: Boolean = false
         ): Texture {
-            return Texture(width, height, internalFormat, options).apply {
+            return Texture(width, height, internalFormat, options, mipmap).apply {
                 withOptions {
                     gl.texImage2D(
-                        CommonGL.GL_TEXTURE_2D,
-                        0,
-                        internalFormat,
-                        width,
-                        height,
-                        0,
-                        internalFormat.toFormat(),
-                        buffer?.toUType() ?: CommonGL.GL_UNSIGNED_BYTE,
+                        target = CommonGL.GL_TEXTURE_2D,
+                        level = 0,
+                        internalFormat = internalFormat,
+                        width = width,
+                        height = height,
+                        border = 0,
+                        format = format,
+                        type = buffer?.toUType() ?: CommonGL.GL_UNSIGNED_BYTE,
                         buffer
                     )
+                    if (mipmap) {
+                        gl.generateMipmap(CommonGL.GL_TEXTURE_2D)
+                    }
                 }
             }
         }
 
-        fun load(bitmap: Bitmap): Texture {
+        fun load(
+            bitmap: Bitmap,
+            options: Options = Options(),
+            internalFormat: Int = CommonGL.GL_RGBA8,
+            mipmap: Boolean = false
+        ): Texture {
             return Texture(
                 bitmap.width,
                 bitmap.height,
-                buffer = null
+                options = options,
+                buffer = null,
+                mipmap = mipmap
             ).apply {
                 withOptions {
                     gl.texImage2D(
                         CommonGL.GL_TEXTURE_2D,
                         0,
+                        internalFormat = internalFormat,
                         bitmap,
                         0
                     )
+                    if (mipmap) {
+                        gl.generateMipmap(CommonGL.GL_TEXTURE_2D)
+                    }
                 }
             }
         }
