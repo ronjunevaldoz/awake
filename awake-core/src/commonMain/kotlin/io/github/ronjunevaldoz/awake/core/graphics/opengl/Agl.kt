@@ -411,6 +411,16 @@ internal object AglDebuggable : OpenGL {
         }
     }
 
+    override fun cullFace(face: Int) {
+        Agl.cullFace(face)
+        checkGL()
+    }
+
+    override fun frontFace(mode: Int) {
+        Agl.frontFace(mode)
+        checkGL()
+    }
+
     override fun enable(target: Int) {
         Agl.enable(target)
         checkGL()

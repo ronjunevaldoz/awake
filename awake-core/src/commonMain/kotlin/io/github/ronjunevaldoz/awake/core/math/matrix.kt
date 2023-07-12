@@ -3,8 +3,10 @@ package io.github.ronjunevaldoz.awake.core.math
 import io.github.ronjunevaldoz.awake.core.memory.FloatBuf
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.tan
 
-class Mat4f {
+
+class Mat4 {
     val data: FloatArray = FloatArray(16)
 
     var m00: Float
@@ -103,47 +105,104 @@ class Mat4f {
             data[15] = value
         }
 
+
     init {
         identity()
     }
 
     fun identity() {
-        for (i in 0 until 16) {
-            data[i] = if (i % 5 == 0) 1.0f else 0.0f
-        }
+        data[0] = 1.0f
+        data[1] = 0.0f
+        data[2] = 0.0f
+        data[3] = 0.0f
+
+        data[4] = 0.0f
+        data[5] = 1.0f
+        data[6] = 0.0f
+        data[7] = 0.0f
+
+        data[8] = 0.0f
+        data[9] = 0.0f
+        data[10] = 1.0f
+        data[11] = 0.0f
+
+        data[12] = 0.0f
+        data[13] = 0.0f
+        data[14] = 0.0f
+        data[15] = 1.0f
     }
 
-    fun scale(x: Float, y: Float, z: Float): Mat4f {
-        val scaleMatrix = obtain()
-        scaleMatrix.identity()
-        scaleMatrix.m00 = x
-        scaleMatrix.m11 = y
-        scaleMatrix.m22 = z
-
-        this * scaleMatrix
-
-        recycle(scaleMatrix)
+    fun set(other: Mat4): Mat4 {
+        m00 = other.m00
+        m01 = other.m01
+        m02 = other.m02
+        m03 = other.m03
+        m10 = other.m10
+        m11 = other.m11
+        m12 = other.m12
+        m13 = other.m13
+        m20 = other.m20
+        m21 = other.m21
+        m22 = other.m22
+        m23 = other.m23
+        m30 = other.m30
+        m31 = other.m31
+        m32 = other.m32
+        m33 = other.m33
         return this
     }
 
-    fun translate(x: Float, y: Float, z: Float): Mat4f {
-        val translationMatrix = obtain()
-        translationMatrix.identity()
-        translationMatrix.m03 = x
-        translationMatrix.m13 = y
-        translationMatrix.m23 = z
+    fun scale(value: Float): Mat4 {
+        return scale(value, value, value)
+    }
 
-        this * translationMatrix
+    fun scale(x: Float, y: Float, z: Float): Mat4 {
+        val scale = Mat4()
+        scale.m00 = x
+        scale.m11 = y
+        scale.m22 = z
+        return scale * this
+    }
 
-        recycle(translationMatrix)
+    fun translate(x: Float, y: Float, z: Float): Mat4 {
+        val translation = Mat4()
+        translation.m30 = x
+        translation.m31 = y
+        translation.m32 = z
+        return translation * this
+    }
 
-        return this
+    fun rotate(angle: Float, axis: Vec3): Mat4 {
+        val rotationMatrix = Mat4()
+        val normalizedAxis = axis.normalize()
+
+        val cosTheta = cos(angle)
+        val sinTheta = sin(angle)
+        val oneMinusCosTheta = 1.0f - cosTheta
+
+        val x = normalizedAxis.x
+        val y = normalizedAxis.y
+        val z = normalizedAxis.z
+
+        // Calculate elements of the rotation matrix
+        rotationMatrix.m00 = cosTheta + x * x * oneMinusCosTheta
+        rotationMatrix.m10 = x * y * oneMinusCosTheta - z * sinTheta
+        rotationMatrix.m20 = x * z * oneMinusCosTheta + y * sinTheta
+
+        rotationMatrix.m01 = x * y * oneMinusCosTheta + z * sinTheta
+        rotationMatrix.m11 = cosTheta + y * y * oneMinusCosTheta
+        rotationMatrix.m21 = y * z * oneMinusCosTheta - x * sinTheta
+
+        rotationMatrix.m02 = x * z * oneMinusCosTheta - y * sinTheta
+        rotationMatrix.m12 = y * z * oneMinusCosTheta + x * sinTheta
+        rotationMatrix.m22 = cosTheta + z * z * oneMinusCosTheta
+
+        return rotationMatrix * this
     }
 
     // Rotate around the x-axis
-    fun rotateX(angleRad: Float): Mat4f {
-        val rotationMatrix = obtain()
-        rotationMatrix.identity()
+    fun rotateX(angleRad: Float): Mat4 {
+        val rotationMatrix = Mat4()
         val sin = sin(angleRad)
         val cos = cos(angleRad)
 
@@ -152,17 +211,12 @@ class Mat4f {
         rotationMatrix.m21 = -sin
         rotationMatrix.m22 = cos
 
-        this * rotationMatrix
-
-        recycle(rotationMatrix)
-
-        return this
+        return rotationMatrix * this
     }
 
     // Rotate around the y-axis
-    fun rotateY(angleRad: Float): Mat4f {
-        val rotationMatrix = obtain()
-        rotationMatrix.identity()
+    fun rotateY(angleRad: Float): Mat4 {
+        val rotationMatrix = Mat4()
         val sin = sin(angleRad)
         val cos = cos(angleRad)
 
@@ -171,17 +225,12 @@ class Mat4f {
         rotationMatrix.m20 = sin
         rotationMatrix.m22 = cos
 
-        this * rotationMatrix
-
-        recycle(rotationMatrix)
-
-        return this
+        return rotationMatrix * this
     }
 
     // Rotate around the z-axis
-    fun rotateZ(angleRad: Float): Mat4f {
-        val rotationMatrix = obtain()
-        rotationMatrix.identity()
+    fun rotateZ(angleRad: Float): Mat4 {
+        val rotationMatrix = Mat4()
         val sin = sin(angleRad)
         val cos = cos(angleRad)
 
@@ -190,116 +239,217 @@ class Mat4f {
         rotationMatrix.m10 = sin
         rotationMatrix.m11 = cos
 
-        this * rotationMatrix
-
-        recycle(rotationMatrix)
-
-        return this
-    }
-
-    fun frustum(
-        left: Float,
-        right: Float,
-        bottom: Float,
-        top: Float,
-        near: Float,
-        far: Float
-    ): Mat4f {
-        identity()
-
-        val width = right - left
-        val height = top - bottom
-        val depth = far - near
-
-        m00 = 2.0f * near / width
-        m11 = 2.0f * near / height
-        m20 = (right + left) / width
-        m21 = (top + bottom) / height
-        m22 = -(far + near) / depth
-        m23 = -1.0f
-        m32 = -2.0f * far * near / depth
-
-        return this
-    }
-
-    fun setLookAt(
-        eyeX: Float,
-        eyeY: Float,
-        eyeZ: Float,
-        centerX: Float,
-        centerY: Float,
-        centerZ: Float,
-        upX: Float,
-        upY: Float,
-        upZ: Float
-    ): Mat4f {
-        return setLookAt(
-            Vec3f(eyeX, eyeY, eyeZ),
-            Vec3f(centerX, centerY, centerZ),
-            Vec3f(upX, upY, upZ)
-        )
-    }
-
-    fun setLookAt(
-        eye: Vec3f, center: Vec3f, up: Vec3f
-    ): Mat4f {
-        identity()
-
-        val f = (center - eye).normalize() // forward
-        val s = f.cross(up).normalize() // side
-        val u = s.cross(f) // up
-
-        m00 = s.x
-        m01 = s.y
-        m02 = s.z
-        m10 = u.x
-        m11 = u.y
-        m12 = u.z
-        m20 = -f.x
-        m21 = -f.y
-        m22 = -f.z
-        m30 = -s.dot(eye)
-        m31 = -u.dot(eye)
-        m32 = f.dot(eye)
-
-        return this
-    }
-
-    operator fun get(i: Int, buffer: FloatBuf) {
-        for (j in 0 until 16) {
-            buffer[16 * i + j] = data[j]
-        }
-    }
-
-    operator fun Mat4f.times(other: Mat4f): Mat4f {
-        for (i in 0 until 4) {
-            for (j in 0 until 4) {
-                data[i * 4 + j] =
-                    this.data[i * 4] * other.data[j] +
-                            this.data[i * 4 + 1] * other.data[j + 4] +
-                            this.data[i * 4 + 2] * other.data[j + 8] +
-                            this.data[i * 4 + 3] * other.data[j + 12]
-            }
-        }
-        return this
+        return rotationMatrix * this
     }
 
     companion object {
-        private val pool: MutableList<Mat4f> = mutableListOf()
 
-        fun obtain(): Mat4f {
-            return if (pool.isNotEmpty()) {
-                pool.removeAt(pool.lastIndex).apply {
-                    identity()
-                }
-            } else {
-                Mat4f()
+        /**
+         * Creates an orthographic projection matrix.
+         *
+         * This projection is best suited for 2D rendering, UI elements, and when a uniform depth range is desired.
+         *
+         * @param left   The leftmost coordinate of the projection volume.
+         * @param right  The rightmost coordinate of the projection volume.
+         * @param bottom The bottom coordinate of the projection volume.
+         * @param top    The top coordinate of the projection volume.
+         * @param near   The distance to the near plane of the projection volume.
+         * @param far    The distance to the far plane of the projection volume.
+         * @return The orthographic projection matrix.
+         */
+        fun orthographic(
+            left: Float,
+            right: Float,
+            bottom: Float,
+            top: Float,
+            near: Float,
+            far: Float
+        ): Mat4 {
+            val width = right - left
+            val height = top - bottom
+            val depth = far - near
+
+            val tx = -(right + left) / width
+            val ty = -(top + bottom) / height
+            val tz = -(far + near) / depth
+            return Mat4().apply {
+                m00 = 2f / width
+                m11 = 2f / height
+                m22 = -2f / depth
+                m03 = tx
+                m13 = ty
+                m23 = tz
             }
         }
 
-        fun recycle(matrix: Mat4f) {
-            matrix.identity()
-            pool.add(matrix)
+        /**
+         * Creates a frustum projection matrix.
+         *
+         * This projection is suitable for 3D rendering, where the view volume is a truncated pyramid (frustum).
+         * Commonly used in frustum culling
+         * val ratio = width / height
+         * val projection = Mat4f.frustum(-ratio, ratio, -1f, 1f, 0.1f, 100.0f)
+         *
+         * @param left   The leftmost coordinate of the frustum.
+         * @param right  The rightmost coordinate of the frustum.
+         * @param bottom The bottom coordinate of the frustum.
+         * @param top    The top coordinate of the frustum.
+         * @param near   The distance to the near plane of the frustum.
+         * @param far    The distance to the far plane of the frustum.
+         * @return The frustum projection matrix.
+         */
+        fun frustum(
+            left: Float,
+            right: Float,
+            bottom: Float,
+            top: Float,
+            near: Float,
+            far: Float
+        ): Mat4 {
+            val width = right - left
+            val height = top - bottom
+            val depth = far - near
+            return Mat4().apply {
+                m00 = 2.0f * near / width
+                m11 = 2.0f * near / height
+                m02 = (right + left) / width
+                m12 = (top + bottom) / height
+                m22 = -(far + near) / depth
+                m32 = -1.0f
+                m23 = -2.0f * far * near / depth
+            }
+        }
+
+        /**
+         * Creates a perspective projection matrix.
+         *
+         * This projection is commonly used for 3D rendering, where a perspective effect is desired.
+         *
+         * @param fovY   The vertical field of view angle in radians.
+         * @param aspect The aspect ratio of the projection volume (width / height).
+         * @param near   The distance to the near plane of the projection volume.
+         * @param far    The distance to the far plane of the projection volume.
+         * @return The perspective projection matrix.
+         */
+        fun perspective(fovY: Float, aspect: Float, near: Float, far: Float): Mat4 {
+            val tanHalfFovY = tan(fovY / 2f)
+            val scaleY = 1f / tanHalfFovY
+            val rangeInv = near - far
+            return Mat4().apply {
+                m00 = scaleY / aspect
+                m11 = scaleY
+                m22 = (near + far) / rangeInv
+                m23 = -1f
+                m32 = 2f * near * far / rangeInv
+                m33 = 0f
+            }
+        }
+
+        fun setLookAt(
+            eyeX: Float,
+            eyeY: Float,
+            eyeZ: Float,
+            centerX: Float,
+            centerY: Float,
+            centerZ: Float,
+            upX: Float,
+            upY: Float,
+            upZ: Float
+        ): Mat4 {
+            return setLookAt(
+                Vec3(eyeX, eyeY, eyeZ),
+                Vec3(centerX, centerY, centerZ),
+                Vec3(upX, upY, upZ)
+            )
+        }
+
+        fun setLookAt(
+            eye: Vec3, center: Vec3, up: Vec3
+        ): Mat4 {
+            return Mat4().apply {
+                val f = (center - eye).normalize() // forward
+                val s = f.cross(up).normalize() // side
+                val u = s.cross(f) // up
+
+                m00 = s.x
+                m01 = s.y
+                m02 = s.z
+                m10 = u.x
+                m11 = u.y
+                m12 = u.z
+                m20 = -f.x
+                m21 = -f.y
+                m22 = -f.z
+                m30 = -s.dot(eye)
+                m31 = -u.dot(eye)
+                m32 = f.dot(eye)
+            }
         }
     }
+
+
+    override fun toString(): String {
+        return "[$m00,$m01,$m02,$m03]\n[$m10,$m11,$m12,$m13]\n[$m20,$m21,$m22,$m23]\n[$m30,$m31,$m32,$m33]"
+    }
+}
+
+
+operator fun Mat4.get(i: Int, buffer: FloatBuf) {
+    for (j in 0 until 16) {
+        buffer[16 * i + j] = data[j]
+    }
+}
+
+operator fun Mat4.plus(other: Mat4): Mat4 {
+    val result = Mat4()
+    for (i in 0 until 4) {
+        for (j in 0 until 4) {
+            var sum = 0.0f
+            for (k in 0 until 4) {
+                sum += data[i * 4 + k] + other.data[k * 4 + j]
+            }
+            result.data[i * 4 + j] = sum
+        }
+    }
+    return result
+}
+
+operator fun Mat4.times(other: Mat4): Mat4 {
+    val result = Mat4()
+    for (i in 0 until 4) {
+        for (j in 0 until 4) {
+            var sum = 0.0f
+            for (k in 0 until 4) {
+                sum += data[i * 4 + k] * other.data[k * 4 + j]
+            }
+            result.data[i * 4 + j] = sum
+        }
+    }
+    return result
+}
+
+fun Mat4.transformToPosition(posDest: Vec4) {
+    val x = posDest.x
+    val y = posDest.y
+    val z = posDest.z
+    val w = posDest.w
+    val mat = this
+    val resultX = mat.m00 * x + mat.m10 * y + mat.m20 * z + mat.m30 * w
+    val resultY = mat.m01 * x + mat.m11 * y + mat.m21 * z + mat.m31 * w
+    val resultZ = mat.m02 * x + mat.m12 * y + mat.m22 * z + mat.m32 * w
+    val resultW = mat.m03 * x + mat.m13 * y + mat.m23 * z + mat.m33 * w
+    posDest[resultX, resultY, resultZ] = resultW
+}
+
+fun Mat4.transformPosition(position: Vec4): Vec4 {
+    val x = position.x
+    val y = position.y
+    val z = position.z
+    val w = position.w
+
+    val resultX = m00 * x + m10 * y + m20 * z + m30 * w
+    val resultY = m01 * x + m11 * y + m21 * z + m31 * w
+    val resultZ = m02 * x + m12 * y + m22 * z + m32 * w
+    val resultW = m03 * x + m13 * y + m23 * z + m33 * w
+    return Vec4(resultX, resultY, resultZ, resultW)
 }

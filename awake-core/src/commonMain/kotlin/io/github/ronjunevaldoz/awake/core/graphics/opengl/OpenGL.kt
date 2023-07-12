@@ -175,6 +175,8 @@ interface OpenGL {
     )
 
     fun checkFramebufferStatus(target: Int): Int
+    fun cullFace(face: Int)
+    fun frontFace(mode: Int)
     fun enable(cap: Int)
     fun disable(cap: Int)
     fun blendFunc(sFactor: Int, dFactor: Int)

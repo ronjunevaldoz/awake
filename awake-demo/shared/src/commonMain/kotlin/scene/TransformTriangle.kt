@@ -7,8 +7,8 @@ import io.github.ronjunevaldoz.awake.core.graphics.Disposable
 import io.github.ronjunevaldoz.awake.core.graphics.Drawable
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.OpenGL
-import io.github.ronjunevaldoz.awake.core.math.Mat4f
-import io.github.ronjunevaldoz.awake.core.math.angleDeg
+import io.github.ronjunevaldoz.awake.core.math.Mat4
+import io.github.ronjunevaldoz.awake.core.math.angleRad
 import io.github.ronjunevaldoz.awake.core.rendering.VertexArrayObject
 import io.github.ronjunevaldoz.awake.core.rendering.addIndexBuffer
 import io.github.ronjunevaldoz.awake.core.rendering.addVertexBuffer
@@ -17,6 +17,7 @@ import io.github.ronjunevaldoz.awake.core.rendering.use
 import io.github.ronjunevaldoz.awake.core.shader.SimpleShader
 import io.github.ronjunevaldoz.awake.core.shader.use
 import io.github.ronjunevaldoz.awake.core.utils.AssetUtils
+import io.github.ronjunevaldoz.awake.core.utils.Time
 
 class TransformTriangle : Drawable, Disposable {
 
@@ -59,28 +60,31 @@ class TransformTriangle : Drawable, Disposable {
     }
 
     private val indices = byteArrayOf(
-        0, 1, 2,
-        2, 3, 0
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
     )
     private lateinit var vao: VertexArrayObject
+    private var angle = 0f
+    private var previousAngle = 0f
+    private val trans = Mat4()
 
     init {
         shader.compile()
         AssetUtils.texture.load(DemoTexture.textureKey, "assets/fonts/calibri.png")
-        shader.use {
-            shader.transformMatrix =
-                Mat4f.obtain().apply {
-                    scale(0.25f, 0.25f, 0.25f)
-                    translate(0.25f, 0.25f, 10.25f)
-                    rotateY(45.angleDeg)
-                }
-
-        }
         createBuffers()
     }
 
     override fun draw() {
         shader.use {
+            previousAngle = angle
+            angle += Time.Delta.toFloat() * 1.angleRad
+            shader.transformMatrix = trans
+                .translate(0f, 0f, 0f)
+                .scale(0.5f, 0.5f, 0.5f)
+                .rotateX(angle)
+                .rotateY(angle)
+                .rotateZ(angle)
+
             vao.use {
                 gl.activeTexture(CommonGL.GL_TEXTURE0)
                 gl.bindTexture(

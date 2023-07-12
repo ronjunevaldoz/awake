@@ -4,14 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.interop.UIKitView
-import io.github.ronjunevaldoz.awake.core.graphics.Renderer
+import io.github.ronjunevaldoz.awake.core.graphics.Application
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.GameView
 import platform.UIKit.UIScreen
 
 @Composable
 actual fun AwakeCanvas(
     modifier: Modifier,
-    renderer: Renderer,
+    renderer: Application,
 ) {
     val gameView = remember {
         { GameView(UIScreen.mainScreen.bounds, renderer) }

@@ -1,8 +1,8 @@
 package io.github.ronjunevaldoz.awake.core.shader
 
-import io.github.ronjunevaldoz.awake.core.math.Mat4f
-import io.github.ronjunevaldoz.awake.core.math.Vec3f
-import io.github.ronjunevaldoz.awake.core.math.Vec4f
+import io.github.ronjunevaldoz.awake.core.math.Mat4
+import io.github.ronjunevaldoz.awake.core.math.Vec3
+import io.github.ronjunevaldoz.awake.core.math.Vec4
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -28,9 +28,9 @@ class Uniform(
         when (value) {
             is Int -> thisRef.uBinder.set(location, value)
             is Float -> thisRef.uBinder.set(location, value)
-            is Vec3f -> thisRef.uBinder.set(location, value)
-            is Vec4f -> thisRef.uBinder.set(location, value)
-            is Mat4f -> thisRef.uBinder.set(location, value)
+            is Vec3 -> thisRef.uBinder.set(location, value)
+            is Vec4 -> thisRef.uBinder.set(location, value)
+            is Mat4 -> thisRef.uBinder.set(location, value)
             else -> throw Exception("Uniform value not yet supported `${value::class.simpleName}` ")
         }
     }

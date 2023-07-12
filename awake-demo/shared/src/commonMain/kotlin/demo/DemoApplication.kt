@@ -2,11 +2,12 @@ package demo
 
 import androidx.compose.ui.graphics.Color
 import io.github.ronjunevaldoz.awake.core.AwakeContext.Companion.gl
+import io.github.ronjunevaldoz.awake.core.graphics.Application
 import io.github.ronjunevaldoz.awake.core.graphics.Disposable
 import io.github.ronjunevaldoz.awake.core.graphics.Drawable
-import io.github.ronjunevaldoz.awake.core.graphics.Renderer
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.OpenGL
 import io.github.ronjunevaldoz.awake.core.isDesktop
+import scene.CubeSample
 import scene.DemoColoredTriangle
 import scene.DemoTexture
 import scene.DemoTriangle
@@ -16,7 +17,7 @@ import kotlin.native.concurrent.ThreadLocal
 import kotlin.random.Random
 
 @ThreadLocal
-object DemoApplication : Renderer {
+object DemoApplication : Application {
 
     private var drawables = emptyList<Drawable>()
     val drawableLabels: List<String> = listOf(
@@ -24,7 +25,8 @@ object DemoApplication : Renderer {
         "Texture",
         "Colored",
         "Transform",
-        "Text"
+        "Text",
+        "Cube"
     )
 
     var drawableIndex: Int = 0
@@ -40,7 +42,8 @@ object DemoApplication : Renderer {
                 DemoTexture(),
                 DemoColoredTriangle(),
                 TransformTriangle(),
-                TextSample()
+                TextSample(),
+                CubeSample()
             )
     }
 

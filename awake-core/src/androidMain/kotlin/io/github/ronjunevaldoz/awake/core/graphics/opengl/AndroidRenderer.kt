@@ -2,12 +2,12 @@ package io.github.ronjunevaldoz.awake.core.graphics.opengl
 
 import android.opengl.GLSurfaceView
 import io.github.ronjunevaldoz.awake.core.application.AndroidGameLoop
-import io.github.ronjunevaldoz.awake.core.graphics.Renderer
+import io.github.ronjunevaldoz.awake.core.graphics.Application
 import io.github.ronjunevaldoz.awake.core.utils.Frame
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class AndroidRenderer(private val renderer: Renderer) : GLSurfaceView.Renderer {
+class AndroidRenderer(private val renderer: Application) : GLSurfaceView.Renderer {
     private var isPaused: Boolean = false
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {

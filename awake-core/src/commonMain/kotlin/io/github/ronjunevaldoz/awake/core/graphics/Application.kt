@@ -1,6 +1,6 @@
 package io.github.ronjunevaldoz.awake.core.graphics
 
-interface Renderer {
+interface Application {
     fun create()
     fun update(delta: Float)
     fun pause()

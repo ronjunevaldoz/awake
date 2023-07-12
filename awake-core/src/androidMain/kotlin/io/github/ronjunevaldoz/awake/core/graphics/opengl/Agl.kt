@@ -15,6 +15,7 @@ import android.opengl.GLES20.glClearColor
 import android.opengl.GLES20.glCompileShader
 import android.opengl.GLES20.glCreateProgram
 import android.opengl.GLES20.glCreateShader
+import android.opengl.GLES20.glCullFace
 import android.opengl.GLES20.glDeleteBuffers
 import android.opengl.GLES20.glDeleteFramebuffers
 import android.opengl.GLES20.glDeleteProgram
@@ -29,6 +30,7 @@ import android.opengl.GLES20.glEnable
 import android.opengl.GLES20.glEnableVertexAttribArray
 import android.opengl.GLES20.glFramebufferRenderbuffer
 import android.opengl.GLES20.glFramebufferTexture2D
+import android.opengl.GLES20.glFrontFace
 import android.opengl.GLES20.glGenBuffers
 import android.opengl.GLES20.glGenFramebuffers
 import android.opengl.GLES20.glGenRenderbuffers
@@ -499,6 +501,14 @@ internal actual object Agl : OpenGL {
 
     override fun checkFramebufferStatus(target: Int): Int {
         return glCheckFramebufferStatus(target)
+    }
+
+    override fun cullFace(face: Int) {
+        glCullFace(face)
+    }
+
+    override fun frontFace(face: Int) {
+        glFrontFace(face)
     }
 
     override fun enable(cap: Int) {

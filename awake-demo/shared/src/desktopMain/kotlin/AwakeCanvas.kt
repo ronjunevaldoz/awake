@@ -12,14 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.toComposeImageBitmap
-import io.github.ronjunevaldoz.awake.core.graphics.Renderer
+import io.github.ronjunevaldoz.awake.core.graphics.Application
 import io.github.ronjunevaldoz.awake.core.rendering.FrameBuffer
 import kotlinx.coroutines.delay
 import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
 
 @Composable
-actual fun AwakeCanvas(modifier: Modifier, renderer: Renderer) {
+actual fun AwakeCanvas(modifier: Modifier, renderer: Application) {
     val scope = rememberCoroutineScope()
     renderer.create()
     LaunchedEffect(Unit) {

@@ -2,7 +2,7 @@ package io.github.ronjunevaldoz.awake.core.graphics.opengl
 
 import io.github.aakira.napier.Napier
 import io.github.ronjunevaldoz.awake.core.AwakeContext
-import io.github.ronjunevaldoz.awake.core.graphics.Renderer
+import io.github.ronjunevaldoz.awake.core.graphics.Application
 import io.github.ronjunevaldoz.awake.core.utils.Time
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ObjCAction
@@ -30,7 +30,7 @@ import platform.UIKit.UIScreen
 import platform.UIKit.UIWindow
 
 
-class GameView(frame: CValue<CGRect>, val renderer: Renderer) : GLKView(frame),
+class GameView(frame: CValue<CGRect>, val renderer: Application) : GLKView(frame),
     GLKViewDelegateProtocol {
 
     private var displayLink: CADisplayLink? = null

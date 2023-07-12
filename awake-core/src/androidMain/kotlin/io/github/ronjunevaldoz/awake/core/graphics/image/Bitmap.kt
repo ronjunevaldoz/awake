@@ -106,7 +106,6 @@ object FontTextureGenerator {
             ),
             mipmap = true
         )
-
         bitmap.recycle()
         return texture!!
     }
