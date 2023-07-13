@@ -1,4 +1,4 @@
-package io.github.ronjunevaldoz.awake.core.graphics.image
+package io.github.ronjunevaldoz.awake.core.graphics
 
 import org.lwjgl.stb.STBImage
 import java.nio.ByteBuffer
@@ -19,7 +19,6 @@ actual fun createBitmap(bytes: ByteArray): Bitmap {
 typealias LwjglBufferUtils = org.lwjgl.BufferUtils
 
 fun decodeBitmap(bytes: ByteArray): Bitmap {
-//    MemoryStack.stackPush().use { stack ->
     // Create a ByteBuffer from the byte array
     val buffer = ByteBuffer.allocateDirect(bytes.size).apply {
         order(ByteOrder.nativeOrder())
@@ -62,5 +61,4 @@ fun decodeBitmap(bytes: ByteArray): Bitmap {
     val pixels = IntArray(width * height)
     pixelBuffer.get(pixels)
     return DesktopBitmap(width, height, channel, pixels)
-//    }
 }

@@ -1,7 +1,7 @@
 package io.github.ronjunevaldoz.awake.core.rendering
 
 import io.github.ronjunevaldoz.awake.core.AwakeContext.Companion.gl
-import io.github.ronjunevaldoz.awake.core.graphics.image.Bitmap
+import io.github.ronjunevaldoz.awake.core.graphics.Bitmap
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL
 import io.github.ronjunevaldoz.awake.core.memory.Buffer
 import io.github.ronjunevaldoz.awake.core.memory.createIntBuffer

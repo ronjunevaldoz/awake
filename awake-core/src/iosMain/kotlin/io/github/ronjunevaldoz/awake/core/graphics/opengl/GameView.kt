@@ -3,6 +3,7 @@ package io.github.ronjunevaldoz.awake.core.graphics.opengl
 import io.github.aakira.napier.Napier
 import io.github.ronjunevaldoz.awake.core.AwakeContext
 import io.github.ronjunevaldoz.awake.core.graphics.Application
+import io.github.ronjunevaldoz.awake.core.utils.Frame
 import io.github.ronjunevaldoz.awake.core.utils.Time
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ObjCAction
@@ -38,6 +39,10 @@ class GameView(frame: CValue<CGRect>, val renderer: Application) : GLKView(frame
     private val preferredFrameDuration = 1.0 / targetFPS.toDouble()
     private var previousTimestamp: CFTimeInterval = 0.0
 
+    private var fpsCallback: ((Int) -> Unit)? = null
+    private var frames: Int = 0
+    private var frameTimer: Double = 0.0
+
     init {
         val context = when (AwakeContext.config.glVersion) {
             OpenGL.Version.ES1 -> EAGLContext(kEAGLRenderingAPIOpenGLES1)
@@ -61,19 +66,27 @@ class GameView(frame: CValue<CGRect>, val renderer: Application) : GLKView(frame
     @ObjCAction
     private fun update(displayLink: CADisplayLink) {
         val currentTimestamp = displayLink.timestamp
-        var deltaTime = 0.0
-        if (previousTimestamp > 0) {
-            deltaTime = currentTimestamp - previousTimestamp
+        val deltaTime = currentTimestamp - previousTimestamp
+        Time.Delta = deltaTime
+        // frame counter
+        frames++
+        frameTimer += deltaTime
+        if (frameTimer >= 1.0) {
+            // update fps each second
+            fpsCallback?.invoke(frames)
+            frames = 0
+            frameTimer = 0.0
         }
         // Update previous timestamp for the next frame
         previousTimestamp = currentTimestamp
-        Time.Delta = deltaTime
         display()
-        Time.Fps = 1.0 / deltaTime
-        limitFrame(displayLink)
+        sync(displayLink)
     }
 
-    private fun limitFrame(displayLink: CADisplayLink) {
+    /**
+     * TODO Experimental will it cause to inaccuracy?
+     */
+    private fun sync(displayLink: CADisplayLink) {
         // Calculate the elapsed time since the previous frame
         val elapsedTime = displayLink.duration
 
@@ -100,7 +113,9 @@ class GameView(frame: CValue<CGRect>, val renderer: Application) : GLKView(frame
         val viewportHeight = height * scale
 
         Napier.i("Resize $viewportWidth | $viewportHeight")
-        renderer.resize(0, 0, viewportWidth.toInt(), viewportHeight.toInt())
+        Frame.width = viewportWidth.toInt()
+        Frame.height = viewportHeight.toInt()
+        renderer.resize(0, 0, Frame.width, Frame.height)
     }
 
     override fun willMoveToWindow(newWindow: UIWindow?) {
@@ -114,6 +129,9 @@ class GameView(frame: CValue<CGRect>, val renderer: Application) : GLKView(frame
 
 
     private fun startRenderLoop() {
+        fpsCallback = { fps ->
+            Time.FpsString = "$fps"
+        }
         if (displayLink == null) {
             Napier.i("start render")
             renderer.resume()
@@ -133,6 +151,7 @@ class GameView(frame: CValue<CGRect>, val renderer: Application) : GLKView(frame
         renderer.pause()
         displayLink?.invalidate()
         displayLink = null
+        fpsCallback = null
     }
 
 

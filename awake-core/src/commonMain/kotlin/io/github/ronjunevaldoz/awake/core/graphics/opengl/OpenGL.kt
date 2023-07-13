@@ -1,6 +1,6 @@
 package io.github.ronjunevaldoz.awake.core.graphics.opengl
 
-import io.github.ronjunevaldoz.awake.core.graphics.image.Bitmap
+import io.github.ronjunevaldoz.awake.core.graphics.Bitmap
 import io.github.ronjunevaldoz.awake.core.memory.Buffer
 import io.github.ronjunevaldoz.awake.core.memory.FloatBuf
 import io.github.ronjunevaldoz.awake.core.memory.IntBuf

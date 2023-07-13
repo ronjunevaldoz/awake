@@ -5,14 +5,13 @@ import io.github.ronjunevaldoz.awake.core.geometry.Attribute
 import io.github.ronjunevaldoz.awake.core.getPlatform
 import io.github.ronjunevaldoz.awake.core.graphics.Disposable
 import io.github.ronjunevaldoz.awake.core.graphics.Drawable
-import io.github.ronjunevaldoz.awake.core.graphics.image.createTextTexture
+import io.github.ronjunevaldoz.awake.core.graphics.createTextTexture
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.OpenGL
 import io.github.ronjunevaldoz.awake.core.math.Mat4
 import io.github.ronjunevaldoz.awake.core.math.Vec3
 import io.github.ronjunevaldoz.awake.core.math.Vec4
 import io.github.ronjunevaldoz.awake.core.math.times
-import io.github.ronjunevaldoz.awake.core.math.transformPosition
 import io.github.ronjunevaldoz.awake.core.rendering.Texture
 import io.github.ronjunevaldoz.awake.core.rendering.VertexArrayObject
 import io.github.ronjunevaldoz.awake.core.rendering.addIndexBuffer
@@ -98,9 +97,15 @@ class TextSample : Drawable, Disposable {
 
                     val projection = Mat4.orthographic(
                         -1f, 1f, -1f, 1f, -1f, 20f
+//                        left = 0f,
+//                        right = width,
+//                        bottom = 0f,
+//                        top =  height,
+//                        near = 0.1f,
+//                        far = 100f
                     )
                     val textPosition = Vec3(0f, 0f, 0f)  // Position of the text
-                    val textScale = 1f  // Dynamic font size
+                    val textScale = 10f  // Dynamic font size
 
                     val eye = Vec3(textPosition.x, textPosition.y, 0f)  // Camera position
                     val center = Vec3(textPosition.x, textPosition.y, 0f)  // Target position
@@ -118,11 +123,11 @@ class TextSample : Drawable, Disposable {
                         .translate(0f, 0f, 0f)
                         .apply {
                             if (fontTexture != null) {
-                                scale(
-                                    (fontTexture!!.width.toFloat() / fontTexture!!.height.toFloat()),
-                                    1f,
-                                    1f
-                                )
+//                                scale(
+//                                    (fontTexture!!.width.toFloat() / fontTexture!!.height.toFloat()),
+//                                    1f,
+//                                    1f
+//                                )
                             }
                         }
                     shader.modelViewMatrix = modelMatrix
@@ -145,15 +150,10 @@ class TextSample : Drawable, Disposable {
         val rectangleRT = Vec4(0.5f, -0.5f, 0.0f, 1.0f)
         val rectangleRB = Vec4(0.5f, 0.5f, 0.0f, 1.0f)
 
-        val clipCoordsLT = transMatrix.transformPosition(rectangleLT)
-        val clipCoordsLB = transMatrix.transformPosition(rectangleLB)
-        val clipCoordsRT = transMatrix.transformPosition(rectangleRT)
-        val clipCoordsRB = transMatrix.transformPosition(rectangleRB)
-
-//        val lt = clipCoordsLT.pixelCoords(viewportWidth, viewportHeight)
-//        val lb = clipCoordsLB.pixelCoords(viewportWidth, viewportHeight)
-//        val rt = clipCoordsRT.pixelCoords(viewportWidth, viewportHeight)
-//        val rb = clipCoordsRB.pixelCoords(viewportWidth, viewportHeight)
+//        val clipCoordsLT = transMatrix.transformPosition(rectangleLT)
+//        val clipCoordsLB = transMatrix.transformPosition(rectangleLB)
+//        val clipCoordsRT = transMatrix.transformPosition(rectangleRT)
+//        val clipCoordsRB = transMatrix.transformPosition(rectangleRB)
 
         rectangleLT.makePixelCoords(viewportWidth, viewportHeight)
         rectangleLB.makePixelCoords(viewportWidth, viewportHeight)

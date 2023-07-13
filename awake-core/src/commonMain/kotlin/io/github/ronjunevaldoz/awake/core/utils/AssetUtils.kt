@@ -1,7 +1,7 @@
 package io.github.ronjunevaldoz.awake.core.utils
 
+import io.github.ronjunevaldoz.awake.core.graphics.Bitmap
 import io.github.ronjunevaldoz.awake.core.graphics.Disposable
-import io.github.ronjunevaldoz.awake.core.graphics.image.Bitmap
 import io.github.ronjunevaldoz.awake.core.rendering.Texture
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.ExperimentalResourceApi

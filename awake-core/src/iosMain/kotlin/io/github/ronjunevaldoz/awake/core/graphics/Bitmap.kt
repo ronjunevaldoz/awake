@@ -1,4 +1,4 @@
-package io.github.ronjunevaldoz.awake.core.graphics.image
+package io.github.ronjunevaldoz.awake.core.graphics
 
 import kotlinx.cinterop.allocArrayOf
 import kotlinx.cinterop.get
@@ -24,29 +24,38 @@ actual fun createBitmap(bytes: ByteArray): Bitmap {
     val nsData = memScoped {
         NSData.create(bytes = allocArrayOf(bytes), length = bytes.size.toULong())
     }
-    val image = UIImage.imageWithData(nsData) ?: throw Exception("Invalid bitmap data")
-    val width = CGImageGetWidth(image.CGImage).toInt()
-    val height = CGImageGetHeight(image.CGImage).toInt()
-    val pixelData = CGDataProviderCopyData(CGImageGetDataProvider(image.CGImage))
-    val data = CFDataGetBytePtr(pixelData)!!
+    return createBitmap(nsData, true)
+}
 
-    val pixelArray = IntArray(width * height)
+fun createBitmap(nsData: NSData, flipY: Boolean): Bitmap {
+    val image = checkNotNull(UIImage.imageWithData(nsData)) { "Invalid bitmap data" }
+    return createBitmap(image, flipY)
+}
+
+fun createBitmap(image: UIImage, flipY: Boolean): Bitmap {
+    val cgImage = image.CGImage
+    val width = CGImageGetWidth(cgImage).toInt()
+    val height = CGImageGetHeight(cgImage).toInt()
+    val pixelData = CGDataProviderCopyData(CGImageGetDataProvider(cgImage))
+    val bytes = CFDataGetBytePtr(pixelData)!!
+
+    val pixels = IntArray(width * height)
     for (y in 0 until height) {
-        val flippedY = height - y - 1 // Flip the y-coordinate
+        val flippedY = if (flipY) height - y - 1 else y
 
         for (x in 0 until width) {
 
-            val pixelInfo: Int = (width * flippedY + x) * 4 // The image is in PNG format
-            val red = data[pixelInfo].toInt()         // If you need this info, enable it
-            val green = data[pixelInfo + 1].toInt()   // If you need this info, enable it
-            val blue = data[pixelInfo + 2].toInt()    // If you need this info, enable it
-            val alpha = data[pixelInfo + 3].toInt()   // I need only this info for my maze game
+            val pixelInfo: Int = (width * flippedY + x) * 4
+            val red = bytes[pixelInfo].toInt()
+            val green = bytes[pixelInfo + 1].toInt()
+            val blue = bytes[pixelInfo + 2].toInt()
+            val alpha = bytes[pixelInfo + 3].toInt()
 
             // Convert RGBA to ARGB format
             val argbPixel = (alpha shl 24) or (red shl 16) or (green shl 8) or blue
 
             // Store the pixel in the pixel array
-            pixelArray[y * width + x] = argbPixel
+            pixels[y * width + x] = argbPixel
         }
     }
 
@@ -55,6 +64,6 @@ actual fun createBitmap(bytes: ByteArray): Bitmap {
         width = width,
         height = height,
         channel = 4,
-        pixels = pixelArray
+        pixels = pixels
     )
 }

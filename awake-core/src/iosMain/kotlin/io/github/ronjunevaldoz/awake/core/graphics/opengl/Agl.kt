@@ -1,6 +1,6 @@
 package io.github.ronjunevaldoz.awake.core.graphics.opengl
 
-import io.github.ronjunevaldoz.awake.core.graphics.image.Bitmap
+import io.github.ronjunevaldoz.awake.core.graphics.Bitmap
 import io.github.ronjunevaldoz.awake.core.memory.Buffer
 import io.github.ronjunevaldoz.awake.core.memory.ByteBuffer
 import io.github.ronjunevaldoz.awake.core.memory.FloatBuf
@@ -8,6 +8,7 @@ import io.github.ronjunevaldoz.awake.core.memory.FloatBuffer
 import io.github.ronjunevaldoz.awake.core.memory.IntBuf
 import io.github.ronjunevaldoz.awake.core.memory.IntBuffer
 import io.github.ronjunevaldoz.awake.core.memory.ShortBuffer
+import io.github.ronjunevaldoz.awake.core.rendering.toFormat
 import io.github.ronjunevaldoz.awake.core.utils.BufferUtils
 import io.github.ronjunevaldoz.awake.core.utils.sizeBytes
 import kotlinx.cinterop.ByteVar
@@ -23,7 +24,9 @@ import platform.gles.glBindFramebufferOES
 import platform.gles.glBindRenderbufferOES
 import platform.gles.glBlendFunc
 import platform.gles.glCheckFramebufferStatusOES
+import platform.gles.glCullFace
 import platform.gles.glDeleteFramebuffersOES
+import platform.gles.glDisable
 import platform.gles.glEnable
 import platform.gles.glFramebufferRenderbufferOES
 import platform.gles.glFramebufferTexture2DOES
@@ -31,9 +34,9 @@ import platform.gles.glGenFramebuffersOES
 import platform.gles.glGenRenderbuffersOES
 import platform.gles.glReadPixels
 import platform.gles.glRenderbufferStorageOES
+import platform.gles.glTexSubImage2D
 import platform.gles2.GL_FALSE
 import platform.gles2.GL_INFO_LOG_LENGTH
-import platform.gles2.GL_RGBA
 import platform.gles2.GL_TRUE
 import platform.gles2.GL_UNSIGNED_BYTE
 import platform.gles2.glActiveTexture
@@ -57,9 +60,11 @@ import platform.gles2.glDisableVertexAttribArray
 import platform.gles2.glDrawArrays
 import platform.gles2.glDrawElements
 import platform.gles2.glEnableVertexAttribArray
+import platform.gles2.glFrontFace
 import platform.gles2.glGenBuffers
 import platform.gles2.glGenTextures
 import platform.gles2.glGenVertexArraysOES
+import platform.gles2.glGenerateMipmap
 import platform.gles2.glGetAttribLocation
 import platform.gles2.glGetError
 import platform.gles2.glGetProgramInfoLog
@@ -367,15 +372,67 @@ internal actual object Agl : OpenGL {
         )
     }
 
-    override fun texImage2D(target: Int, level: Int, bitmap: Bitmap, border: Int) {
+    override fun texSubImage2D(
+        target: Int,
+        level: Int,
+        xOffset: Int,
+        yOffset: Int,
+        width: Int,
+        height: Int,
+        format: Int,
+        type: Int,
+        buffer: Buffer?
+    ) {
+        val pixelBuffer = buffer?.get() ?: 0.toLong().toCPointer<ByteVar>()
+        glTexSubImage2D(
+            target = target.toUInt(),
+            level = level,
+            xoffset = xOffset,
+            yoffset = yOffset,
+            width = width,
+            height = height,
+            format = format.toUInt(),
+            type = GL_UNSIGNED_BYTE,
+            pixels = pixelBuffer
+        )
+    }
+
+    override fun texSubImage2D(
+        target: Int,
+        level: Int,
+        xOffset: Int,
+        yOffset: Int,
+        bitmap: Bitmap,
+        format: Int
+    ) {
+        glTexSubImage2D(
+            target = target.toUInt(),
+            level = level,
+            xoffset = xOffset,
+            yoffset = yOffset,
+            width = bitmap.width,
+            height = bitmap.height,
+            format = format.toUInt(),
+            type = GL_UNSIGNED_BYTE,
+            pixels = bitmap.pixels.refTo(0)
+        )
+    }
+
+    override fun texImage2D(
+        target: Int,
+        level: Int,
+        internalFormat: Int,
+        bitmap: Bitmap,
+        border: Int
+    ) {
         glTexImage2D(
             target = target.toUInt(),
             level = level,
-            internalformat = GL_RGBA,
+            internalformat = internalFormat,
             width = bitmap.width,
             height = bitmap.height,
             border = 0,
-            format = GL_RGBA,
+            format = internalFormat.toFormat().toUInt(),
             type = GL_UNSIGNED_BYTE,
             pixels = bitmap.pixels.refTo(0)
         )
@@ -383,6 +440,10 @@ internal actual object Agl : OpenGL {
 
     override fun texParameteri(target: Int, pname: Int, param: Int) {
         glTexParameteri(target.toUInt(), pname.toUInt(), param)
+    }
+
+    override fun generateMipmap(target: Int) {
+        glGenerateMipmap(target.toUInt())
     }
 
     override fun uniform(location: Int, x: Int) {
@@ -477,8 +538,20 @@ internal actual object Agl : OpenGL {
         return glCheckFramebufferStatusOES(target.toUInt()).toInt()
     }
 
-    override fun enable(target: Int) {
-        glEnable(target.toUInt())
+    override fun cullFace(face: Int) {
+        glCullFace(face.toUInt())
+    }
+
+    override fun frontFace(mode: Int) {
+        glFrontFace(mode.toUInt())
+    }
+
+    override fun enable(cap: Int) {
+        glEnable(cap.toUInt())
+    }
+
+    override fun disable(cap: Int) {
+        glDisable(cap.toUInt())
     }
 
     override fun blendFunc(sFactor: Int, dFactor: Int) {

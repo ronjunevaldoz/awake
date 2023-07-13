@@ -1,7 +1,7 @@
 package io.github.ronjunevaldoz.awake.core.utils
 
-import io.github.ronjunevaldoz.awake.core.graphics.image.Bitmap
-import io.github.ronjunevaldoz.awake.core.graphics.image.createBitmap
+import io.github.ronjunevaldoz.awake.core.graphics.Bitmap
+import io.github.ronjunevaldoz.awake.core.graphics.createBitmap
 
 object BitmapUtils {
     fun decode(bytes: ByteArray): Bitmap = createBitmap(bytes)

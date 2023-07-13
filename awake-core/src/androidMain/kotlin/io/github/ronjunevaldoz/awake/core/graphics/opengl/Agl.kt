@@ -63,7 +63,7 @@ import android.opengl.GLES30.glBindVertexArray
 import android.opengl.GLES30.glBufferData
 import android.opengl.GLES30.glDeleteVertexArrays
 import android.opengl.GLES30.glGenVertexArrays
-import io.github.ronjunevaldoz.awake.core.graphics.image.Bitmap
+import io.github.ronjunevaldoz.awake.core.graphics.Bitmap
 import io.github.ronjunevaldoz.awake.core.memory.Buffer
 import io.github.ronjunevaldoz.awake.core.memory.FloatBuf
 import io.github.ronjunevaldoz.awake.core.memory.IntBuf

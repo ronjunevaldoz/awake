@@ -1,10 +1,7 @@
-package io.github.ronjunevaldoz.awake.core.graphics.image
+package io.github.ronjunevaldoz.awake.core.fonts
 
-
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.Typeface
@@ -12,48 +9,10 @@ import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.TextUtils
+import io.github.ronjunevaldoz.awake.core.graphics.AndroidBitmap
+import io.github.ronjunevaldoz.awake.core.graphics.NativeBitmap
+import io.github.ronjunevaldoz.awake.core.graphics.NativeBitmapConfig
 import io.github.ronjunevaldoz.awake.core.rendering.Texture
-
-typealias NativeBitmap = android.graphics.Bitmap
-typealias NativeBitmapConfig = android.graphics.Bitmap.Config
-
-class AndroidBitmap(
-    override val width: Int,
-    override val height: Int,
-    override val channel: Int,
-    override val pixels: IntArray
-) : Bitmap
-
-actual fun createBitmap(bytes: ByteArray): Bitmap {
-    val matrix = Matrix()
-    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, BitmapFactory.Options())
-        .let { bitmap ->
-            matrix.reset()
-            // flip y axis
-            matrix.postScale(1f, -1f)
-            NativeBitmap.createBitmap(
-                bitmap,
-                0,
-                0,
-                bitmap.width,
-                bitmap.height,
-                matrix,
-                true
-            )
-        }
-
-    val width = bitmap.width
-    val height = bitmap.height
-    val pixels = IntArray(width * height)
-    bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-    bitmap.recycle()
-    return AndroidBitmap(
-        width = bitmap.width,
-        height = bitmap.height,
-        channel = 4,
-        pixels = pixels
-    )
-}
 
 object FontTextureGenerator {
     private val textPaint = TextPaint()
@@ -109,11 +68,4 @@ object FontTextureGenerator {
         bitmap.recycle()
         return texture!!
     }
-}
-
-actual fun createTextTexture(
-    aText: String,
-    aFontSize: Float
-): Texture {
-    return FontTextureGenerator.create(aText, aFontSize)
 }
