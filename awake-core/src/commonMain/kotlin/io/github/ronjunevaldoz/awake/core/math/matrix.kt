@@ -15,25 +15,25 @@ class Mat4 {
             data[0] = value
         }
 
-    var m01: Float
+    var m10: Float
         get() = data[1]
         set(value) {
             data[1] = value
         }
 
-    var m02: Float
+    var m20: Float
         get() = data[2]
         set(value) {
             data[2] = value
         }
 
-    var m03: Float
+    var m30: Float
         get() = data[3]
         set(value) {
             data[3] = value
         }
 
-    var m10: Float
+    var m01: Float
         get() = data[4]
         set(value) {
             data[4] = value
@@ -45,25 +45,25 @@ class Mat4 {
             data[5] = value
         }
 
-    var m12: Float
+    var m21: Float
         get() = data[6]
         set(value) {
             data[6] = value
         }
 
-    var m13: Float
+    var m31: Float
         get() = data[7]
         set(value) {
             data[7] = value
         }
 
-    var m20: Float
+    var m02: Float
         get() = data[8]
         set(value) {
             data[8] = value
         }
 
-    var m21: Float
+    var m12: Float
         get() = data[9]
         set(value) {
             data[9] = value
@@ -75,25 +75,25 @@ class Mat4 {
             data[10] = value
         }
 
-    var m23: Float
+    var m32: Float
         get() = data[11]
         set(value) {
             data[11] = value
         }
 
-    var m30: Float
+    var m03: Float
         get() = data[12]
         set(value) {
             data[12] = value
         }
 
-    var m31: Float
+    var m13: Float
         get() = data[13]
         set(value) {
             data[13] = value
         }
 
-    var m32: Float
+    var m23: Float
         get() = data[14]
         set(value) {
             data[14] = value
@@ -105,31 +105,27 @@ class Mat4 {
             data[15] = value
         }
 
-
     init {
         identity()
     }
 
     fun identity() {
-        data[0] = 1.0f
-        data[1] = 0.0f
-        data[2] = 0.0f
-        data[3] = 0.0f
-
-        data[4] = 0.0f
-        data[5] = 1.0f
-        data[6] = 0.0f
-        data[7] = 0.0f
-
-        data[8] = 0.0f
-        data[9] = 0.0f
-        data[10] = 1.0f
-        data[11] = 0.0f
-
-        data[12] = 0.0f
-        data[13] = 0.0f
-        data[14] = 0.0f
-        data[15] = 1.0f
+        m00 = 1f
+        m11 = 1f
+        m22 = 1f
+        m33 = 1f
+        m01 = 0f
+        m02 = 0f
+        m03 = 0f
+        m10 = 0f
+        m12 = 0f
+        m13 = 0f
+        m20 = 0f
+        m21 = 0f
+        m23 = 0f
+        m30 = 0f
+        m31 = 0f
+        m32 = 0f
     }
 
     fun set(other: Mat4): Mat4 {
@@ -166,9 +162,9 @@ class Mat4 {
 
     fun translate(x: Float, y: Float, z: Float): Mat4 {
         val translation = Mat4()
-        translation.m30 = x
-        translation.m31 = y
-        translation.m32 = z
+        translation.m03 = x
+        translation.m13 = y
+        translation.m23 = z
         return translation * this
     }
 
@@ -272,6 +268,7 @@ class Mat4 {
             val tx = -(right + left) / width
             val ty = -(top + bottom) / height
             val tz = -(far + near) / depth
+
             return Mat4().apply {
                 m00 = 2f / width
                 m11 = 2f / height
@@ -317,6 +314,7 @@ class Mat4 {
                 m22 = -(far + near) / depth
                 m32 = -1.0f
                 m23 = -2.0f * far * near / depth
+                m33 = 0f
             }
         }
 
@@ -339,8 +337,8 @@ class Mat4 {
                 m00 = scaleY / aspect
                 m11 = scaleY
                 m22 = (near + far) / rangeInv
-                m23 = -1f
-                m32 = 2f * near * far / rangeInv
+                m32 = -1f
+                m23 = 2f * near * far / rangeInv
                 m33 = 0f
             }
         }
@@ -372,24 +370,29 @@ class Mat4 {
                 val u = s.cross(f) // up
 
                 m00 = s.x
-                m01 = s.y
-                m02 = s.z
-                m10 = u.x
+                m10 = s.y
+                m20 = s.z
+                m01 = u.x
                 m11 = u.y
-                m12 = u.z
-                m20 = -f.x
-                m21 = -f.y
+                m21 = u.z
+                m02 = -f.x
+                m12 = -f.y
                 m22 = -f.z
-                m30 = -s.dot(eye)
-                m31 = -u.dot(eye)
-                m32 = f.dot(eye)
+                m03 = -s.dot(eye)
+                m13 = -u.dot(eye)
+                m23 = f.dot(eye)
             }
         }
     }
 
 
     override fun toString(): String {
-        return "[$m00,$m01,$m02,$m03]\n[$m10,$m11,$m12,$m13]\n[$m20,$m21,$m22,$m23]\n[$m30,$m31,$m32,$m33]"
+        return buildString {
+            append("| $m00 $m01 $m02 $m03 |\n")
+            append("| $m10 $m11 $m12 $m13 |\n")
+            append("| $m20 $m21 $m22 $m23 |\n")
+            append("| $m30 $m31 $m32 $m33 |")
+        }
     }
 }
 
