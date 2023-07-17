@@ -1,30 +1,35 @@
 package io.github.ronjunevaldoz.awake.core.application
 
 import io.github.ronjunevaldoz.awake.core.graphics.opengl.GlfwWindow
+import io.github.ronjunevaldoz.awake.core.utils.Frame
 
 
-fun glfwWindow(
-    onInit: (window: GlfwWindow, width: Int, height: Int) -> Unit,
+fun createFrame(
+    width: Int,
+    height: Int,
+    onInit: () -> Unit,
     onResize: (width: Int, height: Int) -> Unit,
     onUpdate: (delta: Float) -> Unit,
     onDispose: () -> Unit
 ) {
-    val window = GlfwWindow(640, 480, "Desktop")
-    onInit(window, 640, 480)
-    window.listener = object : GlfwWindow.WindowListener {
-        override fun resize(width: Int, height: Int) {
-            onResize(width, height)
-        }
+    Frame.width = width
+    Frame.height = height
+    val window = GlfwWindow(width, height, "Desktop")
+    onInit()
+    window.setFrameSizeListener { w, h ->
+        Frame.width = width
+        Frame.height = height
+        onResize(w, h)
     }
-    // Set the desired frame rate
-    DesktopGameLoop.initTime()
-
     while (!window.shouldClose()) {
+        // updates
+        window.pollEvents()
+        // render
         DesktopGameLoop.startLoop { deltaTime ->
             onUpdate(deltaTime.toFloat())
         }
         // swap buffer
-        window.swap()
+        window.swapBuffers()
     }
     onDispose()
     window.dispose()

@@ -74,8 +74,9 @@ class DemoTexture : Drawable, Disposable {
 
     private fun createBuffers() {
         vao = createVAO {
-            attributes.forEach(::addVertexBuffer)
             addIndexBuffer(indices)
+            attributes.forEach(::addVertexBuffer)
+
         }
     }
 

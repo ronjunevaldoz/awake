@@ -1,17 +1,19 @@
 package io.github.ronjunevaldoz.awake.core.graphics.opengl
 
 import io.github.ronjunevaldoz.awake.core.graphics.Bitmap
-import io.github.ronjunevaldoz.awake.core.graphics.opengl.CommonGL.GL_RGBA
 import io.github.ronjunevaldoz.awake.core.memory.Buffer
 import io.github.ronjunevaldoz.awake.core.memory.FloatBuf
 import io.github.ronjunevaldoz.awake.core.memory.IntBuf
-import io.github.ronjunevaldoz.awake.core.memory.createIntBuffer
 import io.github.ronjunevaldoz.awake.core.memory.`when`
+import io.github.ronjunevaldoz.awake.core.rendering.toFormat
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.glCullFace
 import org.lwjgl.opengl.GL11.glDeleteTextures
+import org.lwjgl.opengl.GL11.glDisable
+import org.lwjgl.opengl.GL11.glFrontFace
 import org.lwjgl.opengl.GL11.glGetError
 import org.lwjgl.opengl.GL11.glReadPixels
-import org.lwjgl.opengl.GL20.GL_UNSIGNED_BYTE
+import org.lwjgl.opengl.GL11.glTexSubImage2D
 import org.lwjgl.opengl.GL20.glActiveTexture
 import org.lwjgl.opengl.GL20.glAttachShader
 import org.lwjgl.opengl.GL20.glBindAttribLocation
@@ -63,6 +65,7 @@ import org.lwjgl.opengl.GL30.glFramebufferTexture2D
 import org.lwjgl.opengl.GL30.glGenFramebuffers
 import org.lwjgl.opengl.GL30.glGenRenderbuffers
 import org.lwjgl.opengl.GL30.glGenVertexArrays
+import org.lwjgl.opengl.GL30.glGenerateMipmap
 import org.lwjgl.opengl.GL30.glRenderbufferStorage
 
 internal actual object Agl : OpenGL {
@@ -158,7 +161,7 @@ internal actual object Agl : OpenGL {
                     type,
                     normalized,
                     stride,
-                    this!!
+                    this
                 )
             },
             short = {
@@ -168,7 +171,7 @@ internal actual object Agl : OpenGL {
                     type,
                     normalized,
                     stride,
-                    this!!
+                    this
                 )
             },
             int = {
@@ -178,7 +181,7 @@ internal actual object Agl : OpenGL {
                     type,
                     normalized,
                     stride,
-                    this!!
+                    this
                 )
             },
             float = {
@@ -188,7 +191,7 @@ internal actual object Agl : OpenGL {
                     type,
                     normalized,
                     stride,
-                    this!!
+                    this
                 )
             }
         ) ?: glVertexAttribPointer(
@@ -252,28 +255,28 @@ internal actual object Agl : OpenGL {
             byte = {
                 glBufferData(
                     target.value,
-                    this!!,
+                    this,
                     usage.value
                 )
             },
             short = {
                 glBufferData(
                     target.value,
-                    this!!,
+                    this,
                     usage.value
                 )
             },
             int = {
                 glBufferData(
                     target.value,
-                    this!!,
+                    this,
                     usage.value
                 )
             },
             float = {
                 glBufferData(
                     target.value,
-                    this!!,
+                    this,
                     usage.value
                 )
             }
@@ -322,9 +325,9 @@ internal actual object Agl : OpenGL {
 
     override fun drawElements(mode: OpenGL.DrawMode, count: Int, type: Int, indices: Buffer?) {
         indices?.`when`(
-            byte = { glDrawElements(mode.value, this!!) },
-            short = { glDrawElements(mode.value, this!!) },
-            int = { glDrawElements(mode.value, this!!) }
+            byte = { glDrawElements(mode.value, this) },
+            short = { glDrawElements(mode.value, this) },
+            int = { glDrawElements(mode.value, this) }
         ) ?: glDrawElements(mode.value, count, type, 0)
     }
 
@@ -354,10 +357,10 @@ internal actual object Agl : OpenGL {
         pixels: Buffer
     ) {
         pixels.`when`(
-            byte = { glReadPixels(x, y, width, height, format, type, this!!) },
-            int = { glReadPixels(x, y, width, height, format, type, this!!) },
-            short = { glReadPixels(x, y, width, height, format, type, this!!) },
-            float = { glReadPixels(x, y, width, height, format, type, this!!) },
+            byte = { glReadPixels(x, y, width, height, format, type, this) },
+            int = { glReadPixels(x, y, width, height, format, type, this) },
+            short = { glReadPixels(x, y, width, height, format, type, this) },
+            float = { glReadPixels(x, y, width, height, format, type, this) },
         )
     }
 
@@ -382,7 +385,7 @@ internal actual object Agl : OpenGL {
                 border,
                 format,
                 type,
-                null as java.nio.ByteBuffer?
+                0
             )
         } else {
             buffer.`when`(
@@ -442,66 +445,130 @@ internal actual object Agl : OpenGL {
         }
     }
 
-    override fun texImage2D(target: Int, level: Int, bitmap: Bitmap, border: Int) {
-        val buffer = createIntBuffer(bitmap.pixels)
-        buffer.`when`(
+    override fun texImage2D(
+        target: Int,
+        level: Int,
+        internalFormat: Int,
+        bitmap: Bitmap,
+        border: Int
+    ) {
+        glTexImage2D(
+            target,
+            level,
+            internalFormat,
+            bitmap.width,
+            bitmap.height,
+            border,
+            internalFormat.toFormat(),
+            CommonGL.GL_UNSIGNED_INT,
+            bitmap.pixels
+        )
+    }
+
+    override fun texSubImage2D(
+        target: Int,
+        level: Int,
+        xOffset: Int,
+        yOffset: Int,
+        width: Int,
+        height: Int,
+        format: Int,
+        type: Int,
+        buffer: Buffer?
+    ) {
+        buffer?.`when`(
             byte = {
-                glTexImage2D(
+                glTexSubImage2D(
                     target,
                     level,
-                    GL_RGBA,
-                    bitmap.width,
-                    bitmap.height,
-                    border,
-                    GL_RGBA,
-                    GL_UNSIGNED_BYTE,
-                    this
-                )
-            },
-            short = {
-                glTexImage2D(
-                    target,
-                    level,
-                    GL_RGBA,
-                    bitmap.width,
-                    bitmap.height,
-                    border,
-                    GL_RGBA,
-                    GL_UNSIGNED_BYTE,
+                    xOffset,
+                    yOffset,
+                    width,
+                    height,
+                    format,
+                    type,
                     this
                 )
             },
             int = {
-                glTexImage2D(
+                glTexSubImage2D(
                     target,
                     level,
-                    GL_RGBA,
-                    bitmap.width,
-                    bitmap.height,
-                    border,
-                    GL_RGBA,
-                    GL_UNSIGNED_BYTE,
+                    xOffset,
+                    yOffset,
+                    width,
+                    height,
+                    format,
+                    type,
+                    this
+                )
+            },
+            short = {
+                glTexSubImage2D(
+                    target,
+                    level,
+                    xOffset,
+                    yOffset,
+                    width,
+                    height,
+                    format,
+                    type,
                     this
                 )
             },
             float = {
-                glTexImage2D(
+                glTexSubImage2D(
                     target,
                     level,
-                    GL_RGBA,
-                    bitmap.width,
-                    bitmap.height,
-                    border,
-                    GL_RGBA,
-                    GL_UNSIGNED_BYTE,
+                    xOffset,
+                    yOffset,
+                    width,
+                    height,
+                    format,
+                    type,
                     this
                 )
             }
+        ) ?: glTexSubImage2D(
+            target,
+            level,
+            xOffset,
+            yOffset,
+            width,
+            height,
+            format,
+            type,
+            0
+        )
+    }
+
+    override fun texSubImage2D(
+        target: Int,
+        level: Int,
+        xOffset: Int,
+        yOffset: Int,
+        bitmap: Bitmap,
+        format: Int
+    ) {
+        glTexSubImage2D(
+            target,
+            level,
+            xOffset,
+            yOffset,
+            bitmap.width,
+            bitmap.height,
+            format,
+            CommonGL.GL_UNSIGNED_INT,
+            bitmap.pixels
         )
     }
 
     override fun texParameteri(target: Int, pname: Int, param: Int) {
         glTexParameteri(target, pname, param)
+    }
+
+    override fun generateMipmap(target: Int) {
+        glGenerateMipmap(target)
     }
 
     override fun uniform(location: Int, x: Int) {
@@ -576,8 +643,20 @@ internal actual object Agl : OpenGL {
         return glCheckFramebufferStatus(target)
     }
 
-    override fun enable(target: Int) {
-        GL11.glEnable(target)
+    override fun cullFace(face: Int) {
+        glCullFace(face)
+    }
+
+    override fun frontFace(mode: Int) {
+        glFrontFace(mode)
+    }
+
+    override fun enable(cap: Int) {
+        GL11.glEnable(cap)
+    }
+
+    override fun disable(cap: Int) {
+        glDisable(cap)
     }
 
     override fun blendFunc(sFactor: Int, dFactor: Int) {

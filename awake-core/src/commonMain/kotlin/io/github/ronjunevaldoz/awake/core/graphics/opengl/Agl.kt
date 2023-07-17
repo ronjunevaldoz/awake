@@ -421,8 +421,8 @@ internal object AglDebuggable : OpenGL {
         checkGL()
     }
 
-    override fun enable(target: Int) {
-        Agl.enable(target)
+    override fun enable(cap: Int) {
+        Agl.enable(cap)
         checkGL()
     }
 

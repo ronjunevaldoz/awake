@@ -1,5 +1,6 @@
 package io.github.ronjunevaldoz.awake.core.graphics
 
+import kotlinx.cinterop.useContents
 import platform.CoreFoundation.CFDataGetLength
 import platform.CoreFoundation.CFRelease
 import platform.CoreGraphics.CGContextFillRect
@@ -14,8 +15,11 @@ import platform.CoreGraphics.CGRectMake
 import platform.CoreGraphics.CGSizeMake
 import platform.Foundation.NSAttributedString
 import platform.Foundation.NSData
+import platform.Foundation.NSDictionary
+import platform.Foundation.NSMutableDictionary
 import platform.Foundation.create
 import platform.Foundation.dataWithBytes
+import platform.Foundation.setValue
 import platform.UIKit.NSFontAttributeName
 import platform.UIKit.NSForegroundColorAttributeName
 import platform.UIKit.NSKernAttributeName
@@ -31,6 +35,8 @@ import platform.UIKit.UIGraphicsEndImageContext
 import platform.UIKit.UIGraphicsGetCurrentContext
 import platform.UIKit.UIGraphicsGetImageFromCurrentImageContext
 import platform.UIKit.UIImage
+import platform.UIKit.drawInRect
+import platform.UIKit.size
 import kotlin.math.ceil
 
 
@@ -63,13 +69,14 @@ fun createImage(width: Double, height: Double, block: CGContextRef.() -> Unit): 
 /**
  * TODO Experimental native image
  */
-fun createImage(text: String, fontSize: Double, textFont: UIFont, textColor: UIColor): UIImage {
+fun createImage(text: String, fontSize: Double): UIImage {
     val adjustedFontSize = fontSize.coerceIn(8.0, 500.0)
-
+    val font = UIFont.systemFontOfSize(fontSize)
+    val color = UIColor.blackColor
     // Set up text attributes for styling the rendered text
     val textAttributes = mapOf<Any?, Any>(
-        NSFontAttributeName to textFont,
-        NSForegroundColorAttributeName to textColor,
+        NSFontAttributeName to font,
+        NSForegroundColorAttributeName to color,
         NSKernAttributeName to 0.0f,
         NSLigatureAttributeName to 0
     )
@@ -78,8 +85,18 @@ fun createImage(text: String, fontSize: Double, textFont: UIFont, textColor: UIC
     val textString = NSAttributedString.create(text, textAttributes)
     // Create text storage and add the attributed string
     val textStorage = NSTextStorage.create(textString)
+    val textSize = textString.size()
+//    val rect  = textString.boundingRectWithSize(
+//        size = CGSizeMake(Double.MAX_VALUE, Double.MAX_VALUE),
+//        options = NSStringDrawingUsesLineFragmentOrigin,
+//        context = null
+//    )
+//
+//    val width = ceil(CGRectGetWidth(rect))
+//    val height = ceil(CGRectGetHeight(rect))
+
     // Create text container with fixed size for text layout
-    val textContainer = NSTextContainer(CGSizeMake(128.0, adjustedFontSize + 2))
+    val textContainer = NSTextContainer(CGSizeMake(48.0, 48.0 + 2))
 
     // Create layout manager and add the text container
     val layoutManager = NSLayoutManager()
@@ -94,7 +111,9 @@ fun createImage(text: String, fontSize: Double, textFont: UIFont, textColor: UIC
     }
 
     // Get the bounding rectangle of the rendered text
-    val textRect = layoutManager.usedRectForTextContainer(textContainer)
+//    val textRect = layoutManager.usedRectForTextContainer(textContainer)
+
+    val textRect = textSize.useContents { CGRectMake(0.0, 0.0, width, height) }
     val width = ceil(CGRectGetWidth(textRect))
     val height = ceil(CGRectGetHeight(textRect))
 //        // Create the image and draw the text on the context
@@ -112,6 +131,34 @@ fun createImage(text: String, fontSize: Double, textFont: UIFont, textColor: UIC
     }
 }
 
+// Extension function to convert Map to NSDictionary
+fun <K, V> Map<K, V>.toNSDictionary(): NSDictionary {
+    val nsDictionary = NSMutableDictionary()
+    this.forEach { (key, value) ->
+        nsDictionary.setValue(value, key.toString())
+    }
+    return nsDictionary
+}
+
+fun getCharacterGlyph(character: Char, fontSize: Float): UIImage? {
+    val font = UIFont.systemFontOfSize(fontSize.toDouble())
+    val attributes = mapOf<Any?, Any>(
+        NSFontAttributeName to font,
+        NSForegroundColorAttributeName to UIColor.blackColor,
+        NSKernAttributeName to 0.0f,
+        NSLigatureAttributeName to 0
+    )
+    val attributedString = NSAttributedString.create(character.toString(), attributes)
+    val size = attributedString.size()
+    UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
+    val rect = size.useContents {
+        CGRectMake(0.0, 0.0, width, height)
+    }
+    attributedString.drawInRect(rect)
+    val image = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+    return image
+}
 
 fun UIImage.toNSData(): NSData {
     val dataProvider = CGDataProviderCopyData(CGImageGetDataProvider(this.CGImage))

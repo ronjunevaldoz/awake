@@ -122,9 +122,10 @@ class Texture(
             height: Int,
             internalFormat: Int = CommonGL.GL_RGBA8,
             options: Options = Options(),
-            mipmap: Boolean = false
+            mipmap: Boolean = false,
+            buffer: Buffer? = null
         ): Texture {
-            return Texture(width, height, internalFormat, options, mipmap).apply {
+            return Texture(width, height, internalFormat, options, mipmap, buffer).apply {
                 withOptions {
                     gl.texImage2D(
                         target = CommonGL.GL_TEXTURE_2D,

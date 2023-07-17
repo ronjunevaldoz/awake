@@ -6,6 +6,7 @@ import kotlinx.cinterop.memScoped
 import platform.CoreFoundation.CFDataGetBytePtr
 import platform.CoreFoundation.CFRelease
 import platform.CoreGraphics.CGDataProviderCopyData
+import platform.CoreGraphics.CGImageGetBytesPerRow
 import platform.CoreGraphics.CGImageGetDataProvider
 import platform.CoreGraphics.CGImageGetHeight
 import platform.CoreGraphics.CGImageGetWidth
@@ -38,6 +39,8 @@ fun createBitmap(image: UIImage, flipY: Boolean): Bitmap {
     val height = CGImageGetHeight(cgImage).toInt()
     val pixelData = CGDataProviderCopyData(CGImageGetDataProvider(cgImage))
     val bytes = CFDataGetBytePtr(pixelData)!!
+    val bytesPerRow = CGImageGetBytesPerRow(cgImage)
+
 
     val pixels = IntArray(width * height)
     for (y in 0 until height) {

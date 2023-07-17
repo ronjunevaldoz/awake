@@ -1,5 +1,5 @@
 // Input attributes
-layout (location = 0) in vec3 a_Position;
+layout (location = 0) in vec2 a_Position;
 layout (location = 1) in vec3 a_Color;
 layout (location = 2) in vec2 a_TexCoords;
 
@@ -13,7 +13,7 @@ out vec2 v_TexCoords;
 
 void main() {
     // Apply transformation
-    vec4 transformedPosition = u_ProjectionViewMatrix * u_ModelViewMatrix * vec4(a_Position, 1.0);
+    vec4 transformedPosition = u_ProjectionViewMatrix * u_ModelViewMatrix * vec4(a_Position, 0.0, 1.0);
 
     // Pass the color to the fragment shader
     v_Color = a_Color;

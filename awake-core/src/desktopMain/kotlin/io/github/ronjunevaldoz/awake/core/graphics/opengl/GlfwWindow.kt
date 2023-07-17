@@ -1,120 +1,26 @@
 package io.github.ronjunevaldoz.awake.core.graphics.opengl
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.ComposeScene
-import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Density
-import kotlinx.coroutines.Dispatchers
-import org.jetbrains.skia.BackendRenderTarget
-import org.jetbrains.skia.Color
-import org.jetbrains.skia.ColorSpace
-import org.jetbrains.skia.DirectContext
-import org.jetbrains.skia.FramebufferFormat
-import org.jetbrains.skia.Surface
-import org.jetbrains.skia.SurfaceColorFormat
-import org.jetbrains.skia.SurfaceOrigin
-import org.jetbrains.skiko.FrameDispatcher
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL30
-import org.lwjgl.system.MemoryStack
-import java.nio.IntBuffer
+import org.lwjgl.system.MemoryStack.stackPush
 
 
-fun createCompose(window: Long, width: Int, height: Int, content: @Composable () -> Unit) {
-    val context = DirectContext.makeGL()
-    var surface =
-        createSurface(width, height, context) // Skia Surface, bound to the OpenGL framebuffer
-
-    val glfwDispatcher =
-        Dispatchers.Glfw // a custom coroutine dispatcher, in which Compose will run
-
-    GLFW.glfwSetWindowCloseCallback(window) {
-        glfwDispatcher.stop()
-    }
-
-    var width = width
-    var height = height
-
-    lateinit var composeScene: ComposeScene
-
-    fun render() {
-        surface.canvas.clear(Color.WHITE)
-        composeScene.constraints = Constraints(maxWidth = width, maxHeight = height)
-        composeScene.render(surface.canvas, System.nanoTime())
-        context.flush()
-        GLFW.glfwSwapBuffers(window)
-    }
-
-    val frameDispatcher = FrameDispatcher(glfwDispatcher) { render() }
-
-    val density = Density(windowDensity(window))
-    composeScene =
-        ComposeScene(glfwDispatcher, density, invalidate = frameDispatcher::scheduleFrame)
-    GLFW.glfwSetWindowSizeCallback(window) { _, windowWidth, windowHeight ->
-        width = windowWidth * 2
-        height = windowHeight * 2
-        surface.close()
-        surface = createSurface(width, height, context)
-
-        GLFW.glfwSwapInterval(0)
-        render()
-        GLFW.glfwSwapInterval(1)
-    }
-
-    composeScene.subscribeToGLFWEvents(window)
-    composeScene.setContent(content)
-
-    glfwDispatcher.runLoop()
-
-    composeScene.close()
-}
-
-private fun createSurface(width: Int, height: Int, context: DirectContext): Surface {
-    val fbId = GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING)
-    val renderTarget = BackendRenderTarget.makeGL(
-        width, height, 0, 8, fbId,
-        FramebufferFormat.GR_GL_RGBA8
-    )
-    return Surface.makeFromBackendRenderTarget(
-        context,
-        renderTarget,
-        SurfaceOrigin.BOTTOM_LEFT,
-        SurfaceColorFormat.RGBA_8888,
-        ColorSpace.sRGB
-    ) ?: throw Exception("Unable to create surface")
-}
-
-private fun windowDensity(window: Long): Float {
-    val array = FloatArray(1)
-    GLFW.glfwGetWindowContentScale(window, array, FloatArray(1))
-    return array[0]
-}
-
-class GlfwWindow(width: Int, height: Int, title: String) {
-
-    val window: Long
-
-    interface WindowListener {
-        fun resize(width: Int, height: Int)
-    }
-
-    var listener: WindowListener? = null
+class GlfwWindow(val width: Int, val height: Int, title: String) {
+    val id: Long
 
     init {
-        initGlfw()
-        window = createWindow(width, height, title)
+        checkError()
+        initHints()
+        id = GLFW.glfwCreateWindow(width, height, title, 0, 0)
+        createWindow()
         initOpenGL()
     }
 
 
-    private fun initGlfw() {
-        GLFWErrorCallback.createPrint(System.err).set()
-        check(GLFW.glfwInit()) { "Unable to initialize GLFW" }
-
+    private fun initHints() {
         // Configure GLFW
         GLFW.glfwDefaultWindowHints() // optional, the current window hints are already the default
         GLFW.glfwWindowHint(
@@ -128,46 +34,15 @@ class GlfwWindow(width: Int, height: Int, title: String) {
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE)
     }
 
-    private fun createWindow(width: Int, height: Int, title: String): Long {
-        val window = GLFW.glfwCreateWindow(width, height, title, 0, 0)
-
-        // add listeners here
-        GLFW.glfwSetKeyCallback(
-            window
-        ) { _: Long, key: Int, scancode: Int, action: Int, mods: Int ->
-            if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE) GLFW.glfwSetWindowShouldClose(
-                window,
-                true
-            ) // We will detect this in the rendering loop
-        }
-        GLFW.glfwSetFramebufferSizeCallback(window) { _: Long, w: Int, h: Int ->
-            listener?.resize(w, h)
-        }
-        MemoryStack.stackPush().use { stack ->
-            val pWidth: IntBuffer = stack.mallocInt(1) // int*
-            val pHeight: IntBuffer = stack.mallocInt(1) // int*
-
-            // Get the window size passed to glfwCreateWindow
-            GLFW.glfwGetWindowSize(window, pWidth, pHeight)
-
-            // Get the resolution of the primary monitor
-            val vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor())
-
-            // Center the window
-            GLFW.glfwSetWindowPos(
-                window,
-                (vidMode!!.width() - pWidth.get(0)) / 2,
-                (vidMode.height() - pHeight.get(0)) / 2
-            )
-        }
-
+    private fun createWindow() {
+        closeOnEscape()
+        center()
         // Make the OpenGL context current
-        GLFW.glfwMakeContextCurrent(window)
+        GLFW.glfwMakeContextCurrent(id)
         // Enable v-sync
         GLFW.glfwSwapInterval(1)
         // Make the window visible
-        GLFW.glfwShowWindow(window)
-        return window
+        GLFW.glfwShowWindow(id)
     }
 
 
@@ -177,24 +52,96 @@ class GlfwWindow(width: Int, height: Int, title: String) {
     }
 
     fun shouldClose(): Boolean {
-        return GLFW.glfwWindowShouldClose(window)
+        return GLFW.glfwWindowShouldClose(id)
     }
 
-    fun time(): Double {
+    fun setShouldClose(value: Boolean) {
+        GLFW.glfwSetWindowShouldClose(id, value)
+    }
+
+    fun getTime(): Double {
         return GLFW.glfwGetTime()
     }
 
-    fun swap() {
-        GLFW.glfwSwapBuffers(window)
+    fun setCloseListener(onClose: () -> Unit) {
+        GLFW.glfwSetWindowCloseCallback(id) {
+            onClose()
+        }
+    }
+
+    fun setSizeListener(onResize: (w: Int, h: Int) -> Unit) {
+        GLFW.glfwSetWindowSizeCallback(id) { _, w, h ->
+            onResize(w, h)
+        }
+    }
+
+    fun setFrameSizeListener(onResize: (w: Int, h: Int) -> Unit) {
+        GLFW.glfwSetFramebufferSizeCallback(id) { _: Long, w: Int, h: Int ->
+            onResize(w, h)
+        }
+    }
+
+    fun closeOnEscape() {
+        GLFW.glfwSetKeyCallback(id) { _: Long, key: Int, scanCode: Int, action: Int, mods: Int ->
+            if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE) {
+                setShouldClose(true)
+            }
+        }
+    }
+
+    fun center() {
+        useSize { w, h ->
+            // Get the resolution of the primary monitor
+            val vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor())
+
+            // Center the window
+            GLFW.glfwSetWindowPos(
+                id,
+                (vidMode!!.width() - w) / 2,
+                (vidMode.height() - h) / 2
+            )
+        }
+    }
+
+    fun useSize(size: (w: Int, h: Int) -> Unit) {
+        stackPush().use { stack ->
+            val wBuffer = stack.mallocInt(1) // int*
+            val hBuffer = stack.mallocInt(1) // int*
+
+            // Get the window size passed to glfwCreateWindow
+            GLFW.glfwGetWindowSize(id, wBuffer, hBuffer)
+            size(wBuffer[0], hBuffer[0])
+        }
+    }
+
+    fun <T> getContentScale(scale: (x: Float, y: Float) -> T): T {
+        return stackPush().use { s ->
+            val px = s.mallocFloat(1)
+            val py = s.mallocFloat(1)
+            GLFW.glfwGetMonitorContentScale(id, px, py)
+            scale(px[0], py[0])
+        }
+    }
+
+    fun pollEvents() {
         GLFW.glfwPollEvents()
+    }
+
+    fun swapBuffers() {
+        GLFW.glfwSwapBuffers(id)
     }
 
     fun dispose() {
         // Free the window callbacks and destroy the window
-        Callbacks.glfwFreeCallbacks(window)
-        GLFW.glfwDestroyWindow(window)
+        Callbacks.glfwFreeCallbacks(id)
+        GLFW.glfwDestroyWindow(id)
 
         GLFW.glfwTerminate()
         GLFW.glfwSetErrorCallback(null)!!.free()
+    }
+
+    fun checkError() {
+        GLFWErrorCallback.createPrint(System.err).set()
+        check(GLFW.glfwInit()) { "Unable to initialize GLFW" }
     }
 }

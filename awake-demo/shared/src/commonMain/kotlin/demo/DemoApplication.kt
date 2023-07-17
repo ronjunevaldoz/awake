@@ -11,7 +11,7 @@ import scene.CubeSample
 import scene.DemoColoredTriangle
 import scene.DemoTexture
 import scene.DemoTriangle
-import scene.TextSample
+import scene.FontBitmapSample
 import scene.TransformTriangle
 import kotlin.native.concurrent.ThreadLocal
 import kotlin.random.Random
@@ -25,7 +25,7 @@ object DemoApplication : Application {
         "Texture",
         "Colored",
         "Transform",
-        "Text",
+        "Font Bitmap",
         "Cube"
     )
 
@@ -34,7 +34,6 @@ object DemoApplication : Application {
     var colorObject = Color.Green
     var colorVelocity = 1f / 60f
 
-
     override fun create() {
         drawables =
             listOf(
@@ -42,10 +41,11 @@ object DemoApplication : Application {
                 DemoTexture(),
                 DemoColoredTriangle(),
                 TransformTriangle(),
-                TextSample(),
+                FontBitmapSample(),
                 CubeSample()
             )
     }
+
 
     private var totalElapsedTime = 0f
     override fun update(delta: Float) {

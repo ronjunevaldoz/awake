@@ -1,6 +1,6 @@
 import demo.DemoApplication
 import io.github.ronjunevaldoz.awake.core.AwakeContext
-import io.github.ronjunevaldoz.awake.core.application.glfwWindow
+import io.github.ronjunevaldoz.awake.core.application.createFrame
 
 //fun main() = application {
 //    Window(onCloseRequest = ::exitApplication) {
@@ -11,8 +11,11 @@ import io.github.ronjunevaldoz.awake.core.application.glfwWindow
 fun main() {
     AwakeContext.init() // manually set
     val application = DemoApplication
-    glfwWindow(
-        onInit = { window, width, height ->
+
+    createFrame(
+        width = 640,
+        height = 480,
+        onInit = {
             application.create()
         },
         onResize = { width, height ->
