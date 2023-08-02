@@ -177,4 +177,17 @@ Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkDestroyImageView(JNIEnv *env,
                                                                     jlong pImageView) {
     vulkan_utils::destroyImageView(env, pDevice, pImageView);
 }
+
+JNIEXPORT jlong JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkCreateShaderModule(JNIEnv *env, jobject thiz,
+                                                                      jlong device,
+                                                                      jobject create_info) {
+    return vulkan_utils::createShaderModule(env, device, create_info);
+}
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkDestroyShaderModule(JNIEnv *env, jobject thiz,
+                                                                       jlong device,
+                                                                       jlong shader_module) {
+    return vulkan_utils::destroyShaderModule(device, shader_module);
+}
 }

@@ -25,6 +25,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.VkImage
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceProperties
@@ -230,6 +231,9 @@ expect object Vulkan {
 
     fun vkCreateImageView(device: Long, createInfo: VkImageViewCreateInfo): Long
     fun vkDestroyImageView(device: Long, imageView: Long)
+
+    fun vkCreateShaderModule(device: Long, createInfo: VkShaderModuleCreateInfo): Long
+    fun vkDestroyShaderModule(device: Long, shaderModule: Long)
 
     // Debug messenger
     fun createDebugUtilsMessenger(instance: Long): Long

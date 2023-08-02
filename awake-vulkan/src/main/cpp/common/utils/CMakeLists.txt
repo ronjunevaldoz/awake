@@ -7,6 +7,7 @@ set(COMMON_UTILS_VULKAN_UTILS_SOURCES
         VkImageViewCreateInfoConverter.cpp
         VkDeviceQueueCreateInfoConverter.cpp
         VkPhysicalDeviceFeaturesConverter.cpp
+        VkShaderModuleCreateInfoConverter.cpp
         )
 
 # Create a static library for the common utilities

@@ -12,6 +12,7 @@
 #include "VkImageViewCreateInfoConverter.h"
 #include "VkDeviceQueueCreateInfoConverter.h"
 #include "VkPhysicalDeviceFeaturesConverter.h"
+#include "VkShaderModuleCreateInfoConverter.h"
 
 
 std::vector<const char *>
@@ -1294,5 +1295,26 @@ namespace vulkan_utils {
         auto device = reinterpret_cast<VkDevice>(pDevice);
         auto imageView = reinterpret_cast<VkImageView>(p_image_view);
         vkDestroyImageView(device, imageView, nullptr);
+    }
+
+    jlong createShaderModule(JNIEnv *env, jlong pDevice, jobject pCreateInfo) {
+        VkShaderModuleCreateInfoConverter converter(env);
+        VkShaderModuleCreateInfo createInfo = converter.fromObject(pCreateInfo);
+
+        auto device = reinterpret_cast<VkDevice>(pDevice);
+        VkShaderModule shaderModule;
+        VkResult result = vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule);
+
+        if (result != VK_SUCCESS) {
+            return 0;
+        }
+
+        return reinterpret_cast<jlong>(shaderModule);
+    }
+
+    void destroyShaderModule(jlong pDevice, jlong pShaderModule) {
+        auto device = reinterpret_cast<VkDevice>(pDevice);
+        auto shaderModule = reinterpret_cast<VkShaderModule>(pShaderModule);
+        vkDestroyShaderModule(device, shaderModule, nullptr);
     }
 }

@@ -13,9 +13,6 @@ namespace vulkan_utils {
     // function to fromObject jni to Vulkan app info
     VkApplicationInfo VkApplicationInfo_fromObject(JNIEnv *env, jobject vkApplicationInfoObject);
 
-    VkDeviceQueueCreateInfo
-    VkDeviceQueueCreateInfo_fromObject(JNIEnv *env, jobject deviceQueueCreateInfo);
-
     // fill device properties to destination
     bool VkPhysicalDeviceLimits_fromObject(JNIEnv *env,
                                            jclass p_pdpp_class,
@@ -134,6 +131,10 @@ namespace vulkan_utils {
                           jlong device,
                           jlong image_view
     );
+
+    jlong createShaderModule(JNIEnv *env, jlong device, jobject createInfo);
+
+    void destroyShaderModule(jlong device, jlong shaderModule);
 
     _jobjectArray *enumerateInstanceExtensionProperties(JNIEnv *env);
 

@@ -43,6 +43,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageSubresourceRange
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDevice
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.eq
@@ -52,6 +53,9 @@ import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceForm
 import io.github.ronjunevaldoz.awake.vulkan.utils.findQueueFamilies
 import io.github.ronjunevaldoz.awake.vulkan.utils.isSwapChainSupported
 import io.github.ronjunevaldoz.awake.vulkan.utils.querySwapChainSupport
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.resource
 
 
 class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callback2 {
@@ -181,6 +185,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
                 device = Vulkan.vkCreateDevice(gpu.physicalDevice, deviceInfo) // VkDevice
                 // create swap chain
                 swapChain(device, gpu, surface)
+                createGraphicsPipeline()
 //                val graphicsQueue = Vulkan.vkGetDeviceQueue(device, indices.graphicsFamily!!, 0)
 //                graphicsQueue
             }
@@ -271,6 +276,26 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             Vulkan.vkCreateImageView(device, createInfo)
         }
         imageViews = swapChainImageViews
+    }
+
+    @OptIn(ExperimentalResourceApi::class)
+    fun createShaderModule(path: String) = runBlocking {
+        val code = resource(path).readBytes()
+        val createInfo = VkShaderModuleCreateInfo(
+            codeSize = 0,
+            pCode = code
+        )
+        Vulkan.vkCreateShaderModule(device, createInfo)
+    }
+
+    private fun createGraphicsPipeline() {
+        val fragShaderModule = createShaderModule("assets/shader/vulkan/shader.frag.spv")
+        val vertShaderModule = createShaderModule("assets/shader/vulkan/shader.vert.spv")
+
+        // process shader
+
+        Vulkan.vkDestroyShaderModule(device, fragShaderModule)
+        Vulkan.vkDestroyShaderModule(device, vertShaderModule)
     }
 
     private fun chooseSwapSurfaceFormat(availableFormats: List<VkSurfaceFormatKHR>): VkSurfaceFormatKHR {
