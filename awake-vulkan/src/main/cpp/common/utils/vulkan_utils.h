@@ -10,7 +10,7 @@
 #include <jni.h>
 
 namespace vulkan_utils {
-    // function to convert jni to Vulkan app info
+    // function to fromObject jni to Vulkan app info
     VkApplicationInfo VkApplicationInfo_fromObject(JNIEnv *env, jobject vkApplicationInfoObject);
 
     VkDeviceQueueCreateInfo

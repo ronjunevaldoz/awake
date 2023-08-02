@@ -5,6 +5,8 @@ set(COMMON_UTILS_VULKAN_UTILS_SOURCES
         vulkan_utils.cpp
         enum_utils.cpp
         VkImageViewCreateInfoConverter.cpp
+        VkDeviceQueueCreateInfoConverter.cpp
+        VkPhysicalDeviceFeaturesConverter.cpp
         )
 
 # Create a static library for the common utilities
