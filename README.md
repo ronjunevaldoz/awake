@@ -21,6 +21,24 @@ Awake is a cross-platform graphics wrapper and framework (OpenGL, Metal & Vulkan
     - [ ] iOS MoltenVK / Metal (TODO)
     - [ ] Desktop (TODO)
 
+### Tools
+
+Vulkan requires to use `.spv` shader, so i've provided a GlslValidator gradle plugin to convert glsl
+to spv on pre-compilation.
+
+1. To install `glslangValidator`
+    ```
+    brew install glslang 
+    ```
+2. To verify installation
+    ```
+    glslangValidator --version
+    ```
+3. Run gradle task `glslValidator`
+    ```
+   gradle glslValidator
+   ```
+
 ### Installation
 
 To use this library in your Kotlin Multiplatform project, follow the steps below:

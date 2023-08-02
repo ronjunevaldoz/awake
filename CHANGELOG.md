@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial support for Android, iOS, and desktop OpenGL.
 - Implemented using Compose Multiplatform for increased flexibility.
 - Experimental high-quality text rendering (TTF).
+- GlslValidator plugin for pre-compiling glsl to spv in the demo project.
 
 ### Known Issues
 
