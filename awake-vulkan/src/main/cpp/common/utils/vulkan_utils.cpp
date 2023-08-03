@@ -13,6 +13,7 @@
 #include "VkDeviceQueueCreateInfoConverter.h"
 #include "VkPhysicalDeviceFeaturesConverter.h"
 #include "VkShaderModuleCreateInfoConverter.h"
+#include "VkGraphicsPipelineCreateInfoConverter.h"
 
 
 std::vector<const char *>
@@ -1264,6 +1265,7 @@ namespace vulkan_utils {
             env->DeleteLocalRef(imageObj);
         }
 
+        swapChainImages.clear(); // TODO check if needed to clear
         env->DeleteLocalRef(imgClass);
         return imageList;
     }
@@ -1316,5 +1318,61 @@ namespace vulkan_utils {
         auto device = reinterpret_cast<VkDevice>(pDevice);
         auto shaderModule = reinterpret_cast<VkShaderModule>(pShaderModule);
         vkDestroyShaderModule(device, shaderModule, nullptr);
+    }
+
+    jlong createPipelineCache(JNIEnv *env, jlong pDevice, jobject pCreateInfo) {
+        auto device = reinterpret_cast<VkDevice>(pDevice);
+        VkPipelineCacheCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+        createInfo.pNext = nullptr;
+        createInfo.flags = 0;
+        createInfo.initialDataSize = 0;
+        createInfo.pInitialData = nullptr;
+
+        VkPipelineCache pipelineCache;
+        VkResult result = vkCreatePipelineCache(device, &createInfo, nullptr, &pipelineCache);
+        if (result != VK_SUCCESS) {
+            return 0;
+        }
+        return reinterpret_cast<jlong>(pipelineCache);
+    }
+
+    void destroyPipelineCache(jlong pDevice, jlong pPipelineCache) {
+        auto device = reinterpret_cast<VkDevice>(pDevice);
+        auto pipelineCache = reinterpret_cast<VkPipelineCache>(pPipelineCache);
+        vkDestroyPipelineCache(device, pipelineCache, nullptr);
+    }
+
+    jlongArray createGraphicsPipeline(JNIEnv *env, jlong pDevice, jlong pPipelineCache,
+                                      jobjectArray createInfosObj) {
+        auto device = reinterpret_cast<VkDevice>(pDevice);
+        auto pipelineCache = reinterpret_cast<VkPipelineCache>(pPipelineCache);
+        auto createInfoSize = env->GetArrayLength(createInfosObj);
+        VkGraphicsPipelineCreateInfoConverter converter(env);
+        std::vector<VkGraphicsPipelineCreateInfo> createInfos(createInfoSize);
+        for (int i = 0; i < createInfoSize; ++i) {
+            auto createInfoObj = env->GetObjectArrayElement(createInfosObj, i);
+            createInfos.push_back(converter.fromObject(createInfoObj));
+            env->DeleteLocalRef(createInfoObj);
+        }
+        std::vector<VkPipeline> pipelines;
+        VkResult result = vkCreateGraphicsPipelines(device, pipelineCache,
+                                                    static_cast<uint32_t>(createInfos.size()),
+                                                    createInfos.data(), nullptr, pipelines.data());
+        if (result != VK_SUCCESS) {
+            return jlongArray();
+        }
+        jlongArray pipelineHandles = env->NewLongArray((jsize) pipelines.size());
+        for (int i = 0; i < pipelines.size(); ++i) {
+            auto pipeline = reinterpret_cast<jlong>(pipelines[i]);
+            env->SetLongArrayRegion(pipelineHandles, i, 1, &pipeline);
+        }
+        return pipelineHandles;
+    }
+
+    void destroyPipeline(jlong pDevice, jlong pPipeline) {
+        auto device = reinterpret_cast<VkDevice>(pDevice);
+        auto pipeline = reinterpret_cast<VkPipeline>(pPipeline);
+        vkDestroyPipeline(device, pipeline, nullptr);
     }
 }

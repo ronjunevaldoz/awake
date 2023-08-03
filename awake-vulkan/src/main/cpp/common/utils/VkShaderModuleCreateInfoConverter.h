@@ -12,7 +12,6 @@
 class VkShaderModuleCreateInfoConverter {
 private:
     jclass clazz;
-    jmethodID constructor;
     jfieldID sTypeField;
     jfieldID pNextField;
     jfieldID flagsField;

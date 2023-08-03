@@ -24,7 +24,9 @@ import io.github.ronjunevaldoz.awake.vulkan.models.VkExtensionProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.VkImage
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
@@ -135,4 +137,21 @@ actual object Vulkan {
     ): Long
 
     actual external fun vkDestroyShaderModule(device: Long, shaderModule: Long)
+    actual external fun vkCreatePipelineCache(
+        device: Long,
+        createInfo: VkPipelineCacheCreateInfo
+    ): Long
+
+    actual external fun vkDestroyPipelineCache(
+        device: Long,
+        pipelineCache: Long
+    )
+
+    actual external fun vkCreateGraphicsPipeline(
+        device: Long,
+        pipelineCache: Long,
+        createInfos: Array<VkGraphicsPipelineCreateInfo>
+    ): LongArray
+
+    actual external fun vkDestroyPipeline(device: Long, pipeline: Long)
 }

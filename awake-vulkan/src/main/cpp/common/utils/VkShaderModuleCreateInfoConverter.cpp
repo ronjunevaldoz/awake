@@ -29,21 +29,23 @@ VkShaderModuleCreateInfo VkShaderModuleCreateInfoConverter::fromObject(jobject p
     auto codeByteArray = (jbyteArray) env->GetObjectField(pCreateInfoObj, pCodeField);
 
     jsize fileSize = env->GetArrayLength(codeByteArray);
-    std::vector<char> buffer(fileSize);
+    std::vector<jbyte> buffer(fileSize);
 
-    env->GetByteArrayRegion(codeByteArray, 0, fileSize, reinterpret_cast<jbyte *>(buffer.data()));
-
+    env->GetByteArrayRegion(codeByteArray, 0, fileSize, buffer.data());
+    env->DeleteLocalRef(codeByteArray);
 
     VkShaderModuleCreateInfo createInfo{};
-    createInfo.sType = static_cast<VkStructureType>(enum_utils::getEnumFromObject(env, typeObj));
-    createInfo.pNext = static_cast<void *>(pNextObj);
-    createInfo.flags = static_cast<uint32_t>(flags);
-    createInfo.codeSize = static_cast<size_t>(buffer.size());
-    createInfo.pCode = reinterpret_cast<const uint32_t *>(buffer.data());
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;// static_cast<VkStructureType>(enum_utils::getEnumFromObject(env, typeObj));
+//    createInfo.pNext = nullptr;//static_cast<void *>(pNextObj);
+//    createInfo.flags = 0;//static_cast<uint32_t>(flags);
+    createInfo.codeSize = fileSize * sizeof(jbyte);
+    auto code = reinterpret_cast<const uint32_t *>(buffer.data());
+//    createInfo.codeSize =  buffer.size() / sizeof(uint32_t);
+    createInfo.pCode = code;
 
+    buffer.clear();
     env->DeleteLocalRef(typeObj);
     env->DeleteLocalRef(pNextObj);
-    env->DeleteLocalRef(codeByteArray);
 
     return createInfo;
 }

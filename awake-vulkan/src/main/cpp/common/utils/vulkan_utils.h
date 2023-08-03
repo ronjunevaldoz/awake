@@ -136,6 +136,15 @@ namespace vulkan_utils {
 
     void destroyShaderModule(jlong device, jlong shaderModule);
 
+    jlong createPipelineCache(JNIEnv *env, jlong pDevice, jobject createInfo);
+
+    void destroyPipelineCache(jlong device, jlong pipelineCache);
+
+    jlongArray createGraphicsPipeline(JNIEnv *env, jlong pDevice, jlong pPipelineCache,
+                                      jobjectArray createInfosObj);
+
+    void destroyPipeline(jlong device, jlong graphicsPipeline);
+
     _jobjectArray *enumerateInstanceExtensionProperties(JNIEnv *env);
 
     _jobjectArray *enumerateDeviceExtensionProperties(JNIEnv *env, jlong pPhysicalDevice);

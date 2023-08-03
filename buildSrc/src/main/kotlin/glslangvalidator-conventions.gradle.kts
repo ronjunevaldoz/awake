@@ -27,6 +27,11 @@ abstract class GlslValidator : DefaultTask() {
     @get:Input
     abstract val spvDir: Property<String>
 
+    @get:Input
+    abstract val targetEnv: Property<Double>
+
+    val vulkanVersions = listOf(1.0, 1.1, 1.2, 1.3)
+
     init {
         shaderDir.convention("src/commonMain/resources/assets/shader/vulkan")
         spvDir.convention("src/commonMain/resources/assets/shader/vulkan")
@@ -46,16 +51,21 @@ abstract class GlslValidator : DefaultTask() {
             val shaderName =
                 if (shaderExt == "frag" || shaderExt == "vert") shaderFile.name else shaderFile.nameWithoutExtension
             val spvFile = File(spvsDir, "$shaderName.spv")
-            runGlslangValidator(shaderFile.absolutePath, spvFile.absolutePath)
+            runGlslangValidator(shaderFile.absolutePath, spvFile.absolutePath, targetEnv.get())
         }
     }
 
     // Define a function to execute glslangValidator
-    private fun runGlslangValidator(glslFile: String, spvFile: String) {
+    private fun runGlslangValidator(glslFile: String, spvFile: String, targetEnv: Double) {
         println(glslFile)
         println(spvFile)
+
+        if (!vulkanVersions.contains(targetEnv)) {
+            throw RuntimeException("Invalid vulkan target env $targetEnv")
+        }
+
         val processBuilder = ProcessBuilder()
-            .command("glslangValidator", "-V", glslFile, "-o", spvFile)
+            .command("glslangValidator", "-V", glslFile, "--target-env", "vulkan$targetEnv", "-o", spvFile)
             .redirectErrorStream(true)
             .inheritIO()
 

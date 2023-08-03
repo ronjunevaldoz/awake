@@ -191,3 +191,31 @@ Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkDestroyShaderModule(JNIEnv *e
     return vulkan_utils::destroyShaderModule(device, shader_module);
 }
 }
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkCreatePipelineCache(JNIEnv *env, jobject thiz,
+                                                                       jlong device,
+                                                                       jobject create_info) {
+    return vulkan_utils::createPipelineCache(env, device, create_info);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkDestroyPipelineCache(JNIEnv *env, jobject thiz,
+                                                                        jlong device,
+                                                                        jlong pipeline_cache) {
+    vulkan_utils::destroyPipelineCache(device, pipeline_cache);
+}
+extern "C"
+JNIEXPORT jlongArray JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkCreateGraphicsPipeline(JNIEnv *env, jobject thiz,
+                                                                          jlong device,
+                                                                          jlong pipeline_cache,
+                                                                          jobjectArray create_infos) {
+    return vulkan_utils::createGraphicsPipeline(env, device, pipeline_cache, create_infos);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkDestroyPipeline(JNIEnv *env, jobject thiz,
+                                                                   jlong device, jlong pipeline) {
+    vulkan_utils::destroyPipeline(device, pipeline);
+}
