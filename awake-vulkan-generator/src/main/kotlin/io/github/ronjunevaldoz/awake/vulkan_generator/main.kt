@@ -19,18 +19,23 @@
 
 package io.github.ronjunevaldoz.awake.vulkan_generator
 
+import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent2D
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineDynamicStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineVertexInputStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkVertexInputAttributeDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkVertexInputBindingDescription
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.generateCpp
 
 fun main() {
+    // swapchain
+    generateCpp<VkExtent2D>()
+    generateCpp<VkSwapchainCreateInfoKHR>()
+    // graphics
     generateCpp<VkGraphicsPipelineCreateInfo>()
     generateCpp<VkPipelineDynamicStateCreateInfo>()
     generateCpp<VkVertexInputBindingDescription>()
     generateCpp<VkVertexInputAttributeDescription>()
     generateCpp<VkPipelineVertexInputStateCreateInfo>()
-
 }

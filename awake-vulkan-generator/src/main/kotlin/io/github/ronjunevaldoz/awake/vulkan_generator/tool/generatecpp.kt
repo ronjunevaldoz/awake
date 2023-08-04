@@ -19,6 +19,8 @@
 
 package io.github.ronjunevaldoz.awake.vulkan_generator.tool
 
+import io.github.ronjunevaldoz.awake.vulkan.VkHandleRef
+import io.github.ronjunevaldoz.awake.vulkan.VkPointer
 import java.lang.reflect.Field
 import java.util.Calendar
 
@@ -85,15 +87,76 @@ fun Field.varSuffix() = when {
     else -> "Obj"
 }
 
+fun Field.primitiveTypeIsNull(): Boolean {
+    // when a primitive become null, the value of isPrimitive became false
+    return !type.isPrimitive &&
+            (type.simpleName.contains("int", true) ||
+                    type.simpleName.contains("long", true) ||
+                    type.simpleName.contains("short", true) ||
+                    type.simpleName.contains("byte", true) ||
+                    type.simpleName.contains("double", true) ||
+                    type.simpleName.contains("float", true))
+}
+
+fun Field.toCType(): String {
+    return when {
+        type.simpleName.contains("int", true) -> "uint32_t"
+        type.simpleName.contains("long", true) -> "uint64_t"
+        type.simpleName.contains("short", true) -> "NOSURE SHORT"
+        type.simpleName.contains("byte", true) -> "NOSURE BYTE"
+        type.simpleName.contains("double", true) -> "NOSURE DOUBLE"
+        type.simpleName.contains("float", true) -> "VkBool32"
+        else -> type.simpleName.replace("[]", "")
+    }
+}
+
+fun Field.toJNIType(): String {
+    val comType = type.componentType
+    return when {
+        comType.simpleName.contains("Integer", true) -> "jint"
+        comType.simpleName.contains("Long", true) -> "jlong"
+        comType.simpleName.contains("Short", true) -> "jshort"
+        comType.simpleName.contains("Byte", true) -> "jbyte"
+        comType.simpleName.contains("Double", true) -> "jdouble"
+        comType.simpleName.contains("Float", true) -> "jfloat"
+        else -> type.simpleName
+    }
+}
+
+fun Field.toArrayElementType(): String {
+    val comType = type.componentType
+    return when {
+        comType.simpleName.contains("Integer", true) -> "Int"
+        comType.simpleName.contains("Long", true) -> "Long"
+        comType.simpleName.contains("Short", true) -> "Short"
+        comType.simpleName.contains("Byte", true) -> "Byte"
+        comType.simpleName.contains("Double", true) -> "Double"
+        comType.simpleName.contains("Float", true) -> "VkBool32"
+        else -> type.simpleName
+    }
+}
+
 fun Array<Field>.accessFields(sourceObj: String, suffix: String = "Field") =
     joinToString("\n") { field ->
         val varSuffix = field.varSuffix()
         val fieldName = field.name + suffix
         val primitiveField = field.type.simpleName.capitalize()
+
         val access = when {
             field.type.isPrimitive -> "env->Get" + primitiveField + "Field($sourceObj, $fieldName)"
             field.type.isEnum -> "env->GetObjectField($sourceObj,$fieldName)"
-            field.type.isArray -> "(jobjectArray) env->GetObjectField($sourceObj, $fieldName)"
+            field.type.isArray -> {
+                if (field.type.componentType.simpleName.contains(
+                        "Object",
+                        true
+                    ) || field.type.componentType.simpleName.startsWith("vk", true)
+                ) {
+                    "(jobjectArray) env->GetObjectField($sourceObj, $fieldName)"
+                } else {
+                    "(${field.toJNIType()}Array) env->GetObjectField($sourceObj, $fieldName)"
+                }
+            }
+
             else -> "env->GetObjectField($sourceObj, $fieldName)"
         }
         "\tauto ${field.name}$varSuffix = $access;"
@@ -130,22 +193,55 @@ fun Array<Field>.processArrayFields(sourceObj: String, imports: StringBuilder) =
                 else -> "${valueObj}Converter.fromObject($element);"
             }
             var declareConverter = ""
-            if (!componentType.isEnum) {
-                imports.append("""#include  "${variableType}Converter.h"""")
+            if (componentType.typeName.contains(
+                    "Object",
+                    true
+                ) || componentType.simpleName.startsWith("vk", true)
+            ) {
+                imports.append("""#include "${variableType}Converter.h"""")
                 imports.appendLine()
-                declareConverter = "${variableType}Converter ${valueObj}Converter(env);\n"
+                declareConverter = "${variableType}Converter ${valueObj}Converter(env);"
             }
-            """ 
-$declareConverter
-std::vector<$variableType> ${field.name};
-auto $variableSize = env->GetArrayLength($variable);
-for (int i = 0; i < $variableSize; ++i) {
-    auto $element = env->GetObjectArrayElement($variable, i);
-    auto value = $value; 
-    ${field.name}.push_back(value);
-    env->DeleteLocalRef(${element});
-}
-        """.trimIndent()
+            val listType = field.toCType()
+            buildString {
+                if (componentType.simpleName.contains(
+                        "Object",
+                        true
+                    ) || componentType.simpleName.startsWith("vk", true)
+                ) {
+                    append("\t$declareConverter")
+                    appendLine()
+                }
+                if (componentType.simpleName.contains(
+                        "Object",
+                        true
+                    ) || componentType.simpleName.startsWith("vk", true)
+                ) {
+                    append("\tstd::vector<$listType> ${field.name};")
+                    appendLine()
+                    append("\tauto $variableSize = env->GetArrayLength($variable);")
+                    appendLine()
+                    append("\tfor (int i = 0; i < $variableSize; ++i) {")
+                    appendLine()
+                    append("\t\tauto $element = env->GetObjectArrayElement($variable, i);")
+                    appendLine()
+                    append("\t\tauto value = $value; ")
+                    appendLine()
+                    append("\t\t${field.name}.push_back(value);")
+                    appendLine()
+                    append("\t\tenv->DeleteLocalRef(${element});")
+                    appendLine()
+                    append("\t}")
+                    appendLine()
+                } else {
+                    append("\tstd::vector<${listType}> ${field.name};")
+                    appendLine()
+                    append("\tauto $variableSize = env->GetArrayLength($variable);")
+                    appendLine()
+                    append("\tenv->Get${field.toArrayElementType()}ArrayRegion($variable, 0, $variableSize, reinterpret_cast<${field.toJNIType()} *>(${field.name}.data()));")
+                    appendLine()
+                }
+            }
         }
 
 fun Array<Field>.assignValues(imports: StringBuilder) = joinToString("\n") { field ->
@@ -153,14 +249,16 @@ fun Array<Field>.assignValues(imports: StringBuilder) = joinToString("\n") { fie
     val fieldName = field.name
     val variable = fieldName + suffix
     val variableType = field.type.simpleName
+    val variableSize = fieldName.removePrefix("p")
+        .replaceFirstChar { if (it.isUpperCase()) it.lowercase() else it.toString() }
+        .replace("Indices", "Index")
+        .removeSuffix("s") + "Count"
 
     val arrayCount = if (field.type.isArray) {
-        val variableSize = fieldName.removePrefix("p")
-            .replaceFirstChar { if (it.isUpperCase()) it.lowercase() else it.toString() }
-            .removeSuffix("s") + "Count"
-        "\tcreateInfo.$variableSize = static_cast<uint32_t>(${fieldName}.size());\n"
+        "\tcreateInfo.${variableSize} = static_cast<uint32_t>(${fieldName}.size());\n"
     } else ""
     var converters = ""
+    var toCast = "static_cast" // either to static_cast or reinterpret
     val castType = if (variableType.contains("int", true)) {
         if (fieldName.contains("index", true)) {
             "int32_t"
@@ -168,13 +266,20 @@ fun Array<Field>.assignValues(imports: StringBuilder) = joinToString("\n") { fie
             "uint32_t"
         }
     } else if (variableType.contains("long", true)) {
-        "uint64_t"
+        if (field.isAnnotationPresent(VkHandleRef::class.java)) {
+            toCast = "reinterpret_cast"
+            field.getDeclaredAnnotation(VkHandleRef::class.java).name
+        } else {
+            "uint64_t"
+        }
+    } else if (variableType.contains("boolean", true)) {
+        "VkBool32"
     } else {
-        ""
+        "j$variableType"
     }
     val assign = when {
-        field.type.isPrimitive -> "static_cast<$castType>($variable); // primitive type $variableType"
-        field.type.isEnum -> "static_cast<$variableType>(enum_utils::getEnumFromObject(env, $variable));"
+        field.type.isPrimitive -> "$toCast<$castType>($variable); // primitive type $variableType"
+        field.type.isEnum -> "$toCast<$variableType>(enum_utils::getEnumFromObject(env, $variable));"
         field.type.isArray -> "${fieldName}.data();"
         else -> {
             val suffixInfo = "CreateInfo" // TODO get from last 2 words
@@ -182,12 +287,37 @@ fun Array<Field>.assignValues(imports: StringBuilder) = joinToString("\n") { fie
                     "$variableType ${fieldName}$suffixInfo;\n" +
                     "${fieldName}$suffixInfo = ${variableType}Converter(env).fromObject($variable);\n" +
                     "" else ""
-            if (variableType != "Object") {
+            if (field.type.typeName.contains("vk", true)) {
                 imports.append("#include " + """"${variableType}Converter.h"""")
                 imports.appendLine()
             }
-            if (variableType == "Object") "static_cast<void *>($variable);" else "&${fieldName}$suffixInfo;"
+            val isPointer = if (field.isAnnotationPresent(VkPointer::class.java)) "&" else ""
+            if (variableType == "Object") "$toCast<void *>($variable);" else "$isPointer${fieldName}$suffixInfo;"
         }
     }
-    "$converters$arrayCount\tcreateInfo.${fieldName} = $assign"
+    if (field.primitiveTypeIsNull()) {
+        // add null checking then assign
+        buildString {
+            append("\tif($variable == nullptr) {")
+            appendLine()
+            if (field.type.isArray) {
+                append("\tcreateInfo.${variableSize} = 0;")
+            }
+            appendLine()
+            append("\tcreateInfo.${fieldName} = nullptr;")
+            appendLine()
+            append("\t} else {")
+            appendLine()
+            if (field.type.isArray) {
+                append("\t$converters$arrayCount\tcreateInfo.${fieldName} = $assign")
+            } else {
+                val reinterpret = "$toCast<$castType>($variable); // primitive type $variableType"
+                append("\tcreateInfo.${fieldName} = $reinterpret")
+            }
+            appendLine()
+            append("\t}")
+        }
+    } else {
+        "$converters$arrayCount\tcreateInfo.${fieldName} = $assign"
+    }
 }
