@@ -114,10 +114,19 @@ tasks.register<Glslangvalidator_conventions_gradle.GlslValidator>("glslValidator
     shaderDir.set(shadersDir.path)
     spvDir.set(shadersDir.path)
 }
+
+tasks.register<JavaExec>("runVulkanCpp") {
+//    doFirst {
+    mainClass.set("io.github.ronjunevaldoz.awake.vulkan_generator.MainKt")
+    classpath = project(":awake-vulkan-generator").sourceSets["main"].runtimeClasspath
+    args(project(":awake-vulkan-generator").rootDir.path)
+//    }
+}
 // After evaluating the project configuration
 afterEvaluate {
     // Access the preCompileShaders task and make it run before Java compilation tasks
     tasks.withType(JavaCompile::class.java) {
         dependsOn(tasks.withType<Glslangvalidator_conventions_gradle.GlslValidator>())
+        dependsOn(tasks.named("runVulkanCpp"))
     }
 }

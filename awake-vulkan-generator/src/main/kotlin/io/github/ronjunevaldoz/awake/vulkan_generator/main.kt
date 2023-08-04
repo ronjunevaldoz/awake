@@ -26,9 +26,11 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineVertexInputSta
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkVertexInputAttributeDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkVertexInputBindingDescription
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.generateCpp
 
-fun main() {
+fun main(args: Array<String>) {
+    FileWriter.rootDir = args[0]
     // swapchain
     generateCpp<VkExtent2D>()
     generateCpp<VkSwapchainCreateInfoKHR>()

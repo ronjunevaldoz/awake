@@ -61,8 +61,8 @@ inline fun <reified T> generateCpp() {
         clearFields
     )
     val awakeVulkanCpp = "awake-vulkan/src/main/cpp/common/utils/"
-    writeFile("$awakeVulkanCpp$className.h", header)
-    writeFile("$awakeVulkanCpp$className.cpp", cpp)
+    FileWriter.writeFile("$awakeVulkanCpp$className.h", header)
+    FileWriter.writeFile("$awakeVulkanCpp$className.cpp", cpp)
 }
 
 fun Array<Field>.declareFieldIds(type: String = "jfieldID", suffix: String = "Field") =

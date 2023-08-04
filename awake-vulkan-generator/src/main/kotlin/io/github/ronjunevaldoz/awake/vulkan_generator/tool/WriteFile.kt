@@ -21,13 +21,16 @@ package io.github.ronjunevaldoz.awake.vulkan_generator.tool
 
 import java.io.File
 
-fun writeFile(fileName: String, content: String) {
-    val file = File(fileName)
-    try {
-        file.createNewFile()
-        file.writeText(content)
-        println("File created successfully.")
-    } catch (e: Exception) {
-        println("Error creating the file: ${e.message}")
+object FileWriter {
+    var rootDir: String = "/"
+    fun writeFile(fileName: String, content: String) {
+        val file = File(rootDir, fileName)
+        try {
+            file.createNewFile()
+            file.writeText(content)
+            println("File created successfully.")
+        } catch (e: Exception) {
+            println("Error creating the file: ${e.message} | ${file.absoluteFile}")
+        }
     }
 }
