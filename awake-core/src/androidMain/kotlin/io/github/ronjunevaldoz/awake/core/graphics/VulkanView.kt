@@ -79,17 +79,10 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         if (instance == 0L) {
-            setup(holder.surface)
+            setupVulkan(holder.surface)
         } else {
-            Vulkan.destroyDebugUtilsMessenger(instance, debugUtilsMessenger)
-            Vulkan.vkDestroyDevice(device)
-            Vulkan.vkDestroySurface(instance, surface)
-            Vulkan.vkDestroyInstance(instance)
-            Vulkan.vkDestroySwapchainKHR(physicalDevice, swapChain)
-            imageViews.forEach { imageView ->
-                Vulkan.vkDestroyImageView(device, imageView)
-            }
-            setup(holder.surface)
+            destroy()
+            setupVulkan(holder.surface)
         }
     }
 
@@ -105,108 +98,112 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
 //        TODO("Not yet implemented")
     }
 
-    private fun setup(s: Surface) {
+    private fun setupVulkan(window: Surface) {
+        createInstance()
+        setupDebugMessenger()
+        createSurface(window)
+        // Physical Devices
+        pickPhysicalDevice()
+        // Logical Device
+        createLogicalDevice()
+        // create swap chain
+        swapChain()
+        createGraphicsPipeline()
+    }
+
+    private fun createInstance() {
         val appInfo = VkApplicationInfo(
             pApplicationName = "Awake Vulkan - Application",
             pEngineName = "Awaken Vukan - Engine"
         )
-        try {
-//            check(isExtSupported(
-//                VulkanExtension.VK_KHR_SURFACE,
-//                VulkanExtension.VK_KHR_ANDROID_SURFACE,
-//                VulkanExtension.VK_KHR_SWAPCHAIN,
-//            )){"One of ext is not supported"}
+        instance = Vulkan.vkCreateInstance(appInfo)
+    }
 
-            instance = Vulkan.vkCreateInstance(appInfo)
-            debugUtilsMessenger = Vulkan.createDebugUtilsMessenger(instance)
-            val surface = createSurface(instance, s)
-            // Physical Devices
-            val physicalDevices =
-                Vulkan.vkEnumeratePhysicalDevices(instance).map { VkPhysicalDevice(it, instance) }
-            if (physicalDevices.isNotEmpty()) {
-                // find a gpu
-                val gpu = physicalDevices.find { vkDevice ->
-                    val properties = Vulkan.vkGetPhysicalDeviceProperties(vkDevice.physicalDevice)
-                    val features = Vulkan.vkGetPhysicalDeviceFeatures(vkDevice.physicalDevice)
-                    val hasGeometry = features.geometryShader
-                    val isIntegratedGPU =
-                        properties.deviceType eq VkPhysicalDeviceType.VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU
-                    val isDiscreteGPU =
-                        properties.deviceType eq VkPhysicalDeviceType.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
-                    val isVirtualGPU =
-                        properties.deviceType eq VkPhysicalDeviceType.VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU
-                    isIntegratedGPU || isDiscreteGPU || isVirtualGPU
-                } ?: throw Exception("Cannot find suitable gpu!")
-                physicalDevice = gpu.physicalDevice
-                // Queue families
-                val queueFamilyProperties =
-                    Vulkan.vkGetPhysicalDeviceQueueFamilyProperties(gpu.physicalDevice)
-                val indices = findQueueFamilies(gpu, surface)
-
-                if (!isSwapChainSupported(gpu, surface)) {
-                    Log.w("Vulkan", "SwapChain not supported")
-                }
-
-                if (!indices.isComplete()) {
-                    // graphics not supported?
-                    throw Exception("GPU graphics / Presentation not supported")
-                }
-
-                // Logical Device
-                // to avoid duplicate queue family index use set
-                val uniqueQueueFamilies = setOf(
-                    indices.graphicsFamily!!,
-                    indices.presentFamily!!
-                )
-                val queueInfos = uniqueQueueFamilies.map { uniqueQueueFamilyIndex ->
-                    VkDeviceQueueCreateInfo(
-                        queueFamilyIndex = uniqueQueueFamilyIndex,
-                        queueCount = queueFamilyProperties[uniqueQueueFamilyIndex].queueCount.toInt(),
-                        pQueuePriorities = floatArrayOf(1.0f)
-                    )
-                }
-
-                val features = Vulkan.vkGetPhysicalDeviceFeatures(gpu.physicalDevice)
-                val deviceInfo = VkDeviceCreateInfo().apply {
-                    pQueueCreateInfos = queueInfos
-//                    queueCreateInfoCount = queueInfos.size
-                    pEnabledFeatures = listOf(features)
-//                    enabledExtensionCount = 0u
-                    // enable all device extensions
-                    val deviceExtensions =
-                        Vulkan.vkEnumerateDeviceExtensionProperties(gpu.physicalDevice)
-                            .map { it.extensionName }.toList()
-                    ppEnabledExtensionNames = deviceExtensions
-                    val enableValidationLayers = false
-                    if (enableValidationLayers) {
-//                        enabledLayerCount = validationLayers.size
-//                        ppEnabledLayerNames = validationLayers
-                    } else {
-                        enabledLayerCount = 0u
-                    }
-                }
-
-                device = Vulkan.vkCreateDevice(gpu.physicalDevice, deviceInfo) // VkDevice
-                // create swap chain
-                swapChain(device, gpu, surface)
-                createGraphicsPipeline()
-//                val graphicsQueue = Vulkan.vkGetDeviceQueue(device, indices.graphicsFamily!!, 0)
-//                graphicsQueue
-            }
-        } catch (e: Exception) {
-            Log.e("Vulkan", e.message.toString())
+    private fun pickPhysicalDevice() {
+        val physicalDevices =
+            Vulkan.vkEnumeratePhysicalDevices(instance).map { VkPhysicalDevice(it, instance) }
+        if (physicalDevices.isNotEmpty()) {
+            // find a gpu
+            val gpu = physicalDevices.find { vkDevice ->
+                val properties = Vulkan.vkGetPhysicalDeviceProperties(vkDevice.physicalDevice)
+                val features = Vulkan.vkGetPhysicalDeviceFeatures(vkDevice.physicalDevice)
+                val hasGeometry = features.geometryShader
+                val isIntegratedGPU =
+                    properties.deviceType eq VkPhysicalDeviceType.VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU
+                val isDiscreteGPU =
+                    properties.deviceType eq VkPhysicalDeviceType.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
+                val isVirtualGPU =
+                    properties.deviceType eq VkPhysicalDeviceType.VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU
+                isIntegratedGPU || isDiscreteGPU || isVirtualGPU
+            } ?: throw Exception("Cannot find suitable gpu!")
+            physicalDevice = gpu.physicalDevice
         }
     }
 
-    private fun swapChain(device: Long, gpu: VkPhysicalDevice, surface: VkSurfaceKHR) {
-        val (capabilities, formats, presentModes) = querySwapChainSupport(gpu, surface)
+    private fun createLogicalDevice() {
+        // Queue families
+        val queueFamilyProperties =
+            Vulkan.vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice)
+        val indices = findQueueFamilies(physicalDevice, surface)
+
+        if (!isSwapChainSupported(physicalDevice, surface)) {
+            Log.w("Vulkan", "SwapChain not supported")
+        }
+
+        if (!indices.isComplete()) {
+            // graphics not supported?
+            throw Exception("GPU graphics / Presentation not supported")
+        }
+
+        // to avoid duplicate queue family index use set
+        val uniqueQueueFamilies = setOf(
+            indices.graphicsFamily!!,
+            indices.presentFamily!!
+        )
+        val queueInfos = uniqueQueueFamilies.map { uniqueQueueFamilyIndex ->
+            VkDeviceQueueCreateInfo(
+                queueFamilyIndex = uniqueQueueFamilyIndex,
+                queueCount = queueFamilyProperties[uniqueQueueFamilyIndex].queueCount.toInt(),
+                pQueuePriorities = floatArrayOf(1.0f)
+            )
+        }
+
+        val features = Vulkan.vkGetPhysicalDeviceFeatures(physicalDevice)
+        val deviceInfo = VkDeviceCreateInfo().apply {
+            pQueueCreateInfos = queueInfos
+//                    queueCreateInfoCount = queueInfos.size
+            pEnabledFeatures = listOf(features)
+//                    enabledExtensionCount = 0u
+            // enable all device extensions
+            val deviceExtensions =
+                Vulkan.vkEnumerateDeviceExtensionProperties(physicalDevice)
+                    .map { it.extensionName }.toList()
+            ppEnabledExtensionNames = deviceExtensions
+            val enableValidationLayers = false
+            if (enableValidationLayers) {
+//                        enabledLayerCount = validationLayers.size
+//                        ppEnabledLayerNames = validationLayers
+            } else {
+                enabledLayerCount = 0u
+            }
+        }
+
+        device = Vulkan.vkCreateDevice(physicalDevice, deviceInfo) // VkDevice
+    }
+
+    private fun setupDebugMessenger() {
+        debugUtilsMessenger = Vulkan.createDebugUtilsMessenger(instance)
+    }
+
+    private fun swapChain() {
+        val (capabilities, formats, presentModes) = querySwapChainSupport(physicalDevice, surface)
         val (format, colorSpace) = chooseSwapSurfaceFormat(formats)
         val presentMode = chooseSwapPresentMode(presentModes)
         val extent = chooseSwapExtent(capabilities, context)
 
         val imageCount = (capabilities.minImageCount + 1).coerceIn(1, capabilities.maxImageCount)
 
-        val indices = findQueueFamilies(gpu, surface)
+        val indices = findQueueFamilies(physicalDevice, surface)
         var queueFamilyIndices: List<Int>? =
             listOf(indices.graphicsFamily!!, indices.presentFamily!!)
         val imageSharingMode: VkSharingMode
@@ -366,7 +363,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         return VkExtent2D(actualWidth, actualHeight)
     }
 
-    private fun createSurface(instance: Long, window: Surface): VkSurfaceKHR {
+    private fun createSurface(window: Surface): VkSurfaceKHR {
         // Presentation
         val surfaceInfo = VkAndroidSurfaceCreateInfoKHR(
             window = window
@@ -377,4 +374,16 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             surface = surface
         )
     }
+
+    private fun destroy() {
+        Vulkan.destroyDebugUtilsMessenger(instance, debugUtilsMessenger)
+        Vulkan.vkDestroyDevice(device)
+        Vulkan.vkDestroySurface(instance, surface)
+        Vulkan.vkDestroyInstance(instance)
+        Vulkan.vkDestroySwapchainKHR(physicalDevice, swapChain)
+        imageViews.forEach { imageView ->
+            Vulkan.vkDestroyImageView(device, imageView)
+        }
+    }
+
 }
