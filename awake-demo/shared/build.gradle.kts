@@ -110,7 +110,7 @@ tasks.register<Glslangvalidator_conventions_gradle.GlslValidator>("glslValidator
     }
 
     val shadersDir = File(commonResourceDir, "assets/shader/vulkan")
-
+    targetVulkanVersion.set(1.3) // TODO get version from awake-vulkan library
     shaderDir.set(shadersDir.path)
     spvDir.set(shadersDir.path)
 }

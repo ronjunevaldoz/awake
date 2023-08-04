@@ -28,8 +28,9 @@ abstract class GlslValidator : DefaultTask() {
     abstract val spvDir: Property<String>
 
     @get:Input
-    abstract val targetEnv: Property<Double>
+    abstract val targetVulkanVersion: Property<Double>
 
+    @Internal
     val vulkanVersions = listOf(1.0, 1.1, 1.2, 1.3)
 
     init {
@@ -39,6 +40,10 @@ abstract class GlslValidator : DefaultTask() {
 
     @TaskAction
     fun preCompileShaders() {
+        if (!vulkanVersions.contains(targetVulkanVersion.get())) {
+            throw RuntimeException("Invalid vulkan target env $targetVulkanVersion")
+        }
+
         val shadersDir = File(shaderDir.get())
         val spvsDir = File(spvDir.get())
         val shaders = project.fileTree(shadersDir) {
@@ -51,21 +56,18 @@ abstract class GlslValidator : DefaultTask() {
             val shaderName =
                 if (shaderExt == "frag" || shaderExt == "vert") shaderFile.name else shaderFile.nameWithoutExtension
             val spvFile = File(spvsDir, "$shaderName.spv")
-            runGlslangValidator(shaderFile.absolutePath, spvFile.absolutePath, targetEnv.get())
+            runGlslangValidator(shaderFile.absolutePath, spvFile.absolutePath)
         }
     }
 
     // Define a function to execute glslangValidator
-    private fun runGlslangValidator(glslFile: String, spvFile: String, targetEnv: Double) {
+    private fun runGlslangValidator(glslFile: String, spvFile: String) {
+        println("Glsl target vulkan version ${targetVulkanVersion.get()}")
         println(glslFile)
         println(spvFile)
 
-        if (!vulkanVersions.contains(targetEnv)) {
-            throw RuntimeException("Invalid vulkan target env $targetEnv")
-        }
-
         val processBuilder = ProcessBuilder()
-            .command("glslangValidator", "-V", glslFile, "--target-env", "vulkan$targetEnv", "-o", spvFile)
+            .command("glslangValidator", "-V", glslFile, "--target-env", "vulkan${targetVulkanVersion.get()}", "-o", spvFile)
             .redirectErrorStream(true)
             .inheritIO()
 
