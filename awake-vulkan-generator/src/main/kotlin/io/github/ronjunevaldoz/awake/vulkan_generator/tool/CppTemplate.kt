@@ -24,6 +24,7 @@ fun cppTemplate(
     classSimpleName: String,
     classSig: String,
     date: String,
+    converters: String,
     imports: String,
     sourceObj: String,
     initFields: String,
@@ -53,6 +54,7 @@ $initFields
 $classSimpleName
 $className::fromObject(jobject $sourceObj) { 
 $accessFields 
+$converters
 $processFields
 $classSimpleName createInfo;
 $assignValues

@@ -35,12 +35,13 @@ inline fun <reified T> generateCpp() {
     val classSig = clazz.name.replace(".", "/")
     val declaredFields = clazz.declaredFields
     val imports = StringBuilder()
+    val converters = StringBuilder()
     val declareFields = declaredFields.declareFieldIds()
     val initFields = declaredFields.initFieldIds("clazz")
     val clearFields = declaredFields.clearFields()
     val accessFields = declaredFields.accessFields(sourceObj)
     val deleteLocalReferences = declaredFields.deleteLocalReference()
-    val processArrayFields = declaredFields.processArrayFields(sourceObj, imports)
+    val processArrayFields = declaredFields.processArrayFields(sourceObj, converters, imports)
     val assignValues = declaredFields.assignValues(imports)
     val header =
         headerTemplate(className, clazz.simpleName, date.toString(), definition, declareFields)
@@ -49,6 +50,7 @@ inline fun <reified T> generateCpp() {
         clazz.simpleName,
         classSig,
         date.toString(),
+        converters.toString(),
         imports.toString(),
         sourceObj,
         initFields,
@@ -173,7 +175,11 @@ fun Array<Field>.deleteLocalReference() =
             }
         }
 
-fun Array<Field>.processArrayFields(sourceObj: String, imports: StringBuilder) =
+fun Array<Field>.processArrayFields(
+    sourceObj: String,
+    converters: StringBuilder,
+    imports: StringBuilder
+) =
     filter { it.type.isArray } // take only array
         .joinToString("\n") { field ->
             val suffix = field.varSuffix()
@@ -192,26 +198,9 @@ fun Array<Field>.processArrayFields(sourceObj: String, imports: StringBuilder) =
 
                 else -> "${valueObj}Converter.fromObject($element);"
             }
-            var declareConverter = ""
-            if (componentType.typeName.contains(
-                    "Object",
-                    true
-                ) || componentType.simpleName.startsWith("vk", true)
-            ) {
-                imports.append("""#include "${variableType}Converter.h"""")
-                imports.appendLine()
-                declareConverter = "${variableType}Converter ${valueObj}Converter(env);"
-            }
+            addImport(componentType, variableType, valueObj, converters, imports)
             val listType = field.toCType()
             buildString {
-                if (componentType.simpleName.contains(
-                        "Object",
-                        true
-                    ) || componentType.simpleName.startsWith("vk", true)
-                ) {
-                    append("\t$declareConverter")
-                    appendLine()
-                }
                 if (componentType.simpleName.contains(
                         "Object",
                         true
@@ -287,10 +276,8 @@ fun Array<Field>.assignValues(imports: StringBuilder) = joinToString("\n") { fie
                     "$variableType ${fieldName}$suffixInfo;\n" +
                     "${fieldName}$suffixInfo = ${variableType}Converter(env).fromObject($variable);\n" +
                     "" else ""
-            if (field.type.typeName.contains("vk", true)) {
-                imports.append("#include " + """"${variableType}Converter.h"""")
-                imports.appendLine()
-            }
+
+            addImport(field, variableType, imports)
             val isPointer = if (field.isAnnotationPresent(VkPointer::class.java)) "&" else ""
             if (variableType == "Object") "$toCast<void *>($variable);" else "$isPointer${fieldName}$suffixInfo;"
         }
@@ -319,5 +306,36 @@ fun Array<Field>.assignValues(imports: StringBuilder) = joinToString("\n") { fie
         }
     } else {
         "$converters$arrayCount\tcreateInfo.${fieldName} = $assign"
+    }
+}
+
+private fun addImport(field: Field, variableType: String, imports: StringBuilder) {
+    if (
+        !field.type.isEnum &&
+        field.type.typeName.contains("vk", true)
+    ) {
+        imports.append("#include " + """"${variableType}Converter.h"""")
+        imports.appendLine()
+    }
+}
+
+private fun addImport(
+    componentType: Class<*>,
+    variableType: String,
+    valueObj: String,
+    converters: StringBuilder,
+    imports: StringBuilder
+) {
+    if (
+        !componentType.isEnum &&
+        (componentType.typeName.contains(
+            "Object",
+            true
+        ) || componentType.simpleName.startsWith("vk", true))
+    ) {
+        imports.append("""#include "${variableType}Converter.h"""")
+        imports.appendLine()
+        converters.append("\t${variableType}Converter ${valueObj}Converter(env);")
+        converters.appendLine()
     }
 }
