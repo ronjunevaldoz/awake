@@ -23,6 +23,8 @@ import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkOffset2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkRect2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkViewport
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineDynamicStateCreateInfo
@@ -33,6 +35,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkVertexInputAttributeDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkVertexInputBindingDescription
+import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cmakeListTemplate
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.generateCpp
@@ -41,6 +44,11 @@ fun main(args: Array<String>) {
     if (args.isNotEmpty()) {
         FileWriter.rootDir = args[0]
     }
+    generateCpp<VkDeviceCreateInfo>()
+    // physical device
+    generateCpp<VkPhysicalDeviceFeatures>()
+    // queues & families
+    generateCpp<VkDeviceQueueCreateInfo>()
     // swap chain
     generateCpp<VkExtent2D>()
     generateCpp<VkSwapchainCreateInfoKHR>()

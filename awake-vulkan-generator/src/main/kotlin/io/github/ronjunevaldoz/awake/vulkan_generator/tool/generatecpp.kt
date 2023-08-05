@@ -39,13 +39,21 @@ inline fun <reified T> generateCpp() {
     val declareFields = declaredFields.declareFieldIds()
     val initFields = declaredFields.initFieldIds("clazz")
     val clearFields = declaredFields.clearFields()
-    val accessFields = declaredFields.accessFields(sourceObj)
     val deleteLocalReferences = declaredFields.deleteLocalReference()
     val processArrayFields = declaredFields.processArrayFields(sourceObj, converters, imports)
     val assignValues = declaredFields.assignValues(imports)
     val header =
-        headerTemplate(className, clazz.simpleName, date.toString(), definition, declareFields)
+        headerTemplate(
+            clazz,
+            className,
+            clazz.simpleName,
+            date.toString(),
+            definition,
+            declareFields
+        )
     val cpp = cppTemplate(
+        clazz,
+        declaredFields,
         className,
         clazz.simpleName,
         classSig,
@@ -54,7 +62,6 @@ inline fun <reified T> generateCpp() {
         imports.toString(),
         sourceObj,
         initFields,
-        accessFields,
         processArrayFields,
         assignValues,
         deleteLocalReferences,
@@ -82,30 +89,65 @@ fun Array<Field>.clearFields(suffix: String = "Field") = joinToString("\n") { fi
     "\t$fieldName = nullptr;"
 }
 
-fun Array<Field>.accessFields(sourceObj: String, suffix: String = "Field") =
+fun Array<Field>.initValkanValues(
+    sourceObj: String,
+    prefix: String = "Get",
+    suffix: String = "Field"
+) =
     joinToString("\n") { field ->
         val varSuffix = field.varSuffix()
         val fieldName = field.name + suffix
         val primitiveField = field.type.simpleName.capitalize()
 
         val access = when {
-            field.type.isPrimitive -> "env->Get" + primitiveField + "Field($sourceObj, $fieldName)"
-            field.type.isEnum -> "env->GetObjectField($sourceObj,$fieldName)"
+            field.type.isPrimitive -> "env->$prefix" + primitiveField + "Field($sourceObj, $fieldName)"
+            field.type.isEnum -> "env->${prefix}ObjectField($sourceObj,$fieldName)"
             field.type.isArray -> {
                 if (field.type.componentType.simpleName.contains(
                         "Object",
                         true
                     ) || field.type.componentType.simpleName.startsWith("vk", true)
                 ) {
-                    "(jobjectArray) env->GetObjectField($sourceObj, $fieldName)"
+                    "(jobjectArray) env->${prefix}ObjectField($sourceObj, $fieldName)"
                 } else {
-                    "(${field.toJNIType()}Array) env->GetObjectField($sourceObj, $fieldName)"
+                    "(${field.toJavaTypeArray()}) env->${prefix}ObjectField($sourceObj, $fieldName)"
                 }
             }
 
-            else -> "env->GetObjectField($sourceObj, $fieldName)"
+            else -> "env->${prefix}ObjectField($sourceObj, $fieldName)"
         }
         "\tauto ${field.name}$varSuffix = $access;"
+    }
+
+fun Field.cast(value: String): String {
+    val type = toJavaType()
+    return "static_cast<$type>($value)"
+}
+
+fun Array<Field>.setObjValues(sourceObj: String, sourceValue: String, suffix: String = "Field") =
+    joinToString("\n") { field ->
+        val fieldName = field.name + suffix
+        val primitiveField = field.type.simpleName.capitalize()
+        val value = field.cast("$sourceValue.${field.name}")
+        val prefix = "Set"
+        val access = when {
+            field.type.isPrimitive -> "env->$prefix" + primitiveField + "Field($sourceObj, $fieldName, $value)"
+            field.type.isEnum -> "env->${prefix}ObjectField($sourceObj, $fieldName, $value)"
+            field.type.isArray -> {
+                if (field.type.componentType.simpleName.contains(
+                        "Object",
+                        true
+                    ) || field.type.componentType.simpleName.startsWith("vk", true)
+                ) {
+                    "(jobjectArray) env->${prefix}ObjectField($sourceObj, $fieldName, $value)"
+                } else {
+                    "(${field.toJavaTypeArray()}) env->${prefix}ObjectField($sourceObj, $fieldName, $value)"
+                }
+            }
+
+            else -> "env->${prefix}ObjectField($sourceObj, $fieldName, $value)"
+        }
+        "\t$access;"
     }
 
 fun Array<Field>.deleteLocalReference() =
@@ -130,10 +172,8 @@ fun Array<Field>.processArrayFields(
             val componentType = field.type.componentType
             val variable = field.name + suffix
             val elementType = componentType.simpleName
-            var variableSize = field.name
             var listType = field.toCType()
             field.onVkArray { sizeSuffix, varListType, stride ->
-                variableSize += sizeSuffix
                 listType = varListType
             }
             val fieldName = field.name + "Field"
@@ -157,10 +197,17 @@ fun Array<Field>.processArrayFields(
                             true
                         ) || componentType.simpleName.startsWith("vk", true)
                     ) {
-                        append("${indent}auto $variableSize = env->GetArrayLength($variable);")
+                        append("${indent}auto elementSize = env->GetArrayLength($variable);")
                         appendLine()
-                        appendForLoop(2, 0, variableSize) { index ->
-                            append("${indent}\tauto $element = env->GetObjectArrayElement($variable, $index);")
+                        appendForLoop(2, 0, "elementSize") { index ->
+                            append(
+                                "${indent}\tauto $element = env->${
+                                    field.getArrayElement(
+                                        variable,
+                                        index
+                                    )
+                                }"
+                            )
                             appendLine()
                             if (listType != "void*") {
                                 append("${indent}\tauto value = $value; ")
@@ -175,15 +222,45 @@ fun Array<Field>.processArrayFields(
                             appendLine()
                         }
                     } else {
-                        append("${indent}auto $variableSize = env->GetArrayLength($variable);")
+                        append("${indent}auto elementSize = env->GetArrayLength($variable);")
                         appendLine()
-                        appendForLoop(2, 0, variableSize) { index ->
-                            append("${indent}\t${field.toJNIType()} element;")
-                            appendLine()
-                            append("${indent}\tenv->${field.toArrayElementType()}($variable, $index, 1, &element);")
-                            appendLine()
-                            append("${indent}\t${field.name}.push_back(element);")
-                            appendLine()
+                        appendForLoop(2, 0, "elementSize") { index ->
+                            if (field.toJavaType() == "jstring") {
+                                append("${indent}\t${field.toJavaType()} element;")
+                                appendLine()
+                                append(
+                                    "${indent}\telement = (${field.toJavaType()}) env->${
+                                        field.getArrayElement(
+                                            variable,
+                                            index
+                                        )
+                                    }"
+                                )
+                                appendLine()
+                                append("${indent}\tconst char* utfChars = env->GetStringUTFChars(element, nullptr);")
+                                appendLine()
+                                append("${indent}\t${field.name}.push_back(utfChars);")
+                                appendLine()
+                                append("${indent}\tenv->ReleaseStringUTFChars(element, utfChars);")
+                                appendLine()
+                                append("${indent}\tenv->DeleteLocalRef(element);")
+                                appendLine()
+                            } else {
+                                append("${indent}\t${field.toJavaType()} element;")
+                                appendLine()
+                                append(
+                                    "${indent}\tenv->${
+                                        field.getArrayRegion(
+                                            variable,
+                                            index,
+                                            "&element"
+                                        )
+                                    }"
+                                )
+                                appendLine()
+                                append("${indent}\t${field.name}.push_back(element);")
+                                appendLine()
+                            }
                         }
                     }
                 }
@@ -192,15 +269,18 @@ fun Array<Field>.processArrayFields(
 
 fun Array<Field>.assignValues(imports: StringBuilder): String {
     return buildString {
-        joinToString("\n") { field ->
+        this@assignValues.forEach { field ->
             val suffix = field.varSuffix()
             val fieldName = field.name
             val variable = fieldName + suffix
             val variableType = field.type.simpleName
             var multiplier = ""
-            var variableSize = fieldName.removePrefix("p")
+            var variableSize = fieldName
+                .removePrefix("p")
+                .removePrefix("p")
                 .replaceFirstChar { if (it.isUpperCase()) it.lowercase() else it.toString() }
                 .replace("Indices", "Index")
+                .replace("Names", "")
                 .removeSuffix("s")
 
             field.onVkArray { sizeSuffix, varListType, stride ->
@@ -211,9 +291,8 @@ fun Array<Field>.assignValues(imports: StringBuilder): String {
             }
 
             val arrayCount = if (field.type.isArray) {
-                "\tcreateInfo.${variableSize} = static_cast<uint32_t>(${fieldName}.size()$multiplier);\n"
+                "\tcreateInfo.${variableSize} = static_cast<uint32_t>(${fieldName}.size()$multiplier);"
             } else ""
-            var converters = ""
             var toCast = "static_cast" // either to static_cast or reinterpret
             val castType = if (variableType.contains("int", true)) {
                 if (fieldName.contains("index", true)) {
@@ -233,6 +312,7 @@ fun Array<Field>.assignValues(imports: StringBuilder): String {
             } else {
                 "j$variableType"
             }
+            var converters = ""
             val assign = when {
                 field.type.isPrimitive -> "$toCast<$castType>($variable); // primitive type $variableType"
                 field.type.isEnum -> "$toCast<$variableType>(enum_utils::getEnumFromObject(env, $variable));"
@@ -255,15 +335,24 @@ fun Array<Field>.assignValues(imports: StringBuilder): String {
                 appendCondition(1, condition = "$variable == nullptr",
                     `if` = { tab ->
                         if (field.type.isArray) {
-                            append("${tab}createInfo.${variableSize} = 0;")
-                            appendLine()
+                            if (field.canGenerateArraySize()) {
+                                // ASSIGN ARRAY SIZE
+                                append("${tab}createInfo.${variableSize} = 0;")
+                                appendLine()
+                            }
                         }
                         append("${tab}createInfo.${fieldName} = nullptr;")
                         appendLine()
                     }, `else` = { tab ->
                         if (field.type.isArray) {
-                            append("\t$converters$arrayCount")
-                            append("${tab}createInfo.${fieldName} = $assign")
+                            append("\t$converters")
+                            if (field.canGenerateArraySize()) {
+                                // ASSIGN ARRAY SIZE
+                                appendLine()
+                                append(arrayCount)
+                                appendLine()
+                            }
+                            append("\tcreateInfo.${fieldName} = $assign")
                         } else {
                             val reinterpret =
                                 "$toCast<$castType>($variable); // primitive type $variableType"
@@ -273,10 +362,16 @@ fun Array<Field>.assignValues(imports: StringBuilder): String {
                     }
                 )
             } else {
-                append("$converters$arrayCount")
+                append(converters)
+                if (field.canGenerateArraySize()) {
+                    // ASSIGN ARRAY SIZE
+                    appendLine()
+                    append(arrayCount)
+                    appendLine()
+                }
                 append("\tcreateInfo.${fieldName} = $assign")
-                appendLine()
             }
+            appendLine()
         }
     }
 }
@@ -332,7 +427,6 @@ fun StringBuilder.appendCondition(
     appendLine()
     `else`("${tab}\t")
     append("${tab}}")
-    appendLine()
     return this
 }
 

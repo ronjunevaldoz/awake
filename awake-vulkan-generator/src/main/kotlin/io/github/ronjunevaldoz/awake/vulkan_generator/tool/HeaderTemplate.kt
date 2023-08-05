@@ -19,13 +19,17 @@
 
 package io.github.ronjunevaldoz.awake.vulkan_generator.tool
 
+import io.github.ronjunevaldoz.awake.vulkan.VkDeserializer
+
 fun headerTemplate(
+    clazz: Class<*>,
     className: String,
     classSimpleName: String,
     date: String,
     definition: String,
     fields: String,
 ): String {
+    val enabled = clazz.isAnnotationPresent(VkDeserializer::class.java)
     return """
 /* 
  * $className.h
@@ -42,11 +46,14 @@ class $className {
 private:
     JNIEnv *env;
     jclass clazz;
+    ${if (enabled) "jmethodID constructor;" else ""}
 $fields
 public:
     explicit $className(JNIEnv *env);
     
     $classSimpleName fromObject(jobject createInfo);
+    
+    jobject toObject($classSimpleName &vulkan);
     
     ~$className();
 };
