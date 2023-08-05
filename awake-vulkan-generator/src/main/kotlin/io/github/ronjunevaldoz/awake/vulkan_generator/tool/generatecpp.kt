@@ -132,7 +132,7 @@ fun Array<Field>.processArrayFields(
             val elementType = componentType.simpleName
             var variableSize = field.name
             var listType = field.toCType()
-            field.onVkArray { sizeSuffix, varListType ->
+            field.onVkArray { sizeSuffix, varListType, stride ->
                 variableSize += sizeSuffix
                 listType = varListType
             }
@@ -175,12 +175,16 @@ fun Array<Field>.processArrayFields(
                             appendLine()
                         }
                     } else {
-                        append("${indent}${field.toJNIType()} element;")
+                        append("${indent}auto $variableSize = env->GetArrayLength($variable);")
                         appendLine()
-                        append("${indent}env->${field.toArrayElementType()}($variable, 0, 1, &element);")
-                        appendLine()
-                        append("${indent}${field.name}.push_back(element);")
-                        appendLine()
+                        appendForLoop(2, 0, variableSize) { index ->
+                            append("${indent}\t${field.toJNIType()} element;")
+                            appendLine()
+                            append("${indent}\tenv->${field.toArrayElementType()}($variable, $index, 1, &element);")
+                            appendLine()
+                            append("${indent}\t${field.name}.push_back(element);")
+                            appendLine()
+                        }
                     }
                 }
             }
@@ -193,17 +197,21 @@ fun Array<Field>.assignValues(imports: StringBuilder): String {
             val fieldName = field.name
             val variable = fieldName + suffix
             val variableType = field.type.simpleName
+            var multiplier = ""
             var variableSize = fieldName.removePrefix("p")
                 .replaceFirstChar { if (it.isUpperCase()) it.lowercase() else it.toString() }
                 .replace("Indices", "Index")
                 .removeSuffix("s")
 
-            field.onVkArray { sizeSuffix, varListType ->
+            field.onVkArray { sizeSuffix, varListType, stride ->
                 variableSize += sizeSuffix
+                if (stride.isNotEmpty()) {
+                    multiplier = " * $stride"
+                }
             }
 
             val arrayCount = if (field.type.isArray) {
-                "\tcreateInfo.${variableSize} = static_cast<uint32_t>(${fieldName}.size());\n"
+                "\tcreateInfo.${variableSize} = static_cast<uint32_t>(${fieldName}.size()$multiplier);\n"
             } else ""
             var converters = ""
             var toCast = "static_cast" // either to static_cast or reinterpret

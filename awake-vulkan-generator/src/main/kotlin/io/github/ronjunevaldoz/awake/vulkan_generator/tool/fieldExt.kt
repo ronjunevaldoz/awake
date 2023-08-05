@@ -59,12 +59,22 @@ fun Field.toCType(): String {
 fun Field.toJNIType(): String {
     val comType = type.componentType
     return when {
+        comType == Int::class.javaPrimitiveType -> "jint"
+        comType == Long::class.javaPrimitiveType -> "jlong"
+        comType == Short::class.javaPrimitiveType -> "jshort"
+        comType == Byte::class.javaPrimitiveType -> "jbyte"
+        comType == Double::class.javaPrimitiveType -> "jdouble"
+        comType == Float::class.javaPrimitiveType -> "jfloat"
+        comType == Char::class.javaPrimitiveType -> "jchar"
+        comType == Boolean::class.javaPrimitiveType -> "jboolean"
         comType.simpleName.contains("Integer", true) -> "jint"
         comType.simpleName.contains("Long", true) -> "jlong"
         comType.simpleName.contains("Short", true) -> "jshort"
         comType.simpleName.contains("Byte", true) -> "jbyte"
         comType.simpleName.contains("Double", true) -> "jdouble"
         comType.simpleName.contains("Float", true) -> "jfloat"
+        comType.simpleName.contains("Char", true) -> "jchar"
+        comType.simpleName.contains("Boolearn", true) -> "jboolean"
         else -> type.simpleName
     }
 }
@@ -72,19 +82,30 @@ fun Field.toJNIType(): String {
 fun Field.toArrayElementType(): String {
     val comType = type.componentType
     return when {
+        comType == Int::class.javaPrimitiveType -> "GetIntArrayRegion"
+        comType == Long::class.javaPrimitiveType -> "GetLongArrayRegion"
+        comType == Short::class.javaPrimitiveType -> "GetShortArrayRegion"
+        comType == Byte::class.javaPrimitiveType -> "GetByteArrayRegion"
+        comType == Double::class.javaPrimitiveType -> "GetDoubleArrayRegion"
+        comType == Float::class.javaPrimitiveType -> "GetFloatArrayRegion"
+        comType == Char::class.javaPrimitiveType -> "GetCharArrayRegion"
+        comType == Boolean::class.javaPrimitiveType -> "GetBooleanArrayRegion"
         comType.simpleName.contains("Integer", true) -> "GetIntArrayRegion"
         comType.simpleName.contains("Long", true) -> "GetLongArrayRegion"
         comType.simpleName.contains("Short", true) -> "GetShortArrayRegion"
         comType.simpleName.contains("Byte", true) -> "GetByteArrayRegion"
         comType.simpleName.contains("Double", true) -> "GetDoubleArrayRegion"
         comType.simpleName.contains("Float", true) -> "GetFloatArrayRegion"
+        comType.simpleName.contains("Char", true) -> "GetCharArrayRegion"
+        comType.simpleName.contains("Boolean", true) -> "GetBooleanArrayRegion"
         else -> type.simpleName
     }
 }
 
-fun Field.onVkArray(alias: (sizeSuffix: String, listType: String) -> Unit) {
+fun Field.onVkArray(alias: (sizeSuffix: String, listType: String, stride: String) -> Unit) {
     var sizeSuffix = "Count"
     var listType = toCType()
+    var stride = ""
     if (isAnnotationPresent(VkArray::class.java)) {
         val annotationVkArray = getDeclaredAnnotation(VkArray::class.java)
         sizeSuffix = annotationVkArray.sizeSuffix
@@ -92,8 +113,11 @@ fun Field.onVkArray(alias: (sizeSuffix: String, listType: String) -> Unit) {
         if (annotationVkArray.elementCast.simpleName == UInt::class.java.simpleName) {
             listType = "uint32_t"
         }
+        if (annotationVkArray.stride.simpleName == UInt::class.java.simpleName) {
+            stride = "sizeof(uint32_t)"
+        }
     }
-    alias(sizeSuffix, listType)
+    alias(sizeSuffix, listType, stride)
 }
 
 
