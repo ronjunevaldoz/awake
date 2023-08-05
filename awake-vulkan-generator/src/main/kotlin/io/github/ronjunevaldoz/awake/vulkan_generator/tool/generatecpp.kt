@@ -72,7 +72,7 @@ fun Array<Field>.declareFieldIds(type: String = "jfieldID", suffix: String = "Fi
 
 fun Array<Field>.initFieldIds(className: String = "clazz", suffix: String = "Field") =
     joinToString("\n") { field ->
-        val sig = convertToJniTypeSignature(field.type.name).replace(".", "/")
+        val sig = field.toSig()
         val fieldName = field.name + suffix
         """${"\t"}$fieldName = env->GetFieldID($className, "${field.name}", "$sig");"""
     }
@@ -129,56 +129,57 @@ fun Array<Field>.processArrayFields(
             val suffix = field.varSuffix()
             val componentType = field.type.componentType
             val variable = field.name + suffix
-            val variableType = componentType.simpleName
-            val variableSize = field.name + "Count"
+            val elementType = componentType.simpleName
+            var variableSize = field.name
+            var listType = field.toCType()
+            field.onVkArray { sizeSuffix, varListType ->
+                variableSize += sizeSuffix
+                listType = varListType
+            }
             val fieldName = field.name + "Field"
             val primitiveField = field.type.simpleName.capitalize()
             val valueObj = field.name.removeSuffix("s")
             val element = "${valueObj}Element"
             val value = when {
                 componentType.isPrimitive -> "env->Get" + primitiveField + "Field($sourceObj, $fieldName)"
-                componentType.isEnum -> """static_cast<$variableType>(enum_utils::getEnumFromObject(
+                componentType.isEnum -> """static_cast<$elementType>(enum_utils::getEnumFromObject(
                 env, $element));"""
 
                 else -> "${valueObj}Converter.fromObject($element);"
             }
-            addImport(componentType, variableType, valueObj, converters, imports)
-            val listType = field.toCType()
+            addImport(componentType, valueObj, converters, imports)
             buildString {
-                if (componentType.simpleName.contains(
-                        "Object",
-                        true
-                    ) || componentType.simpleName.startsWith("vk", true)
-                ) {
-                    append("\tstd::vector<$listType> ${field.name};")
-                    appendLine()
-                    append("\tauto $variableSize = env->GetArrayLength($variable);")
-                    appendLine()
-                    append("\tfor (int i = 0; i < $variableSize; ++i) {")
-                    appendLine()
-                    append("\t\tauto $element = env->GetObjectArrayElement($variable, i);")
-                    appendLine()
-                    append("\t\tauto value = $value; ")
-                    appendLine()
-                    append("\t\t${field.name}.push_back(value);")
-                    appendLine()
-                    append("\t\tenv->DeleteLocalRef(${element});")
-                    appendLine()
-                    append("\t}")
-                    appendLine()
-                } else {
-                    append("\tstd::vector<${listType}> ${field.name};")
-                    appendLine()
-                    if (field.primitiveTypeIsNull()) {
-                        append("\tif(${variable} != nullptr) {")
+                append("\tstd::vector<$listType> ${field.name};")
+                appendLine()
+                appendCondition(1, "$variable != nullptr") { indent ->
+                    if (componentType.simpleName.contains(
+                            "Object",
+                            true
+                        ) || componentType.simpleName.startsWith("vk", true)
+                    ) {
+                        append("${indent}auto $variableSize = env->GetArrayLength($variable);")
                         appendLine()
-                    }
-                    append("\t\tauto $variableSize = env->GetArrayLength($variable);")
-                    appendLine()
-                    append("\t\tenv->${field.toArrayElementType()}($variable, 0, $variableSize, reinterpret_cast<${field.toJNIType()} *>(${field.name}.data()));")
-                    appendLine()
-                    if (field.primitiveTypeIsNull()) {
-                        append("\t}")
+                        appendForLoop(2, 0, variableSize) { index ->
+                            append("${indent}\tauto $element = env->GetObjectArrayElement($variable, $index);")
+                            appendLine()
+                            if (listType != "void*") {
+                                append("${indent}\tauto value = $value; ")
+                                appendLine()
+                                append("${indent}\t${field.name}.push_back(value);")
+                                appendLine()
+                            } else {
+                                append("${indent}\t${field.name}.push_back($element);")
+                                appendLine()
+                            }
+                            append("${indent}\tenv->DeleteLocalRef(${element});")
+                            appendLine()
+                        }
+                    } else {
+                        append("${indent}${field.toJNIType()} element;")
+                        appendLine()
+                        append("${indent}env->${field.toArrayElementType()}($variable, 0, 1, &element);")
+                        appendLine()
+                        append("${indent}${field.name}.push_back(element);")
                         appendLine()
                     }
                 }
@@ -192,10 +193,14 @@ fun Array<Field>.assignValues(imports: StringBuilder): String {
             val fieldName = field.name
             val variable = fieldName + suffix
             val variableType = field.type.simpleName
-            val variableSize = fieldName.removePrefix("p")
+            var variableSize = fieldName.removePrefix("p")
                 .replaceFirstChar { if (it.isUpperCase()) it.lowercase() else it.toString() }
                 .replace("Indices", "Index")
-                .removeSuffix("s") + "Count"
+                .removeSuffix("s")
+
+            field.onVkArray { sizeSuffix, varListType ->
+                variableSize += sizeSuffix
+            }
 
             val arrayCount = if (field.type.isArray) {
                 "\tcreateInfo.${variableSize} = static_cast<uint32_t>(${fieldName}.size());\n"
@@ -239,27 +244,26 @@ fun Array<Field>.assignValues(imports: StringBuilder): String {
             }
             if (field.primitiveTypeIsNull()) {
                 // add null checking then assign
-                append("\tif($variable == nullptr) {")
-                appendLine()
-                if (field.type.isArray) {
-                    append("\t\tcreateInfo.${variableSize} = 0;")
-                    appendLine()
-                }
-                append("\t\tcreateInfo.${fieldName} = nullptr;")
-                appendLine()
-                append("\t} else {")
-                appendLine()
-                if (field.type.isArray) {
-                    append("\t$converters$arrayCount")
-                    append("\t\tcreateInfo.${fieldName} = $assign")
-                } else {
-                    val reinterpret =
-                        "$toCast<$castType>($variable); // primitive type $variableType"
-                    append("\t\tcreateInfo.${fieldName} = $reinterpret")
-                }
-                appendLine()
-                append("\t}")
-                appendLine()
+                appendCondition(1, condition = "$variable == nullptr",
+                    `if` = { tab ->
+                        if (field.type.isArray) {
+                            append("${tab}createInfo.${variableSize} = 0;")
+                            appendLine()
+                        }
+                        append("${tab}createInfo.${fieldName} = nullptr;")
+                        appendLine()
+                    }, `else` = { tab ->
+                        if (field.type.isArray) {
+                            append("\t$converters$arrayCount")
+                            append("${tab}createInfo.${fieldName} = $assign")
+                        } else {
+                            val reinterpret =
+                                "$toCast<$castType>($variable); // primitive type $variableType"
+                            append("${tab}createInfo.${fieldName} = $reinterpret")
+                        }
+                        appendLine()
+                    }
+                )
             } else {
                 append("$converters$arrayCount")
                 append("\tcreateInfo.${fieldName} = $assign")
@@ -281,7 +285,6 @@ private fun addImport(field: Field, variableType: String, imports: StringBuilder
 
 private fun addImport(
     componentType: Class<*>,
-    variableType: String,
     valueObj: String,
     converters: StringBuilder,
     imports: StringBuilder
@@ -293,9 +296,63 @@ private fun addImport(
             true
         ) || componentType.simpleName.startsWith("vk", true))
     ) {
-        imports.append("""#include "${variableType}Converter.h"""")
-        imports.appendLine()
-        converters.append("\t${variableType}Converter ${valueObj}Converter(env);")
-        converters.appendLine()
+        if (componentType.simpleName == "Object") {
+            // no converter available for Object
+            println("no converter available for Object")
+            converters.append("\t// no converter available for Object")
+            converters.appendLine()
+            converters.append("\t// ${componentType.simpleName}Converter ${valueObj}Converter(env);")
+        } else {
+            imports.append("""#include "${componentType.simpleName}Converter.h"""")
+            imports.appendLine()
+            converters.append("\t${componentType.simpleName}Converter ${valueObj}Converter(env);")
+        }
     }
+}
+
+fun StringBuilder.appendCondition(
+    tabSize: Int = 1,
+    condition: String,
+    `if`: StringBuilder.(indent: String) -> Unit,
+    `else`: StringBuilder.(indent: String) -> Unit
+): StringBuilder {
+    val tab = "\t".repeat(tabSize)
+    append("${tab}if($condition) {")
+    appendLine()
+    `if`("${tab}\t")
+    append("${tab}} else {")
+    appendLine()
+    `else`("${tab}\t")
+    append("${tab}}")
+    appendLine()
+    return this
+}
+
+fun StringBuilder.appendCondition(
+    tabSize: Int = 1,
+    condition: String,
+    `if`: StringBuilder.(indent: String) -> Unit
+): StringBuilder {
+    val tab = "\t".repeat(tabSize)
+    append("${tab}if($condition) {")
+    appendLine()
+    `if`("$tab\t")
+    append("$tab}")
+    appendLine()
+    return this
+}
+
+fun StringBuilder.appendForLoop(
+    tabSize: Int = 1,
+    start: Int = 0,
+    size: String,
+    loop: StringBuilder.(index: String) -> Unit
+): StringBuilder {
+    val tab = "\t".repeat(tabSize)
+    append("${tab}for (int i = $start; i < $size; ++i) {")
+    appendLine()
+    loop("i")
+    append("${tab}}")
+    appendLine()
+    return this
 }

@@ -19,18 +19,42 @@
 
 package io.github.ronjunevaldoz.awake.vulkan_generator.tool
 
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter.rootDir
 import java.io.File
 
 object FileWriter {
-    var rootDir: String = "/"
+    var rootDir: String? = null
     fun writeFile(fileName: String, content: String) {
         val file = File(rootDir, fileName)
         try {
             file.createNewFile()
             file.writeText(content)
-            println("File created successfully.")
+            println("File created successfully. $fileName")
         } catch (e: Exception) {
             println("Error creating the file: ${e.message} | ${file.absoluteFile}")
         }
     }
+}
+
+fun cmakeListTemplate(path: String = ""): String {
+    val commonUtilsDir = File(rootDir, path)
+    val cmakeListsTxt = buildString {
+        append("# common/utils/CMakeLists.txt\n\n")
+        // Set the source files for the common Vulkan utilities
+        append("set(COMMON_UTILS_VULKAN_UTILS_SOURCES\n")
+        commonUtilsDir.listFiles()?.forEach { file ->
+            if (file.isFile && file.extension == "cpp") {
+                append("        ${file.name}\n")
+            }
+        }
+        append("        )\n\n")
+
+        // Create a static library for the common utilities
+        append("add_library(common_utils_vulkan_utils STATIC \${COMMON_UTILS_VULKAN_UTILS_SOURCES})\n\n")
+
+        // Add the 'include' directory for the library
+        append("target_include_directories(common_utils_vulkan_utils PUBLIC \${CMAKE_CURRENT_SOURCE_DIR})\n")
+    }
+    FileWriter.writeFile("${path}CMakeLists.txt", cmakeListsTxt)
+    return cmakeListsTxt
 }

@@ -19,6 +19,7 @@
 
 package io.github.ronjunevaldoz.awake.vulkan_generator.tool
 
+import io.github.ronjunevaldoz.awake.vulkan.VkArray
 import java.lang.reflect.Field
 
 
@@ -44,11 +45,14 @@ fun Field.toCType(): String {
     return when {
         type.simpleName.contains("int", true) -> "uint32_t"
         type.simpleName.contains("long", true) -> "uint64_t"
-        type.simpleName.contains("short", true) -> "NOSURE SHORT"
-        type.simpleName.contains("byte", true) -> "NOSURE BYTE"
+        type.simpleName.contains("short", true) -> "uint16_t"
+        type.simpleName.contains("byte", true) -> "uint8_t"
         type.simpleName.contains("double", true) -> "NOSURE DOUBLE"
         type.simpleName.contains("float", true) -> "VkBool32"
-        else -> type.simpleName.replace("[]", "")
+        type.simpleName.contains("object", true) -> "void*"
+        else -> {
+            type.simpleName.replace("[]", "")
+        }
     }
 }
 
@@ -76,4 +80,44 @@ fun Field.toArrayElementType(): String {
         comType.simpleName.contains("Float", true) -> "GetFloatArrayRegion"
         else -> type.simpleName
     }
+}
+
+fun Field.onVkArray(alias: (sizeSuffix: String, listType: String) -> Unit) {
+    var sizeSuffix = "Count"
+    var listType = toCType()
+    if (isAnnotationPresent(VkArray::class.java)) {
+        val annotationVkArray = getDeclaredAnnotation(VkArray::class.java)
+        sizeSuffix = annotationVkArray.sizeSuffix
+
+        if (annotationVkArray.elementCast.simpleName == UInt::class.java.simpleName) {
+            listType = "uint32_t"
+        }
+    }
+    alias(sizeSuffix, listType)
+}
+
+
+fun Field.toSig(): String {
+    return when (val javaTypeName = type.name) {
+        "boolean" -> "Z"
+        "byte" -> "B"
+        "char" -> "C"
+        "short" -> "S"
+        "int" -> "I"
+        "long" -> "J"
+        "float" -> "F"
+        "double" -> "D"
+        "void" -> "V"
+        else -> {
+            if (javaTypeName.startsWith("[")) {
+                // Array types
+                javaTypeName
+            } else if (javaTypeName.startsWith("L") && javaTypeName.endsWith(";")) {
+                // Object types
+                "L" + javaTypeName.substring(1, javaTypeName.length - 1) + ";"
+            } else {
+                "L$javaTypeName;"
+            }
+        }
+    }.replace(".", "/")
 }

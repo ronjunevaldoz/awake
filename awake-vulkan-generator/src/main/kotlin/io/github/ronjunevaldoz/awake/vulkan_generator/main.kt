@@ -20,24 +20,45 @@
 package io.github.ronjunevaldoz.awake.vulkan_generator
 
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent2D
+import io.github.ronjunevaldoz.awake.vulkan.models.VkOffset2D
+import io.github.ronjunevaldoz.awake.vulkan.models.VkRect2D
+import io.github.ronjunevaldoz.awake.vulkan.models.VkViewport
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineDynamicStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineInputAssemblyStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineVertexInputStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineViewportStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkVertexInputAttributeDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkVertexInputBindingDescription
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cmakeListTemplate
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.generateCpp
 
 fun main(args: Array<String>) {
-    FileWriter.rootDir = args[0]
-    // swapchain
+    if (args.isNotEmpty()) {
+        FileWriter.rootDir = args[0]
+    }
+    // swap chain
     generateCpp<VkExtent2D>()
     generateCpp<VkSwapchainCreateInfoKHR>()
     // graphics
+    generateCpp<VkShaderModuleCreateInfo>()
+    generateCpp<VkPipelineCacheCreateInfo>()
     generateCpp<VkGraphicsPipelineCreateInfo>()
+    // dynamic state
     generateCpp<VkPipelineDynamicStateCreateInfo>()
+    // vertex input state
     generateCpp<VkVertexInputBindingDescription>()
     generateCpp<VkVertexInputAttributeDescription>()
     generateCpp<VkPipelineVertexInputStateCreateInfo>()
+    // input assembly
+    generateCpp<VkPipelineInputAssemblyStateCreateInfo>()
+    generateCpp<VkOffset2D>()
+    generateCpp<VkRect2D>()
+    generateCpp<VkViewport>()
+    generateCpp<VkPipelineViewportStateCreateInfo>()
+    println(cmakeListTemplate("awake-vulkan/src/main/cpp/common/utils/"))
 }
