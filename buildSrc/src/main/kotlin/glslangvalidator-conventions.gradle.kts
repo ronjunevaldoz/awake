@@ -67,7 +67,7 @@ abstract class GlslValidator : DefaultTask() {
         println(spvFile)
 
         val processBuilder = ProcessBuilder()
-            .command("glslangValidator", "-V", glslFile, "--target-env", "vulkan${targetVulkanVersion.get()}", "-o", spvFile)
+            .command("glslangValidator", "-V", glslFile,  "-o", spvFile)
             .redirectErrorStream(true)
             .inheritIO()
 
