@@ -10,9 +10,6 @@
 #include <jni.h>
 
 namespace vulkan_utils {
-    // function to fromObject jni to Vulkan app info
-    VkApplicationInfo VkApplicationInfo_fromObject(JNIEnv *env, jobject vkApplicationInfoObject);
-
     // fill device properties to destination
     bool VkPhysicalDeviceLimits_fromObject(JNIEnv *env,
                                            jclass p_pdpp_class,
@@ -46,11 +43,6 @@ namespace vulkan_utils {
     _jobject *surfaceFormatKHRObj_fromVkSurfaceFormatKHR(JNIEnv *env, VkSurfaceFormatKHR &format);
 
     _jobject *presentModeKHRObj_fromVkPresentModeKHR(JNIEnv *env, VkPresentModeKHR &presentMode);
-
-    VkExtent2D VkExtent2D_fromObject(JNIEnv *env, jobject vkExtentObj);
-
-    std::vector<uint32_t>
-    queueFamilyIndicesList_fromObject(JNIEnv *env, jobject queueFamilyIndicesList);
 
     VkSwapchainCreateInfoKHR
     VkSwapchainCreateInfoKHR_fromObject(JNIEnv *env, jobject pSwapchainObj);

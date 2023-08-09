@@ -34,6 +34,8 @@ typealias VkDeviceSize = Long
 typealias VkFlags = Int
 typealias VkSampleMask = Int
 
+typealias VkHandle = Long
+
 enum class VulkanExtension(val extensionName: String) {
     VK_KHR_SWAPCHAIN("VK_KHR_swapchain"),
     VK_KHR_MAINTENANCE1("VK_KHR_maintenance1"),

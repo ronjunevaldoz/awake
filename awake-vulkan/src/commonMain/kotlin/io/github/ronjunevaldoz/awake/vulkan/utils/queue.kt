@@ -22,8 +22,6 @@ package io.github.ronjunevaldoz.awake.vulkan.utils
 import io.github.ronjunevaldoz.awake.vulkan.Vulkan
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkQueueFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.has
-import io.github.ronjunevaldoz.awake.vulkan.models.VkSurfaceKHR
-import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDevice
 
 
 data class QueueFamilyIndices(
@@ -36,18 +34,18 @@ data class QueueFamilyIndices(
 }
 
 
-fun findQueueFamilies(gpu: VkPhysicalDevice, surface: VkSurfaceKHR): QueueFamilyIndices {
+fun findQueueFamilies(physicalDevice: Long, surface: Long): QueueFamilyIndices {
     val queueFamilyProperties =
-        Vulkan.vkGetPhysicalDeviceQueueFamilyProperties(gpu.physicalDevice)
+        Vulkan.vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice)
     val indices = QueueFamilyIndices()
     queueFamilyProperties.forEachIndexed { index, queueFamily ->
         if (queueFamily.queueFlags has VkQueueFlagBits.VK_QUEUE_GRAPHICS_BIT) {
             indices.graphicsFamily = index
         }
         if (Vulkan.vkGetPhysicalDeviceSurfaceSupportKHR(
-                gpu.physicalDevice,
+                physicalDevice,
                 index,
-                surface.surface
+                surface
             )
         ) {
             indices.presentFamily = index

@@ -22,51 +22,79 @@ package io.github.ronjunevaldoz.awake.vulkan_generator
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkOffset2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkRect2D
+import io.github.ronjunevaldoz.awake.vulkan.models.VkStencilOpState
 import io.github.ronjunevaldoz.awake.vulkan.models.VkViewport
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineCacheCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineDynamicStateCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineInputAssemblyStateCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineVertexInputStateCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineViewportStateCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkVertexInputAttributeDescription
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkVertexInputBindingDescription
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendAttachmentState
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineDepthStencilStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineDynamicStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineInputAssemblyStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayoutCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineMultisampleStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineRasterizationStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineShaderStageCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineTessellationStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineVertexInputStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineViewportStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPushConstantRange
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkSpecializationInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkSpecializationMapEntry
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputAttributeDescription
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputBindingDescription
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cmakeListTemplate
-import io.github.ronjunevaldoz.awake.vulkan_generator.tool.generateCpp
+import io.github.ronjunevaldoz.awake.vulkan_generator.toolv2.generateJavaToVulkanCpp
 
 fun main(args: Array<String>) {
     if (args.isNotEmpty()) {
         FileWriter.rootDir = args[0]
     }
-    generateCpp<VkDeviceCreateInfo>()
-    // physical device
-    generateCpp<VkPhysicalDeviceFeatures>()
-    // queues & families
-    generateCpp<VkDeviceQueueCreateInfo>()
-    // swap chain
-    generateCpp<VkExtent2D>()
-    generateCpp<VkSwapchainCreateInfoKHR>()
-    // graphics
-    generateCpp<VkShaderModuleCreateInfo>()
-    generateCpp<VkPipelineCacheCreateInfo>()
-    generateCpp<VkGraphicsPipelineCreateInfo>()
-    // dynamic state
-    generateCpp<VkPipelineDynamicStateCreateInfo>()
+
+    generateJavaToVulkanCpp<VkApplicationInfo>()
+    generateJavaToVulkanCpp<VkPhysicalDeviceFeatures>()
+    generateJavaToVulkanCpp<VkDeviceQueueCreateInfo>()
+    generateJavaToVulkanCpp<VkDeviceCreateInfo>()
+
+    //
+    generateJavaToVulkanCpp<VkExtent2D>()
+
+    // pipeline
+    generateJavaToVulkanCpp<VkSpecializationMapEntry>()
+    generateJavaToVulkanCpp<VkSpecializationInfo>()
+    generateJavaToVulkanCpp<VkPipelineShaderStageCreateInfo>()
+    generateJavaToVulkanCpp<VkGraphicsPipelineCreateInfo>()
+
+    generateJavaToVulkanCpp<VkPushConstantRange>()
+    generateJavaToVulkanCpp<VkPipelineLayoutCreateInfo>()
+    generateJavaToVulkanCpp<VkPipelineCacheCreateInfo>()
+    generateJavaToVulkanCpp<VkGraphicsPipelineCreateInfo>()
+    // states
+    generateJavaToVulkanCpp<VkStencilOpState>()
+    generateJavaToVulkanCpp<VkPipelineColorBlendAttachmentState>()
+
+    generateJavaToVulkanCpp<VkPipelineColorBlendStateCreateInfo>()
+    generateJavaToVulkanCpp<VkPipelineDepthStencilStateCreateInfo>()
+    generateJavaToVulkanCpp<VkPipelineMultisampleStateCreateInfo>()
+    generateJavaToVulkanCpp<VkPipelineRasterizationStateCreateInfo>()
+    generateJavaToVulkanCpp<VkPipelineTessellationStateCreateInfo>()
+//    // dynamic state
+    generateJavaToVulkanCpp<VkPipelineDynamicStateCreateInfo>()
     // vertex input state
-    generateCpp<VkVertexInputBindingDescription>()
-    generateCpp<VkVertexInputAttributeDescription>()
-    generateCpp<VkPipelineVertexInputStateCreateInfo>()
+    generateJavaToVulkanCpp<VkVertexInputBindingDescription>()
+    generateJavaToVulkanCpp<VkVertexInputAttributeDescription>()
+    generateJavaToVulkanCpp<VkPipelineVertexInputStateCreateInfo>()
     // input assembly
-    generateCpp<VkPipelineInputAssemblyStateCreateInfo>()
-    generateCpp<VkOffset2D>()
-    generateCpp<VkRect2D>()
-    generateCpp<VkViewport>()
-    generateCpp<VkPipelineViewportStateCreateInfo>()
+    generateJavaToVulkanCpp<VkPipelineInputAssemblyStateCreateInfo>()
+    generateJavaToVulkanCpp<VkOffset2D>()
+    generateJavaToVulkanCpp<VkRect2D>()
+    generateJavaToVulkanCpp<VkViewport>()
+    generateJavaToVulkanCpp<VkPipelineViewportStateCreateInfo>()
+
     println(cmakeListTemplate("awake-vulkan/src/main/cpp/common/utils/"))
 }

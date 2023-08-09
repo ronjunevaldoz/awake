@@ -19,6 +19,7 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.models.info
 
+import io.github.ronjunevaldoz.awake.vulkan.VkArray
 import io.github.ronjunevaldoz.awake.vulkan.VkFlags
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkStructureType
 
@@ -26,8 +27,10 @@ class VkShaderModuleCreateInfo(
     val sType: VkStructureType = VkStructureType.VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
     val pNext: Any? = null,
     val flags: VkShaderModuleCreateFlags = 0,
-    val codeSize: Long = 0,
-    val pCode: ByteArray = byteArrayOf()
+//    val codeSize: Long = 0,
+    @VkArray(sizeAlias = "codeSize", elementCast = UInt::class, stride = UInt::class)
+    val pCode: IntArray// = byteArrayOf()
+//    val pCode: ByteArray = byteArrayOf()
 )
 
 typealias VkShaderModuleCreateFlags = VkFlags

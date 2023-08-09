@@ -22,8 +22,6 @@ package io.github.ronjunevaldoz.awake.vulkan.utils
 import io.github.ronjunevaldoz.awake.vulkan.Vulkan
 import io.github.ronjunevaldoz.awake.vulkan.VulkanExtension
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPresentModeKHR
-import io.github.ronjunevaldoz.awake.vulkan.models.VkSurfaceKHR
-import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDevice
 import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceCapabilitiesKHR
 import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceFormatKHR
 
@@ -34,11 +32,11 @@ data class SwapChainSupportDetails(
     val presentModes: List<VkPresentModeKHR>,
 )
 
-fun isSwapChainSupported(gpu: VkPhysicalDevice, surface: VkSurfaceKHR): Boolean {
+fun isSwapChainSupported(physicalDevice: Long, surface: Long): Boolean {
     var swapChainAdequate = false
     // verify swap chain extension supported
-    if (isDeviceExtSupported(gpu.physicalDevice, VulkanExtension.VK_KHR_SWAPCHAIN)) {
-        val swapChainSupport = querySwapChainSupport(gpu, surface)
+    if (isDeviceExtSupported(physicalDevice, VulkanExtension.VK_KHR_SWAPCHAIN)) {
+        val swapChainSupport = querySwapChainSupport(physicalDevice, surface)
         swapChainAdequate =
             swapChainSupport.formats.isNotEmpty() && swapChainSupport.presentModes.isNotEmpty()
     }
@@ -46,12 +44,12 @@ fun isSwapChainSupported(gpu: VkPhysicalDevice, surface: VkSurfaceKHR): Boolean 
 }
 
 
-fun querySwapChainSupport(gpu: VkPhysicalDevice, surface: VkSurfaceKHR): SwapChainSupportDetails {
+fun querySwapChainSupport(physicalDevice: Long, surface: Long): SwapChainSupportDetails {
     val capabilities =
-        Vulkan.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpu.physicalDevice, surface.surface)
-    val formats = Vulkan.vkGetPhysicalDeviceSurfaceFormatsKHR(gpu.physicalDevice, surface.surface)
+        Vulkan.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface)
+    val formats = Vulkan.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface)
     val presentModes =
-        Vulkan.vkGetPhysicalDeviceSurfacePresentModesKHR(gpu.physicalDevice, surface.surface)
+        Vulkan.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface)
 
     return SwapChainSupportDetails(
         capabilities,

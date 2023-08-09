@@ -17,14 +17,10 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan.models.info
+package io.github.ronjunevaldoz.awake.vulkan.enums
 
-import io.github.ronjunevaldoz.awake.vulkan.enums.VkStructureType
-
-data class VkPipelineCacheCreateInfo(
-    val sType: VkStructureType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO,
-    val pNext: Any? = null,
-    val flags: Int = 0,
-    val initialDataSize: Long = 0,
-    val pInitialData: List<Any>? = null
-)
+enum class VkVertexInputRate(val value: Int) {
+    VK_VERTEX_INPUT_RATE_VERTEX(0),
+    VK_VERTEX_INPUT_RATE_INSTANCE(1),
+    VK_VERTEX_INPUT_RATE_MAX_ENUM(0x7FFFFFFF)
+}

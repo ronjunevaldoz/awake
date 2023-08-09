@@ -1,61 +1,69 @@
-//
-// Created by Ron June Valdoz on 8/2/23.
-//
+/* 
+ * VkShaderModuleCreateInfoConverter.cpp
+ * Created by Ron June Valdoz on Mon Aug 07 11:15:30 PST 2023
+ */
 
 #include <vector>
 #include "VkShaderModuleCreateInfoConverter.h"
 #include "enum_utils.h"
 
+
 VkShaderModuleCreateInfoConverter::VkShaderModuleCreateInfoConverter(JNIEnv *env) {
     this->env = env;
     clazz = env->FindClass(
             "io/github/ronjunevaldoz/awake/vulkan/models/info/VkShaderModuleCreateInfo");
-//    constructor = env->GetMethodID(clazz, "<init>", "()V");
 
     sTypeField = env->GetFieldID(clazz, "sType",
                                  "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType;");
     pNextField = env->GetFieldID(clazz, "pNext", "Ljava/lang/Object;");
     flagsField = env->GetFieldID(clazz, "flags", "I");
-    codeSizeField = env->GetFieldID(clazz, "codeSize", "J");
-    pCodeField = env->GetFieldID(clazz, "pCode", "[B");
+    pCodeField = env->GetFieldID(clazz, "pCode", "[I");
 }
 
+VkShaderModuleCreateInfo
+VkShaderModuleCreateInfoConverter::fromObject(jobject pCreateInfo) {
+    if (!env->IsInstanceOf(pCreateInfo, clazz)) {
+        throw std::runtime_error("Invalid object. Expected VkShaderModuleCreateInfo.");
+    }
+    auto sTypeEnum = env->GetObjectField(pCreateInfo, sTypeField);
+    auto pNextObj = env->GetObjectField(pCreateInfo, pNextField);
+    auto flagsInt = env->GetIntField(pCreateInfo, flagsField);
+    auto pCodeArray = (jintArray) env->GetObjectField(pCreateInfo, pCodeField);
 
-VkShaderModuleCreateInfo VkShaderModuleCreateInfoConverter::fromObject(jobject pCreateInfoObj) {
-    auto typeObj = env->GetObjectField(pCreateInfoObj, sTypeField);
-    auto pNextObj = env->GetObjectField(pCreateInfoObj, pNextField);
-    auto flags = env->GetIntField(pCreateInfoObj, flagsField);
-    auto codeSize = env->GetLongField(pCreateInfoObj, codeSizeField);
-    auto codeByteArray = (jbyteArray) env->GetObjectField(pCreateInfoObj, pCodeField);
+    std::vector<uint32_t> pCode;
+    if (pCodeArray != nullptr) {
+        auto elementSize = env->GetArrayLength(pCodeArray);
+        for (int i = 0; i < elementSize; ++i) {
+            int element;
+            env->GetIntArrayRegion(pCodeArray, i, 1, &element);
+            pCode.push_back(element);
+        }
+    }
 
-    jsize fileSize = env->GetArrayLength(codeByteArray);
-    std::vector<jbyte> buffer(fileSize);
+    VkShaderModuleCreateInfo createInfo;
+    createInfo.sType = static_cast<VkStructureType>(enum_utils::getEnumFromObject(env, sTypeEnum));
+    createInfo.pNext = static_cast<void *>(pNextObj);
+    createInfo.flags = static_cast<uint32_t>(flagsInt); // primitive type int
+    if (pCodeArray == nullptr) {
+        createInfo.codeSize = 0;
+        createInfo.pCode = nullptr;
+    } else {
 
-    env->GetByteArrayRegion(codeByteArray, 0, fileSize, buffer.data());
-    env->DeleteLocalRef(codeByteArray);
+        createInfo.codeSize = static_cast<uint32_t>(pCode.size() * sizeof(uint32_t));
+        createInfo.pCode = pCode.data();
+    }
 
-    VkShaderModuleCreateInfo createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;// static_cast<VkStructureType>(enum_utils::getEnumFromObject(env, typeObj));
-//    createInfo.pNext = nullptr;//static_cast<void *>(pNextObj);
-//    createInfo.flags = 0;//static_cast<uint32_t>(flags);
-    createInfo.codeSize = fileSize * sizeof(jbyte);
-    auto code = reinterpret_cast<const uint32_t *>(buffer.data());
-//    createInfo.codeSize =  buffer.size() / sizeof(uint32_t);
-    createInfo.pCode = code;
-
-    buffer.clear();
-    env->DeleteLocalRef(typeObj);
+    env->DeleteLocalRef(sTypeEnum);
     env->DeleteLocalRef(pNextObj);
-
+    env->DeleteLocalRef(pCodeArray);
     return createInfo;
 }
 
+jobject VkShaderModuleCreateInfoConverter::toObject(VkShaderModuleCreateInfo &vulkan) {
+    // TODO not yet implemented
+    return nullptr;
+}
 
 VkShaderModuleCreateInfoConverter::~VkShaderModuleCreateInfoConverter() {
-    env->DeleteLocalRef(clazz);
-    clazz = nullptr;
-    sTypeField = nullptr;
-    flagsField = nullptr;
-    codeSizeField = nullptr;
-    pCodeField = nullptr;
+    // TODO not yet implemented
 }

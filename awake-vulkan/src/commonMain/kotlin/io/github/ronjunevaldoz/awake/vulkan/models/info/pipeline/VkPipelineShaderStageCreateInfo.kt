@@ -17,8 +17,10 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan.models.info
+package io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline
 
+import io.github.ronjunevaldoz.awake.vulkan.VkHandle
+import io.github.ronjunevaldoz.awake.vulkan.VkHandleRef
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPipelineShaderStageCreateFlags
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkShaderStageFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkStructureType
@@ -28,14 +30,15 @@ class VkPipelineShaderStageCreateInfo(
     val pNext: Any? = null,
     val flags: VkPipelineShaderStageCreateFlags = 0,
     val stage: VkShaderStageFlagBits = VkShaderStageFlagBits.VERTEX,
-    val module: Long = 0, // VkShaderModule
+    @field:VkHandleRef("VkShaderModule")
+    val module: VkHandle = 0, // VkShaderModule
     val pName: String? = null,
     val pSpecializationInfo: Array<VkSpecializationInfo> = emptyArray()
 )
 
 class VkSpecializationInfo(
     val mapEntryCount: Int = 0,
-    val pMapEntries: List<VkSpecializationMapEntry> = emptyList(),
+    val pMapEntries: Array<VkSpecializationMapEntry> = emptyArray(),
     val dataSize: Long = 0,
     val pData: Array<Any>? = null // Replace Any with the appropriate data type for pData
 )

@@ -63,6 +63,7 @@ kotlin {
                 implementation(fileTree("src/main/jniLibs") {
                     include("**/*.so")
                 })
+                implementation("com.squareup.leakcanary:leakcanary-android:2.12")
             }
         }
     }
