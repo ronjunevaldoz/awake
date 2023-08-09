@@ -79,7 +79,7 @@ fun Array<Field>.declareFieldIds(type: String = "jfieldID", suffix: String = "Fi
 
 fun Array<Field>.initFieldIds(className: String = "clazz", suffix: String = "Field") =
     joinToString("\n") { field ->
-        val sig = field.toSig()
+        val sig = field.toJavaSignature()
         val fieldName = field.name + suffix
         """${"\t"}$fieldName = env->GetFieldID($className, "${field.name}", "$sig");"""
     }
@@ -95,7 +95,7 @@ fun Array<Field>.initValkanValues(
     suffix: String = "Field"
 ) =
     joinToString("\n") { field ->
-        val varSuffix = field.varSuffix()
+        val varSuffix = field.javaTypeSuffix()
         val fieldName = field.name + suffix
         val primitiveField = field.type.simpleName.capitalize()
 
@@ -153,7 +153,7 @@ fun Array<Field>.setObjValues(sourceObj: String, sourceValue: String, suffix: St
 fun Array<Field>.deleteLocalReference() =
     filterNot { it.type.isPrimitive } // take only non-primitive (enum, object or an array)
         .joinToString("\n") { field ->
-            val varSuffix = field.varSuffix()
+            val varSuffix = field.javaTypeSuffix()
             if (!field.type.isPrimitive) {
                 "\tenv->DeleteLocalRef(" + field.name + varSuffix + ");"
             } else {
@@ -168,11 +168,11 @@ fun Array<Field>.processArrayFields(
 ) =
     filter { it.type.isArray } // take only array
         .joinToString("\n") { field ->
-            val suffix = field.varSuffix()
+            val suffix = field.javaTypeSuffix()
             val componentType = field.type.componentType
             val variable = field.name + suffix
             val elementType = componentType.simpleName
-            var listType = field.toCType()
+            var listType = field.toCppType()
             field.onVkArray { sizeSuffix, varListType, stride ->
                 listType = varListType
             }
@@ -225,7 +225,7 @@ fun Array<Field>.processArrayFields(
                         append("${indent}auto elementSize = env->GetArrayLength($variable);")
                         appendLine()
                         appendForLoop(2, 0, "elementSize") { index ->
-                            if (field.toJavaType() == "jstring") {
+                            if (field.toJavaType() == JNIType.JString) {
                                 append("${indent}\t${field.toJavaType()} element;")
                                 appendLine()
                                 append(
@@ -253,6 +253,7 @@ fun Array<Field>.processArrayFields(
                                         field.getArrayRegion(
                                             variable,
                                             index,
+                                            "1",
                                             "&element"
                                         )
                                     }"
@@ -270,7 +271,7 @@ fun Array<Field>.processArrayFields(
 fun Array<Field>.assignValues(imports: StringBuilder): String {
     return buildString {
         this@assignValues.forEach { field ->
-            val suffix = field.varSuffix()
+            val suffix = field.javaTypeSuffix()
             val fieldName = field.name
             val variable = fieldName + suffix
             val variableType = field.type.simpleName

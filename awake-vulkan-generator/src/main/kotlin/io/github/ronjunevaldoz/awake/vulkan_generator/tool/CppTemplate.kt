@@ -103,7 +103,8 @@ $processDeserializer
 }
 
 $className::~$className() {
-
+    // TODO not yet implemented
+$clearFields
 }
         """.trimIndent()
 }

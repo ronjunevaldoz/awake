@@ -22,19 +22,27 @@ package io.github.ronjunevaldoz.awake.vulkan_generator
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkOffset2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkRect2D
+import io.github.ronjunevaldoz.awake.vulkan.models.VkStencilOpState
 import io.github.ronjunevaldoz.awake.vulkan.models.VkViewport
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineCacheCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineDynamicStateCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineInputAssemblyStateCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineVertexInputStateCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPipelineViewportStateCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkVertexInputAttributeDescription
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkVertexInputBindingDescription
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendAttachmentState
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineDepthStencilStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineDynamicStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineInputAssemblyStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayoutCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineMultisampleStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineRasterizationStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineTessellationStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineVertexInputStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineViewportStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPushConstantRange
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputAttributeDescription
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputBindingDescription
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cmakeListTemplate
@@ -53,9 +61,20 @@ fun main(args: Array<String>) {
     generateCpp<VkExtent2D>()
     generateCpp<VkSwapchainCreateInfoKHR>()
     // graphics
-    generateCpp<VkShaderModuleCreateInfo>()
+//    generateCpp<VkShaderModuleCreateInfo>() // TODO SKIP generate cpp for now
+    generateCpp<VkPushConstantRange>()
+    generateCpp<VkPipelineLayoutCreateInfo>()
     generateCpp<VkPipelineCacheCreateInfo>()
     generateCpp<VkGraphicsPipelineCreateInfo>()
+    // states
+    generateCpp<VkStencilOpState>()
+    generateCpp<VkPipelineColorBlendAttachmentState>()
+
+    generateCpp<VkPipelineColorBlendStateCreateInfo>()
+    generateCpp<VkPipelineDepthStencilStateCreateInfo>()
+    generateCpp<VkPipelineMultisampleStateCreateInfo>()
+    generateCpp<VkPipelineRasterizationStateCreateInfo>()
+    generateCpp<VkPipelineTessellationStateCreateInfo>()
     // dynamic state
     generateCpp<VkPipelineDynamicStateCreateInfo>()
     // vertex input state

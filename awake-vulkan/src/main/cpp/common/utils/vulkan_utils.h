@@ -47,11 +47,6 @@ namespace vulkan_utils {
 
     _jobject *presentModeKHRObj_fromVkPresentModeKHR(JNIEnv *env, VkPresentModeKHR &presentMode);
 
-    VkExtent2D VkExtent2D_fromObject(JNIEnv *env, jobject vkExtentObj);
-
-    std::vector<uint32_t>
-    queueFamilyIndicesList_fromObject(JNIEnv *env, jobject queueFamilyIndicesList);
-
     VkSwapchainCreateInfoKHR
     VkSwapchainCreateInfoKHR_fromObject(JNIEnv *env, jobject pSwapchainObj);
 

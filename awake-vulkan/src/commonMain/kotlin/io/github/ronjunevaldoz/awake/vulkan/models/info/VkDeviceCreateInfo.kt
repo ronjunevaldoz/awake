@@ -19,19 +19,25 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.models.info
 
+import io.github.ronjunevaldoz.awake.vulkan.VkArray
 import io.github.ronjunevaldoz.awake.vulkan.VkFlags
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkStructureType
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
 
 class VkDeviceCreateInfo(
-    var sType: Int = 0,
-    var pNext: Long = 0,
+    var sType: VkStructureType = VkStructureType.VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+    var pNext: Any? = null,
     var flags: VkDeviceCreateFlags = 0,
-    var queueCreateInfoCount: UInt = 0u,
-    var pQueueCreateInfos: List<VkDeviceQueueCreateInfo> = emptyList(),
-    var enabledLayerCount: UInt = 0u,
-    var ppEnabledLayerNames: List<String>? = null,
+//    var queueCreateInfoCount: UInt = 0u,
+    @VkArray
+    var pQueueCreateInfos: Array<VkDeviceQueueCreateInfo> = emptyArray(),
+//    var enabledLayerCount: UInt = 0u,
+    @VkArray
+    var ppEnabledLayerNames: Array<String>? = null,
 //    var enabledExtensionCount: UInt = 0u, not needed sinze we have a list
-    var ppEnabledExtensionNames: List<String>? = null,
-    var pEnabledFeatures: List<VkPhysicalDeviceFeatures> = emptyList()
+    @VkArray
+    var ppEnabledExtensionNames: Array<String>? = null,
+    @VkArray(sizeSuffix = "")
+    var pEnabledFeatures: Array<VkPhysicalDeviceFeatures> = emptyArray()
 )
 typealias VkDeviceCreateFlags = VkFlags

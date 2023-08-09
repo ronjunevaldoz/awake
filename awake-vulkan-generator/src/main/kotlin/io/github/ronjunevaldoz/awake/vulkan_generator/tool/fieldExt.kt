@@ -20,10 +20,28 @@
 package io.github.ronjunevaldoz.awake.vulkan_generator.tool
 
 import io.github.ronjunevaldoz.awake.vulkan.VkArray
+import io.github.ronjunevaldoz.awake.vulkan.VkHandleRef
+import io.github.ronjunevaldoz.awake.vulkan.VkPointer
 import java.lang.reflect.Field
 
+enum class JNIType(private val value: String) {
+    JByte("jstring"),
+    JChar("jchar"),
+    JBoolean("jboolean"),
+    JShort("jshort"),
+    JInt("jint"),
+    JLong("jlong"),
+    JDouble("jdouble"),
+    JFloat("jfloat"),
+    JString("jstring"),
+    JObject("jobject");
 
-fun Field.varSuffix() = when {
+    override fun toString(): String {
+        return value
+    }
+}
+
+fun Field.javaTypeSuffix() = when {
     type.isPrimitive -> type.simpleName.capitalize()
     type.isEnum -> "Enum"
     type.isArray -> "Array"
@@ -41,19 +59,43 @@ fun Field.primitiveTypeIsNull(): Boolean {
                     type.simpleName.contains("float", true))
 }
 
-fun Field.toCType(): String {
-    return when {
-        type.simpleName.contains("int", true) -> "uint32_t"
-        type.simpleName.contains("long", true) -> "uint64_t"
-        type.simpleName.contains("short", true) -> "uint16_t"
-        type.simpleName.contains("byte", true) -> "uint8_t"
-        type.simpleName.contains("double", true) -> "NOSURE DOUBLE"
-        type.simpleName.contains("float", true) -> "float"
-        type.simpleName.contains("object", true) -> "void*"
-        type.simpleName.contains("string", true) -> "const char*"
-        else -> {
-            type.simpleName.replace("[]", "")
-        }
+fun Field.toCppType(): String {
+    val isPrimitiveArray = type.isArray && type.componentType.isPrimitive
+    val isArray = type.isArray && !isPrimitiveArray
+    val elementType = if (isArray) type.componentType.simpleName else type.simpleName
+    val simpleName = elementType.toLowerCase()
+
+    // by default the value should all unsigned
+    var prefix = "u"
+    var suffix = ""
+
+    if (name.contains("index", true)) {
+        prefix = ""
+    }
+    if (isVkPointer()) {
+        suffix = "*"
+    }
+
+    val type = when {
+        simpleName.contains("int") -> "${prefix}int32_t$suffix"
+        simpleName.contains("long") -> "${prefix}int64_t$suffix"
+        simpleName.contains("short") -> "${prefix}int16_t$suffix"
+        simpleName.contains("byte") -> "${prefix}int8_t$suffix"
+        simpleName.contains("double") -> "double"
+        simpleName.contains("float") -> "float"
+        simpleName.contains("boolean") -> "bool"
+        simpleName.contains("char") -> "char"
+        simpleName.contains("string") -> "const char*"
+        simpleName.contains("object") -> "void*"
+        isArray -> elementType
+        else -> elementType //"void* sdsd"
+    }
+    return if (isPrimitiveArray) {
+        "std::vector<${type}>"
+    } else if (isArray) {
+        "std::vector<$type>"
+    } else {
+        type
     }
 }
 
@@ -100,56 +142,224 @@ fun Field.toJavaTypeArray(): String {
             true
         ) -> "jbooleanArray"
 
-        else -> type.simpleName + "Array"
+        else -> "jobjectArray"
     }
 }
 
-fun Field.toJavaType(): String {
+fun Field.getArrayElementJavaType(): JNIType {
+    val comType = type.componentType
+    return when {
+        comType == Int::class.javaPrimitiveType || comType.simpleName.contains(
+            "Integer",
+            true
+        ) -> JNIType.JInt
+
+        comType == Long::class.javaPrimitiveType || comType.simpleName.contains(
+            "Long",
+            true
+        ) -> JNIType.JLong
+
+        comType == Short::class.javaPrimitiveType || comType.simpleName.contains(
+            "Short",
+            true
+        ) -> JNIType.JShort
+
+        comType == Byte::class.javaPrimitiveType || comType.simpleName.contains(
+            "Byte",
+            true
+        ) -> JNIType.JByte
+
+        comType == Double::class.javaPrimitiveType || comType.simpleName.contains(
+            "Double",
+            true
+        ) -> JNIType.JDouble
+
+        comType == Float::class.javaPrimitiveType || comType.simpleName.contains(
+            "Float",
+            true
+        ) -> JNIType.JFloat
+
+        comType == Char::class.javaPrimitiveType || comType.simpleName.contains(
+            "Character",
+            true
+        ) -> JNIType.JChar
+
+        comType == String::class.java || comType.simpleName.contains(
+            "String",
+            true
+        ) -> JNIType.JString
+
+        comType == Boolean::class.javaPrimitiveType || comType.simpleName.contains(
+            "Boolean",
+            true
+        ) -> JNIType.JBoolean
+
+        else -> JNIType.JObject
+    }
+}
+
+fun Field.toJavaType(): JNIType {
     val comType = type
     return when {
         comType == Int::class.javaPrimitiveType || comType.simpleName.contains(
             "Integer",
             true
-        ) -> "jint"
+        ) -> JNIType.JInt
 
         comType == Long::class.javaPrimitiveType || comType.simpleName.contains(
             "Long",
             true
-        ) -> "jlong"
+        ) -> JNIType.JLong
 
         comType == Short::class.javaPrimitiveType || comType.simpleName.contains(
             "Short",
             true
-        ) -> "jshort"
+        ) -> JNIType.JShort
 
         comType == Byte::class.javaPrimitiveType || comType.simpleName.contains(
             "Byte",
             true
-        ) -> "jbyte"
+        ) -> JNIType.JByte
 
         comType == Double::class.javaPrimitiveType || comType.simpleName.contains(
             "Double",
             true
-        ) -> "jdouble"
+        ) -> JNIType.JDouble
 
         comType == Float::class.javaPrimitiveType || comType.simpleName.contains(
             "Float",
             true
-        ) -> "jfloat"
+        ) -> JNIType.JFloat
 
         comType == Char::class.javaPrimitiveType || comType.simpleName.contains(
             "Character",
             true
-        ) -> "jchar"
+        ) -> JNIType.JChar
 
-        comType == String::class.java || comType.simpleName.contains("String", true) -> "jstring"
+        comType == String::class.java || comType.simpleName.contains(
+            "String",
+            true
+        ) -> JNIType.JString
+
         comType == Boolean::class.javaPrimitiveType || comType.simpleName.contains(
             "Boolean",
             true
-        ) -> "jboolean"
+        ) -> JNIType.JBoolean
 
-        else -> type.simpleName.replace("[]", "")
+        else -> JNIType.JObject
     }
+}
+
+fun Field.getJavaValue(env: String = "env", obj: String, fieldID: String): String {
+    val comType = type
+    val objParam = obj //"\"$obj\""
+    val fieldIdParam = fieldID //"\"$fieldID\""
+    val type = when {
+        comType == Int::class.javaPrimitiveType || comType.simpleName.contains(
+            "Integer",
+            true
+        ) -> "Int"
+
+        comType == Long::class.javaPrimitiveType || comType.simpleName.contains(
+            "Long",
+            true
+        ) -> "Long"
+
+        comType == Short::class.javaPrimitiveType || comType.simpleName.contains(
+            "Short",
+            true
+        ) -> "Short"
+
+        comType == Byte::class.javaPrimitiveType || comType.simpleName.contains(
+            "Byte",
+            true
+        ) -> "Byte"
+
+        comType == Double::class.javaPrimitiveType || comType.simpleName.contains(
+            "Double",
+            true
+        ) -> "Double"
+
+        comType == Float::class.javaPrimitiveType || comType.simpleName.contains(
+            "Float",
+            true
+        ) -> "Float"
+
+        comType == Char::class.javaPrimitiveType || comType.simpleName.contains(
+            "Character",
+            true
+        ) -> "Char"
+
+        comType == String::class.java || comType.simpleName.contains("String", true)
+        -> "Object"
+
+        comType == Boolean::class.javaPrimitiveType || comType.simpleName.contains(
+            "Boolean",
+            true
+        ) -> "Boolean"
+
+        else -> "Object"
+    }
+    if (comType.isArray) {
+        return "$env->GetObjectField($objParam, $fieldIdParam)"
+    }
+    return "$env->Get${type}Field($objParam, $fieldIdParam)"
+}
+
+fun Field.setJavaValue(env: String = "env", obj: String, fieldID: String, value: String): String {
+    val comType = type
+    val objParam = obj //"\"$obj\""
+    val fieldIdParam = fieldID //"\"$fieldID\""
+    val type = when {
+        comType == Int::class.javaPrimitiveType || comType.simpleName.contains(
+            "Integer",
+            true
+        ) -> "Int"
+
+        comType == Long::class.javaPrimitiveType || comType.simpleName.contains(
+            "Long",
+            true
+        ) -> "Long"
+
+        comType == Short::class.javaPrimitiveType || comType.simpleName.contains(
+            "Short",
+            true
+        ) -> "Short"
+
+        comType == Byte::class.javaPrimitiveType || comType.simpleName.contains(
+            "Byte",
+            true
+        ) -> "Byte"
+
+        comType == Double::class.javaPrimitiveType || comType.simpleName.contains(
+            "Double",
+            true
+        ) -> "Double"
+
+        comType == Float::class.javaPrimitiveType || comType.simpleName.contains(
+            "Float",
+            true
+        ) -> "Float"
+
+        comType == Char::class.javaPrimitiveType || comType.simpleName.contains(
+            "Character",
+            true
+        ) -> "Char"
+
+        comType == String::class.java || comType.simpleName.contains("String", true)
+        -> "Object"
+
+        comType == Boolean::class.javaPrimitiveType || comType.simpleName.contains(
+            "Boolean",
+            true
+        ) -> "Boolean"
+
+        else -> "Object"
+    }
+    if (comType.isArray) {
+        return "$env->SetObjectField($objParam, $fieldIdParam, $value)"
+    }
+    return "$env->Set${type}Field($objParam, $fieldIdParam, $value)"
 }
 
 fun Field.getArrayElement(list: String, index: String): String {
@@ -160,14 +370,19 @@ fun Field.getArrayElement(list: String, index: String): String {
             if (type.simpleName.startsWith("vk", true)) {
                 "GetObjectArrayElement($list, $index); // actual type is ${type.simpleName}"
             } else {
-                throw RuntimeException("getArrayElement not supported ${type.simpleName}")
+                throw RuntimeException("getArrayElement not supported (use getArrayRegion instead) ${type.simpleName}")
             }
         }
     }
 }
 
-fun Field.getArrayRegion(list: String, index: String, outElement: String): String {
-    val arrayRegionConstructor = "($list, $index, 1, $outElement);"
+fun Field.getArrayRegion(
+    list: String,
+    index: String,
+    size: String = "1",
+    outElement: String
+): String {
+    val arrayRegionConstructor = "($list, $index, $size, $outElement);"
     return when (type.componentType) {
         Int::class.javaPrimitiveType, Integer::class.java -> "GetIntArrayRegion$arrayRegionConstructor"
         Long::class.javaPrimitiveType, java.lang.Long::class.java -> "GetLongArrayRegion$arrayRegionConstructor"
@@ -189,6 +404,7 @@ fun Field.getArrayRegion(list: String, index: String, outElement: String): Strin
     }
 }
 
+
 fun Field.canGenerateArraySize(): Boolean {
     if (isAnnotationPresent(VkArray::class.java)) {
         val annotationVkArray = getDeclaredAnnotation(VkArray::class.java)
@@ -201,7 +417,7 @@ fun Field.canGenerateArraySize(): Boolean {
 
 fun Field.onVkArray(alias: (sizeSuffix: String, listType: String, stride: String) -> Unit) {
     var sizeSuffix = "Count"
-    var listType = toCType()
+    var listType = toCppType()
     var stride = ""
     if (isAnnotationPresent(VkArray::class.java)) {
         val annotationVkArray = getDeclaredAnnotation(VkArray::class.java)
@@ -218,7 +434,7 @@ fun Field.onVkArray(alias: (sizeSuffix: String, listType: String, stride: String
 }
 
 
-fun Field.toSig(): String {
+fun Field.toJavaSignature(): String {
     return when (val javaTypeName = type.name) {
         "boolean" -> "Z"
         "byte" -> "B"
@@ -241,4 +457,26 @@ fun Field.toSig(): String {
             }
         }
     }.replace(".", "/")
+}
+
+
+// vulkan extensions
+
+fun Field.isVkHandle(): Boolean {
+    if (isAnnotationPresent(VkHandleRef::class.java)) {
+        return true
+    }
+    return false
+}
+
+fun Field.isVkPointer(): Boolean {
+    if (isAnnotationPresent(VkPointer::class.java)) {
+        return true
+    }
+    return false
+}
+
+
+fun Field.getVkHandle(): VkHandleRef {
+    return getDeclaredAnnotation(VkHandleRef::class.java)
 }

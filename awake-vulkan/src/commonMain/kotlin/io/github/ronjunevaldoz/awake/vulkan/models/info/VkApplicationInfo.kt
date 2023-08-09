@@ -21,10 +21,11 @@ package io.github.ronjunevaldoz.awake.vulkan.models.info
 
 import io.github.ronjunevaldoz.awake.vulkan.Version
 import io.github.ronjunevaldoz.awake.vulkan.Version.Companion.u32
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkStructureType
 
 data class VkApplicationInfo(
-    var sType: Int = 0,
-    var pNext: Long = 0,
+    var sType: VkStructureType = VkStructureType.VK_STRUCTURE_TYPE_APPLICATION_INFO,
+    var pNext: Any? = null,
     var pApplicationName: String,
     var applicationVersion: Int = Version(1, 0, 0).u32,
     var pEngineName: String,

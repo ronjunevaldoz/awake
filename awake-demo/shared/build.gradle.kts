@@ -127,6 +127,6 @@ afterEvaluate {
     // Access the preCompileShaders task and make it run before Java compilation tasks
     tasks.withType(JavaCompile::class.java) {
         dependsOn(tasks.withType<Glslangvalidator_conventions_gradle.GlslValidator>())
-        dependsOn(tasks.named("runVulkanCpp"))
+//        dependsOn(tasks.named("runVulkanCpp"))
     }
 }

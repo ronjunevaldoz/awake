@@ -10,120 +10,19 @@
 #include "vulkan_utils.h"
 #include "enum_utils.h"
 #include "VkImageViewCreateInfoConverter.h"
-#include "VkDeviceQueueCreateInfoConverter.h"
-#include "VkPhysicalDeviceFeaturesConverter.h"
+#include "VkPhysicalDeviceFeaturesMutator.cpp"
 #include "VkShaderModuleCreateInfoConverter.h"
-#include "VkGraphicsPipelineCreateInfoConverter.h"
-
-
-std::vector<const char *>
-getEnabledDeviceExtensions_fromObjectList(JNIEnv *env, jobject pListObject) {
-    jclass listClass = env->GetObjectClass(pListObject);
-    jmethodID getMethodID = env->GetMethodID(listClass, "get",
-                                             "(I)Ljava/lang/Object;");
-    jmethodID sizeMethodID = env->GetMethodID(listClass, "size", "()I");
-
-    // Get the size of the List
-    jint queueCreateInfoListSize = env->CallIntMethod(pListObject, sizeMethodID);
-    std::vector<const char *> enabledExtensions;
-    for (int i = 0; i < queueCreateInfoListSize; ++i) {
-        // Get the element object at the specified index
-        auto elementString = (jstring) env->CallObjectMethod(pListObject,
-                                                             getMethodID, i);
-        const char *str = env->GetStringUTFChars(elementString, nullptr);
-
-        enabledExtensions.push_back(str);
-//        env->ReleaseStringUTFChars(elementString, str); // TODO check if needed to freeup memory
-//        env->DeleteLocalRef(elementString); // TODO check if needed to freeup memory
-    }
-
-    env->DeleteLocalRef(listClass);
-    return enabledExtensions;
-}
+#include "VkGraphicsPipelineCreateInfoAccessor.cpp"
+#include "VkSwapchainCreateInfoKHRConverter.h"
+#include "VkPipelineCacheCreateInfoAccessor.cpp"
+#include "VkDeviceCreateInfoConverter.h"
+#include "VkApplicationInfoAccessor.cpp"
+#include "VkDeviceCreateInfoAccessor.cpp"
 
 namespace vulkan_utils {
-/**
- *
- * @param env
- * @param pQueueCreateInfosObj  list of vkDeviceQueueCreateInfo class from kotlin
- */
-    void getDeviceQueueCreateInfoList(JNIEnv *env, jobject pQueueCreateInfosObj,
-                                      std::vector<VkDeviceQueueCreateInfo> &queueCreateInfos) {
-        jclass queueCreateInfoListClass = env->GetObjectClass(pQueueCreateInfosObj);
-        jmethodID getMethodID = env->GetMethodID(queueCreateInfoListClass, "get",
-                                                 "(I)Ljava/lang/Object;");
-        jmethodID sizeMethodID = env->GetMethodID(queueCreateInfoListClass, "size", "()I");
-
-        VkDeviceQueueCreateInfoConverter converter(env);
-        // Get the size of the List
-        jint queueCreateInfoListSize = env->CallIntMethod(pQueueCreateInfosObj, sizeMethodID);
-        for (int i = 0; i < queueCreateInfoListSize; ++i) {
-            // Get the VkDeviceQueueCreateInfo object at the specified index
-            jobject elementObject = env->CallObjectMethod(pQueueCreateInfosObj,
-                                                          getMethodID, i);
-            VkDeviceQueueCreateInfo queueCreateInfo = converter.fromObject(elementObject);
-            queueCreateInfos.push_back(queueCreateInfo);
-            env->DeleteLocalRef(elementObject);
-        }
-        env->DeleteLocalRef(queueCreateInfoListClass);
-    }
-    // HELPERS ABOVE
-
     VkApplicationInfo VkApplicationInfo_fromObject(JNIEnv *env, jobject vkApplicationInfoObject) {
-        jclass clazz = env->GetObjectClass(vkApplicationInfoObject);
-
-//    jfieldID sTypeField = env->GetFieldID(clazz, "sType", "I");
-        jfieldID pNextField = env->GetFieldID(clazz, "pNext", "J");
-        jfieldID pApplicationNameField = env->GetFieldID(clazz, "pApplicationName",
-                                                         "Ljava/lang/String;");
-        jfieldID applicationVersionField = env->GetFieldID(clazz, "applicationVersion", "I");
-        jfieldID pEngineNameField = env->GetFieldID(clazz, "pEngineName", "Ljava/lang/String;");
-        jfieldID engineVersionField = env->GetFieldID(clazz, "engineVersion", "I");
-//    jfieldID apiVersionField = env->GetFieldID(clazz, "apiVersion", "I");
-
-        VkApplicationInfo appInfo{};
-
-//    jobject vkStructureTypeObj = env->GetObjectField(vkApplicationInfoObject, sTypeField);
-
-        auto pNext = env->GetLongField(vkApplicationInfoObject,
-                                       pNextField);
-
-        auto appNameString = (jstring) (env->GetObjectField(vkApplicationInfoObject,
-                                                            pApplicationNameField));
-        auto engineNameString = (jstring) (env->GetObjectField(vkApplicationInfoObject,
-                                                               pEngineNameField));
-        const char *appNameChars = env->GetStringUTFChars(appNameString, nullptr);
-        const char *engineNameChars = env->GetStringUTFChars(engineNameString, nullptr);
-
-        appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO; // GetVkStructureType(env, vkStructureTypeObj);
-        appInfo.pNext = reinterpret_cast<const void *>(pNext);
-        appInfo.pApplicationName = appNameChars;
-        appInfo.applicationVersion = env->GetIntField(vkApplicationInfoObject,
-                                                      applicationVersionField);
-        appInfo.pEngineName = engineNameChars;
-        appInfo.engineVersion = env->GetIntField(vkApplicationInfoObject,
-                                                 engineVersionField);
-        int apiLevel = android_get_device_api_level();
-        if (apiLevel <= 24) {
-            appInfo.apiVersion = VK_API_VERSION_1_0;
-        } else if (apiLevel >= 25) {
-            appInfo.apiVersion = VK_API_VERSION_1_1;
-        } else if (apiLevel >= 29) {
-            appInfo.apiVersion = VK_API_VERSION_1_2;
-        } else if (apiLevel >= 33) {
-            appInfo.apiVersion = VK_API_VERSION_1_3;
-        }
-
-        // env->GetIntField(vkApplicationInfoObject, apiVersionField);
-
-
-//        env->ReleaseStringUTFChars(appNameString, appNameChars); // TODO check if not needed
-//        env->ReleaseStringUTFChars(engineNameString, engineNameChars); // TODO check if not needed
-
-        // release object
-        env->DeleteLocalRef(clazz);
-        env->DeleteLocalRef(vkApplicationInfoObject);
-        return appInfo;
+        VkApplicationInfoAccessor accessor(env, vkApplicationInfoObject);
+        return accessor.fromObject();
     }
 
     bool VkPhysicalDeviceSparseProperties_fromObject(JNIEnv *env,
@@ -244,9 +143,7 @@ namespace vulkan_utils {
         auto physicalDevice = reinterpret_cast<VkPhysicalDevice>(pPhysicalDevice);
         VkPhysicalDeviceFeatures deviceFeatures;
         vkGetPhysicalDeviceFeatures(physicalDevice, &deviceFeatures);
-        VkPhysicalDeviceFeaturesConverter extractor(env);
-        jobject obj = extractor.toObject(deviceFeatures);
-        return obj;
+        return VkPhysicalDeviceFeaturesMutator(env).toObject(deviceFeatures);
     }
 
     jobjectArray
@@ -402,170 +299,9 @@ namespace vulkan_utils {
         return enumObj;
     }
 
-    VkExtent2D
-    VkExtent2D_fromObject(JNIEnv *env, jobject vkExtentObj) {
-        // Get the Class object of VkExtent2D
-        jclass vkExtentClass = env->GetObjectClass(vkExtentObj);
-        // Get the width and height values from the Java object
-        jfieldID widthFieldID = env->GetFieldID(vkExtentClass, "width", "I");
-        jfieldID heightFieldID = env->GetFieldID(vkExtentClass, "height", "I");
-        jint width = env->GetIntField(vkExtentObj, widthFieldID);
-        jint height = env->GetIntField(vkExtentObj, heightFieldID);
-        // Release local references
-        env->DeleteLocalRef(vkExtentClass);
-
-        VkExtent2D extent{};
-        extent.width = static_cast<uint32_t>(width);
-        extent.height = static_cast<uint32_t>(height);
-        // Return the newly created VkExtent2D object
-        return extent;
-    }
-
-    std::vector<uint32_t>
-    queueFamilyIndicesList_fromObject(JNIEnv *env, jobject queueFamilyIndicesList) {
-        jclass listClass = env->FindClass("java/util/List");
-        jclass integerClass = env->FindClass("java/lang/Integer");
-
-// Get the size of the List
-        jmethodID listSizeMethod = env->GetMethodID(listClass, "size", "()I");
-        jint listSize = env->CallIntMethod(queueFamilyIndicesList, listSizeMethod);
-
-// Iterate through the List and extract each Integer value
-        std::vector<uint32_t> queueFamilyIndices;
-        for (int i = 0; i < listSize; i++) {
-            jmethodID listGetMethod = env->GetMethodID(listClass, "get", "(I)Ljava/lang/Object;");
-            jobject integerObject = env->CallObjectMethod(queueFamilyIndicesList, listGetMethod, i);
-
-            // Convert the Integer object to int
-            jmethodID intValueMethod = env->GetMethodID(integerClass, "intValue", "()I");
-            jint value = env->CallIntMethod(integerObject, intValueMethod);
-
-            queueFamilyIndices.push_back(static_cast<uint32_t>(value));
-
-            // Release local references for each integerObject
-            env->DeleteLocalRef(integerObject);
-        }
-
-// Release local references
-        env->DeleteLocalRef(listClass);
-        env->DeleteLocalRef(integerClass);
-        env->DeleteLocalRef(queueFamilyIndicesList);
-        return queueFamilyIndices;
-    }
-
-
     VkSwapchainCreateInfoKHR
     VkSwapchainCreateInfoKHR_fromObject(JNIEnv *env, jobject pSwapchainObj) {
-        // Assuming you have JNI methods to access the properties of the Java object
-        jclass swapchainClass = env->GetObjectClass(pSwapchainObj);
-        jfieldID surfaceField = env->GetFieldID(swapchainClass, "surface",
-                                                "Lio/github/ronjunevaldoz/awake/vulkan/models/VkSurfaceKHR;");
-        jfieldID oldSwapchainField = env->GetFieldID(swapchainClass, "oldSwapchain",
-                                                     "Lio/github/ronjunevaldoz/awake/vulkan/models/VkSwapchainKHR;");
-        jfieldID minImageCountField = env->GetFieldID(swapchainClass, "minImageCount", "I");
-        jfieldID imageFormatField = env->GetFieldID(swapchainClass, "imageFormat",
-                                                    "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkFormat;");
-        jfieldID imageColorSpaceField = env->GetFieldID(swapchainClass, "imageColorSpace",
-                                                        "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkColorSpaceKHR;");
-        jfieldID imageExtentField = env->GetFieldID(swapchainClass, "imageExtent",
-                                                    "Lio/github/ronjunevaldoz/awake/vulkan/models/VkExtent2D;");
-        jfieldID imageArrayLayersField = env->GetFieldID(swapchainClass, "imageArrayLayers", "I");
-        jfieldID imageUsageField = env->GetFieldID(swapchainClass, "imageUsage", "I");
-        jfieldID imageSharingModeField = env->GetFieldID(swapchainClass, "imageSharingMode",
-                                                         "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkSharingMode;");
-        jfieldID queueFamilyIndicesField = env->GetFieldID(swapchainClass, "queueFamilyIndices",
-                                                           "Ljava/util/List;");
-        jfieldID preTransformField = env->GetFieldID(swapchainClass, "preTransform",
-                                                     "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkSurfaceTransformFlagBitsKHR;");
-        jfieldID compositeAlphaField = env->GetFieldID(swapchainClass, "compositeAlpha",
-                                                       "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkCompositeAlphaFlagBitsKHR;");
-        jfieldID presentModeField = env->GetFieldID(swapchainClass, "presentMode",
-                                                    "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkPresentModeKHR;");
-        jfieldID clippedField = env->GetFieldID(swapchainClass, "clipped", "Z");
-        // Add other fields as needed
-
-        // Extract properties from the Java object
-        // surface from object
-        jobject surfaceObj = env->GetObjectField(pSwapchainObj, surfaceField);
-        jclass surfaceClass = env->GetObjectClass(surfaceObj);
-        jfieldID surfaceIdField = env->GetFieldID(surfaceClass, "surface", "J");
-        auto surface = env->GetLongField(surfaceObj, surfaceIdField);
-
-        jint minImageCount = env->GetIntField(pSwapchainObj, minImageCountField);
-        jobject imageFormatObj = env->GetObjectField(pSwapchainObj, imageFormatField);
-        jobject imageColorSpaceObj = env->GetObjectField(pSwapchainObj, imageColorSpaceField);
-        jobject imageExtentObj = env->GetObjectField(pSwapchainObj, imageExtentField);
-        jobject imageSharingModeObj = env->GetObjectField(pSwapchainObj, imageSharingModeField);
-        jint imageArrayLayers = env->GetIntField(pSwapchainObj, imageArrayLayersField);
-        jint imageUsage = env->GetIntField(pSwapchainObj, imageUsageField);
-        jobject queueFamilyIndicesList = env->GetObjectField(pSwapchainObj,
-                                                             queueFamilyIndicesField);
-        jobject preTransformObj = env->GetObjectField(pSwapchainObj, preTransformField);
-        jobject compositeAlphaObj = env->GetObjectField(pSwapchainObj, compositeAlphaField);
-        jobject presentModeObj = env->GetObjectField(pSwapchainObj, presentModeField);
-        jboolean clipped = env->GetBooleanField(pSwapchainObj, clippedField);
-
-        auto pCreateInfo = VkSwapchainCreateInfoKHR{};
-        pCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        pCreateInfo.pNext = nullptr;
-        pCreateInfo.flags = 0;
-        pCreateInfo.surface = reinterpret_cast<VkSurfaceKHR>(surface);
-        pCreateInfo.minImageCount = static_cast<uint32_t>(minImageCount);
-        pCreateInfo.imageFormat = static_cast<VkFormat>(enum_utils::getEnumFromObject(env,
-                                                                                      imageFormatObj));
-        pCreateInfo.imageColorSpace = static_cast<VkColorSpaceKHR>(enum_utils::getEnumFromObject(
-                env,
-                imageColorSpaceObj));
-        pCreateInfo.imageExtent = VkExtent2D_fromObject(env, imageExtentObj);
-        pCreateInfo.imageArrayLayers = static_cast<uint32_t>(imageArrayLayers);
-        pCreateInfo.imageUsage = static_cast<VkImageUsageFlags>(imageUsage);
-        pCreateInfo.imageSharingMode = static_cast<VkSharingMode>(enum_utils::getEnumFromObject(env,
-                                                                                                imageSharingModeObj));;
-        if (queueFamilyIndicesList != nullptr) {
-            std::vector<uint32_t> queueFamilyIndices = queueFamilyIndicesList_fromObject(env,
-                                                                                         queueFamilyIndicesList);
-            pCreateInfo.queueFamilyIndexCount = static_cast<uint32_t>(queueFamilyIndices.size());
-            pCreateInfo.pQueueFamilyIndices = queueFamilyIndices.data();
-        } else {
-            pCreateInfo.queueFamilyIndexCount = 0;
-            pCreateInfo.pQueueFamilyIndices = nullptr;
-        }
-        pCreateInfo.preTransform = static_cast<VkSurfaceTransformFlagBitsKHR>(enum_utils::getEnumFromObject(
-                env,
-                preTransformObj));
-        pCreateInfo.compositeAlpha = static_cast<VkCompositeAlphaFlagBitsKHR>(enum_utils::getEnumFromObject(
-                env,
-                compositeAlphaObj));
-        pCreateInfo.presentMode = static_cast<VkPresentModeKHR>(enum_utils::getEnumFromObject(env,
-                                                                                              presentModeObj));
-        pCreateInfo.clipped = static_cast<VkBool32>(clipped);
-
-        // oldSwapchain from object
-        jobject oldSwapchainObj = env->GetObjectField(pSwapchainObj, oldSwapchainField);
-        if (oldSwapchainObj != nullptr) {
-            jclass oldSwapchainClass = env->GetObjectClass(oldSwapchainObj);
-            jfieldID oldSwapchainIdField = env->GetFieldID(oldSwapchainClass, "swapchain", "J");
-            auto oldSwapchain = env->GetLongField(oldSwapchainObj, oldSwapchainIdField);
-            pCreateInfo.oldSwapchain = reinterpret_cast<VkSwapchainKHR>(oldSwapchain);
-            env->DeleteLocalRef(oldSwapchainClass);
-        } else {
-            pCreateInfo.oldSwapchain = nullptr;
-        }
-
-        env->DeleteLocalRef(oldSwapchainObj);
-        env->DeleteLocalRef(swapchainClass);
-        env->DeleteLocalRef(surfaceObj);
-        env->DeleteLocalRef(surfaceClass);
-        env->DeleteLocalRef(imageFormatObj);
-        env->DeleteLocalRef(imageColorSpaceObj);
-        env->DeleteLocalRef(imageExtentObj);
-        env->DeleteLocalRef(imageSharingModeObj);
-        env->DeleteLocalRef(queueFamilyIndicesList);
-        env->DeleteLocalRef(preTransformObj);
-        env->DeleteLocalRef(compositeAlphaObj);
-        env->DeleteLocalRef(presentModeObj);
-
-        return pCreateInfo;
+        return VkSwapchainCreateInfoKHRConverter(env).fromObject(pSwapchainObj);
     }
 
     bool
@@ -865,73 +601,87 @@ namespace vulkan_utils {
 
     jlong createDevice(JNIEnv *env, jlong pPhysicalDevice, jobject p_dci_obj) {
         auto physicalDevice = reinterpret_cast<VkPhysicalDevice>(pPhysicalDevice);
-
-        jclass deviceCreateInfoClass = env->GetObjectClass(p_dci_obj);
-
-        jfieldID sTypeFieldID = env->GetFieldID(deviceCreateInfoClass, "sType", "I");
-        jfieldID pNextFieldID = env->GetFieldID(deviceCreateInfoClass, "pNext", "J");
-        jfieldID flagsFieldID = env->GetFieldID(deviceCreateInfoClass, "flags", "I");
-        jfieldID queueCreateInfoCountFieldID = env->GetFieldID(deviceCreateInfoClass,
-                                                               "queueCreateInfoCount", "I");
-        jfieldID pQueueCreateInfosFieldID = env->GetFieldID(deviceCreateInfoClass,
-                                                            "pQueueCreateInfos",
-                                                            "Ljava/util/List;");
-        jfieldID ppEnabledLayerNamesFieldID = env->GetFieldID(deviceCreateInfoClass,
-                                                              "ppEnabledLayerNames",
-                                                              "Ljava/util/List;");
-        jfieldID ppEnabledExtensionNamesFieldID = env->GetFieldID(deviceCreateInfoClass,
-                                                                  "ppEnabledExtensionNames",
-                                                                  "Ljava/util/List;");
-        jfieldID pEnabledFeaturesFieldID = env->GetFieldID(deviceCreateInfoClass,
-                                                           "pEnabledFeatures", "Ljava/util/List;");
-
-        jint sType = env->GetIntField(p_dci_obj, sTypeFieldID);
-        jlong pNext = env->GetLongField(p_dci_obj, pNextFieldID);
-        auto flags = env->GetIntField(p_dci_obj, flagsFieldID);
-        jint queueCreateInfoCount = env->GetIntField(p_dci_obj, queueCreateInfoCountFieldID);
-        jobject pQueueCreateInfosObj = env->GetObjectField(p_dci_obj, pQueueCreateInfosFieldID);
-        jobject ppEnabledLayerNamesObj = env->GetObjectField(p_dci_obj,
-                                                             ppEnabledLayerNamesFieldID);
-        auto ppEnabledExtensionNamesObj = env->GetObjectField(p_dci_obj,
-                                                              ppEnabledExtensionNamesFieldID);
-        jobject pEnabledFeaturesObj = env->GetObjectField(p_dci_obj, pEnabledFeaturesFieldID);
-
-        // Get list of device queue create infos
-        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-        getDeviceQueueCreateInfoList(env, pQueueCreateInfosObj, queueCreateInfos);
-        VkPhysicalDeviceFeaturesConverter extractor(env);
-        VkPhysicalDeviceFeatures deviceFeatures;
-        extractor.extract(pEnabledFeaturesObj, deviceFeatures);
-        std::vector<const char *> enabledExtensions = getEnabledDeviceExtensions_fromObjectList(env,
-                                                                                                ppEnabledExtensionNamesObj);
-        VkDeviceCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        createInfo.flags = static_cast<VkDeviceCreateFlags>(flags);
-        createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
-        createInfo.pQueueCreateInfos = queueCreateInfos.data();
-        createInfo.pEnabledFeatures = &deviceFeatures;
-        if (ppEnabledExtensionNamesObj != nullptr) {
-            createInfo.enabledExtensionCount = static_cast<uint32_t>(enabledExtensions.size());
-            createInfo.ppEnabledExtensionNames = enabledExtensions.data();
-        } else {
-            createInfo.enabledExtensionCount = 0;
-            createInfo.ppEnabledExtensionNames = nullptr;
-        }
-        createInfo.enabledLayerCount = 0;// static_cast<uint32_t>(enabledLayerCount);
-//        if (ppEnabledLayerNames != nullptr) {
-        createInfo.ppEnabledLayerNames = nullptr;// reinterpret_cast<const char *const *>(ppEnabledLayerNames);
+//
+//        jclass deviceCreateInfoClass = env->FindClass("io/github/ronjunevaldoz/awake/vulkan/models/info/VkDeviceCreateInfo");
+//        jfieldID pQueueCreateInfosFieldID = env->GetFieldID(deviceCreateInfoClass,
+//                                                            "pQueueCreateInfos",
+//                                                            "[Lio/github/ronjunevaldoz/awake/vulkan/models/info/VkDeviceQueueCreateInfo;");
+//        jfieldID ppEnabledExtensionNamesFieldID = env->GetFieldID(deviceCreateInfoClass,
+//                                                                  "ppEnabledExtensionNames",
+//                                                                  "[Ljava/lang/String;");
+//        jfieldID pEnabledFeaturesFieldID = env->GetFieldID(deviceCreateInfoClass,
+//                                                           "pEnabledFeatures", "[Lio/github/ronjunevaldoz/awake/vulkan/physicaldevice/VkPhysicalDeviceFeatures;");
+//
+//        auto pQueueCreateInfosArray = (jobjectArray) env->GetObjectField(p_dci_obj, pQueueCreateInfosFieldID);
+//        auto ppEnabledExtensionNamesObj = (jobjectArray) env->GetObjectField(p_dci_obj,
+//                                                              ppEnabledExtensionNamesFieldID);
+//        auto pEnabledFeaturesObj =  (jobjectArray)  env->GetObjectField(p_dci_obj, pEnabledFeaturesFieldID);
+//
+//        VkDeviceQueueCreateInfoConverter pQueueCreateInfoConverter(env);
+//        std::vector<VkDeviceQueueCreateInfo> pQueueCreateInfos;
+//        if (pQueueCreateInfosArray != nullptr) {
+//            auto elementSize = env->GetArrayLength(pQueueCreateInfosArray);
+//            for (int i = 0; i < elementSize; ++i) {
+//                auto pQueueCreateInfoElement = env->GetObjectArrayElement(pQueueCreateInfosArray, i);
+//                pQueueCreateInfos.push_back(pQueueCreateInfoConverter.fromObject(pQueueCreateInfoElement ));
+////                env->DeleteLocalRef(pQueueCreateInfoElement);
+//            }
 //        }
+//
+//        VkPhysicalDeviceFeaturesConverter extractor(env);
+//        std::vector<VkPhysicalDeviceFeatures> deviceFeatures;
+//        auto featureSize = env->GetArrayLength(pEnabledFeaturesObj);
+//        for (int i = 0; i < featureSize; ++i) {
+//            auto element = env->GetObjectArrayElement(pEnabledFeaturesObj, i);
+//            deviceFeatures.push_back(extractor.fromObject(element));
+//            env->DeleteLocalRef(element);
+//        }
+//
+//        std::vector<const char*> enabledExtensions;
+//        if (ppEnabledExtensionNamesObj != nullptr) {
+//            auto elementSize = env->GetArrayLength(ppEnabledExtensionNamesObj);
+//            for (int i = 0; i < elementSize; ++i) {
+//                auto element = (jstring) env->GetObjectArrayElement(ppEnabledExtensionNamesObj, i);
+//                const char* utfChars = env->GetStringUTFChars(element, nullptr);
+//                enabledExtensions.push_back(utfChars);
+//                env->DeleteLocalRef(element);
+//            }
+//        }
+//
+//        VkDeviceCreateInfo createInfo{};
+//        createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+//        createInfo.flags = 0; //static_cast<VkDeviceCreateFlags>(flags);
+//        createInfo.queueCreateInfoCount = static_cast<uint32_t>(pQueueCreateInfos.size());
+//        createInfo.pQueueCreateInfos = pQueueCreateInfos.data();
+//        createInfo.pEnabledFeatures = deviceFeatures.data();
+//        if (ppEnabledExtensionNamesObj != nullptr) {
+//            createInfo.enabledExtensionCount = static_cast<uint32_t>(enabledExtensions.size());
+//            createInfo.ppEnabledExtensionNames = enabledExtensions.data();
+//        } else {
+//            createInfo.enabledExtensionCount = 0;
+//            createInfo.ppEnabledExtensionNames = nullptr;
+//        }
+//        createInfo.enabledLayerCount = 0;// static_cast<uint32_t>(enabledLayerCount);
+//        createInfo.ppEnabledLayerNames = nullptr;// reinterpret_cast<const char *const *>(ppEnabledLayerNames);
 
+
+        // TODO CRASHED when use the converter
+//        VkDeviceCreateInfo createInfo2;
+//        createInfo2 = VkDeviceCreateInfoConverter(env).fromObject(p_dci_obj);
         // Release local references if needed.
+        VkDeviceCreateInfoAccessor accessor(env, p_dci_obj);
+        VkDeviceCreateInfo clazzInfo = accessor.fromObject();
+//        VkDeviceCreateInfo clazzInfo{};
+//        clazzInfo.sType = accessor.getsType();
+//        clazzInfo.pNext = accessor.getpNext();
+//        clazzInfo.flags = accessor.getflags();
+//        clazzInfo.queueCreateInfoCount = accessor.getpQueueCreateInfos().size();
+//        clazzInfo.pQueueCreateInfos = accessor.getpQueueCreateInfos().data();
+//        clazzInfo.ppEnabledLayerNames = accessor.getppEnabledLayerNames().data();
+//        clazzInfo.ppEnabledExtensionNames = accessor.getppEnabledExtensionNames().data();
+//        clazzInfo.pEnabledFeatures = accessor.getpEnabledFeatures().data();
         VkDevice device{};
-
-        VkResult result = vkCreateDevice(physicalDevice, &createInfo, nullptr, &device);
-
-        env->DeleteLocalRef(deviceCreateInfoClass);
-        env->DeleteLocalRef(pQueueCreateInfosObj);
-        env->DeleteLocalRef(ppEnabledLayerNamesObj);
-        env->DeleteLocalRef(ppEnabledExtensionNamesObj);
-        env->DeleteLocalRef(pEnabledFeaturesObj);
+        VkResult result = vkCreateDevice(physicalDevice, &clazzInfo, nullptr, &device);
         if (result != VK_SUCCESS) {
             return 0;
         }
@@ -1322,12 +1072,9 @@ namespace vulkan_utils {
 
     jlong createPipelineCache(JNIEnv *env, jlong pDevice, jobject pCreateInfo) {
         auto device = reinterpret_cast<VkDevice>(pDevice);
-        VkPipelineCacheCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
-        createInfo.pNext = nullptr;
-        createInfo.flags = 0;
-        createInfo.initialDataSize = 0;
-        createInfo.pInitialData = nullptr;
+
+        VkPipelineCacheCreateInfo createInfo;
+        createInfo = VkPipelineCacheCreateInfoAccessor(env, pCreateInfo).fromObject();
 
         VkPipelineCache pipelineCache;
         VkResult result = vkCreatePipelineCache(device, &createInfo, nullptr, &pipelineCache);
@@ -1348,12 +1095,13 @@ namespace vulkan_utils {
         auto device = reinterpret_cast<VkDevice>(pDevice);
         auto pipelineCache = reinterpret_cast<VkPipelineCache>(pPipelineCache);
         auto createInfoSize = env->GetArrayLength(createInfosObj);
-        VkGraphicsPipelineCreateInfoConverter converter(env);
         std::vector<VkGraphicsPipelineCreateInfo> createInfos(createInfoSize);
         for (int i = 0; i < createInfoSize; ++i) {
             auto createInfoObj = env->GetObjectArrayElement(createInfosObj, i);
-            createInfos.push_back(converter.fromObject(createInfoObj));
-            env->DeleteLocalRef(createInfoObj);
+            VkGraphicsPipelineCreateInfoAccessor accessor(env, createInfoObj);
+            createInfos[i] = (accessor.fromObject());
+            // TODO experimental don't delete [createInfoObj] local ref
+//            env->DeleteLocalRef(createInfoObj);
         }
         std::vector<VkPipeline> pipelines;
         VkResult result = vkCreateGraphicsPipelines(device, pipelineCache,
