@@ -1,8 +1,7 @@
 /*
  *  VkPhysicalDeviceFeaturesMutator.h
  *  Vulkan mutator e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
 #include <vulkan/vulkan.h>
@@ -314,7 +313,7 @@ public:
     }
 
     ~VkPhysicalDeviceFeaturesMutator() {
-        env->DeleteGlobalRef(clazz);
+        // env->DeleteGlobalRef(clazz);
     }
 
 };

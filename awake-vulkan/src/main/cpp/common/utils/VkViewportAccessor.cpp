@@ -1,11 +1,10 @@
 /*
  *  VkViewportAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -30,7 +29,7 @@ private:
 private:
     jfieldID maxDepthField;
 public:
-    VkViewportAccessor(JNIEnv *env, jobject obj) {
+    VkViewportAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -66,20 +65,16 @@ public:
         return (float) (jfloat) env->GetFloatField(obj, maxDepthField); // primitive
     }
 
-    VkViewport fromObject() {
-        VkViewport clazzInfo{};
-        clazzInfo.x = getx(); // Object
-        clazzInfo.y = gety(); // Object
-        clazzInfo.width = getwidth(); // Object
-        clazzInfo.height = getheight(); // Object
-        clazzInfo.minDepth = getminDepth(); // Object
-        clazzInfo.maxDepth = getmaxDepth(); // Object
-        return clazzInfo;
+    void fromObject(VkViewport &clazzInfo) {
+        clazzInfo.x = getx(); // Object float
+        clazzInfo.y = gety(); // Object float
+        clazzInfo.width = getwidth(); // Object float
+        clazzInfo.height = getheight(); // Object float
+        clazzInfo.minDepth = getminDepth(); // Object float
+        clazzInfo.maxDepth = getmaxDepth(); // Object float
     }
 
     ~VkViewportAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

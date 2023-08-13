@@ -1,11 +1,10 @@
 /*
  *  VkPipelineLayoutCreateInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -33,7 +32,7 @@ private:
 private:
     jfieldID pPushConstantRangesField;
 public:
-    VkPipelineLayoutCreateInfoAccessor(JNIEnv *env, jobject obj) {
+    VkPipelineLayoutCreateInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -53,8 +52,9 @@ public:
         return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     }
 
-    void *getpNext() {
-        return (void *) (jobject) env->GetObjectField(obj, pNextField); // Object??
+    void getpNext(VkPipelineLayoutCreateInfo &clazzInfo) {
+        auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
+        clazzInfo.pNext = ref;
     }
 
     uint32_t getflags() {
@@ -65,54 +65,62 @@ public:
         return (uint32_t) (jint) env->GetIntField(obj, setLayoutCountField); // primitive
     }
 
-    std::vector<uint64_t> getpSetLayouts() {
+    void getpSetLayouts(VkPipelineLayoutCreateInfo &clazzInfo) {
         auto pSetLayoutsArray = (jlongArray) env->GetObjectField(obj, pSetLayoutsField);
         if (pSetLayoutsArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(pSetLayoutsArray);
-        std::vector<uint64_t> array(size);
-        env->GetLongArrayRegion(pSetLayoutsArray, 0, size, reinterpret_cast<jlong *>(array.data()));
-        return array;
+        // primitive array?
+        std::vector<VkDescriptorSetLayout> pSetLayouts(size);
+        env->GetLongArrayRegion(pSetLayoutsArray, 0, size,
+                                reinterpret_cast<jlong *>(pSetLayouts.data()));
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkDescriptorSetLayout[size];
+        std::copy(pSetLayouts.begin(), pSetLayouts.end(), copy);
+        clazzInfo.pSetLayouts = copy;
     }
 
     uint32_t getpushConstantRangeCount() {
         return (uint32_t) (jint) env->GetIntField(obj, pushConstantRangeCountField); // primitive
     }
 
-    std::vector<VkPushConstantRange> getpPushConstantRanges() {
+    void getpPushConstantRanges(VkPipelineLayoutCreateInfo &clazzInfo) {
         auto pPushConstantRangesArray = (jobjectArray) env->GetObjectField(obj,
                                                                            pPushConstantRangesField);
         if (pPushConstantRangesArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(pPushConstantRangesArray);
-        std::vector<VkPushConstantRange> array;
+        std::vector<VkPushConstantRange> pPushConstantRanges;
         for (int i = 0; i < size; ++i) {
             auto element = (jobject) env->GetObjectArrayElement(pPushConstantRangesArray,
                                                                 i); // actual type is VkPushConstantRange[];
             // experimental optimize accessor
             VkPushConstantRangeAccessor accessor(env, element);
-            array.push_back(accessor.fromObject());
+            VkPushConstantRange ref{};
+            accessor.fromObject(ref);
+            pPushConstantRanges.push_back(ref);
         }
-        return array;
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkPushConstantRange[size];
+        std::copy(pPushConstantRanges.begin(), pPushConstantRanges.end(), copy);
+        clazzInfo.pPushConstantRanges = copy;
     }
 
-    VkPipelineLayoutCreateInfo fromObject() {
-        VkPipelineLayoutCreateInfo clazzInfo{};
-        clazzInfo.sType = getsType(); // Object
-        clazzInfo.pNext = getpNext(); // Object
-        clazzInfo.flags = getflags(); // Object
-        clazzInfo.setLayoutCount = getsetLayoutCount(); // Object
-        clazzInfo.pSetLayouts = getpSetLayouts().data(); // Object Array
-        clazzInfo.pushConstantRangeCount = getpushConstantRangeCount(); // Object
-        clazzInfo.pPushConstantRanges = getpPushConstantRanges().data(); // Object Array
-        return clazzInfo;
+    void fromObject(VkPipelineLayoutCreateInfo &clazzInfo) {
+        clazzInfo.sType = getsType(); // Enum VkStructureType
+        getpNext(clazzInfo); // Object void*
+        clazzInfo.flags = getflags(); // Object uint32_t
+        clazzInfo.setLayoutCount = getsetLayoutCount(); // Object uint32_t
+        getpSetLayouts(clazzInfo);  // Long Object Array
+        clazzInfo.pushConstantRangeCount = getpushConstantRangeCount(); // Object uint32_t
+        getpPushConstantRanges(clazzInfo);  // VkPushConstantRange Object Array
     }
 
     ~VkPipelineLayoutCreateInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

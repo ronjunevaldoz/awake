@@ -1,11 +1,10 @@
 /*
  *  VkPushConstantRangeAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -24,7 +23,7 @@ private:
 private:
     jfieldID sizeField;
 public:
-    VkPushConstantRangeAccessor(JNIEnv *env, jobject obj) {
+    VkPushConstantRangeAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -45,17 +44,13 @@ public:
         return (uint32_t) (jint) env->GetIntField(obj, sizeField); // primitive
     }
 
-    VkPushConstantRange fromObject() {
-        VkPushConstantRange clazzInfo{};
-        clazzInfo.stageFlags = getstageFlags(); // Object
-        clazzInfo.offset = getoffset(); // Object
-        clazzInfo.size = getsize(); // Object
-        return clazzInfo;
+    void fromObject(VkPushConstantRange &clazzInfo) {
+        clazzInfo.stageFlags = getstageFlags(); // Object uint32_t
+        clazzInfo.offset = getoffset(); // Object uint32_t
+        clazzInfo.size = getsize(); // Object uint32_t
     }
 
     ~VkPushConstantRangeAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

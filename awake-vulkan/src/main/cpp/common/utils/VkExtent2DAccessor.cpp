@@ -1,11 +1,10 @@
 /*
  *  VkExtent2DAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -22,7 +21,7 @@ private:
 private:
     jfieldID heightField;
 public:
-    VkExtent2DAccessor(JNIEnv *env, jobject obj) {
+    VkExtent2DAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -38,16 +37,12 @@ public:
         return (uint32_t) (jint) env->GetIntField(obj, heightField); // primitive
     }
 
-    VkExtent2D fromObject() {
-        VkExtent2D clazzInfo{};
-        clazzInfo.width = getwidth(); // Object
-        clazzInfo.height = getheight(); // Object
-        return clazzInfo;
+    void fromObject(VkExtent2D &clazzInfo) {
+        clazzInfo.width = getwidth(); // Object uint32_t
+        clazzInfo.height = getheight(); // Object uint32_t
     }
 
     ~VkExtent2DAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

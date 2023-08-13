@@ -1,11 +1,10 @@
 /*
  *  VkPhysicalDeviceFeaturesAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -128,7 +127,7 @@ private:
 private:
     jfieldID inheritedQueriesField;
 public:
-    VkPhysicalDeviceFeaturesAccessor(JNIEnv *env, jobject obj) {
+    VkPhysicalDeviceFeaturesAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -453,69 +452,65 @@ public:
         return (bool) (jboolean) env->GetBooleanField(obj, inheritedQueriesField); // primitive
     }
 
-    VkPhysicalDeviceFeatures fromObject() {
-        VkPhysicalDeviceFeatures clazzInfo{};
-        clazzInfo.robustBufferAccess = getrobustBufferAccess(); // Object
-        clazzInfo.fullDrawIndexUint32 = getfullDrawIndexUint32(); // Object
-        clazzInfo.imageCubeArray = getimageCubeArray(); // Object
-        clazzInfo.independentBlend = getindependentBlend(); // Object
-        clazzInfo.geometryShader = getgeometryShader(); // Object
-        clazzInfo.tessellationShader = gettessellationShader(); // Object
-        clazzInfo.sampleRateShading = getsampleRateShading(); // Object
-        clazzInfo.dualSrcBlend = getdualSrcBlend(); // Object
-        clazzInfo.logicOp = getlogicOp(); // Object
-        clazzInfo.multiDrawIndirect = getmultiDrawIndirect(); // Object
-        clazzInfo.drawIndirectFirstInstance = getdrawIndirectFirstInstance(); // Object
-        clazzInfo.depthClamp = getdepthClamp(); // Object
-        clazzInfo.depthBiasClamp = getdepthBiasClamp(); // Object
-        clazzInfo.fillModeNonSolid = getfillModeNonSolid(); // Object
-        clazzInfo.depthBounds = getdepthBounds(); // Object
-        clazzInfo.wideLines = getwideLines(); // Object
-        clazzInfo.largePoints = getlargePoints(); // Object
-        clazzInfo.alphaToOne = getalphaToOne(); // Object
-        clazzInfo.multiViewport = getmultiViewport(); // Object
-        clazzInfo.samplerAnisotropy = getsamplerAnisotropy(); // Object
-        clazzInfo.textureCompressionETC2 = gettextureCompressionETC2(); // Object
-        clazzInfo.textureCompressionASTC_LDR = gettextureCompressionASTC_LDR(); // Object
-        clazzInfo.textureCompressionBC = gettextureCompressionBC(); // Object
-        clazzInfo.occlusionQueryPrecise = getocclusionQueryPrecise(); // Object
-        clazzInfo.pipelineStatisticsQuery = getpipelineStatisticsQuery(); // Object
-        clazzInfo.vertexPipelineStoresAndAtomics = getvertexPipelineStoresAndAtomics(); // Object
-        clazzInfo.fragmentStoresAndAtomics = getfragmentStoresAndAtomics(); // Object
-        clazzInfo.shaderTessellationAndGeometryPointSize = getshaderTessellationAndGeometryPointSize(); // Object
-        clazzInfo.shaderImageGatherExtended = getshaderImageGatherExtended(); // Object
-        clazzInfo.shaderStorageImageExtendedFormats = getshaderStorageImageExtendedFormats(); // Object
-        clazzInfo.shaderStorageImageMultisample = getshaderStorageImageMultisample(); // Object
-        clazzInfo.shaderStorageImageReadWithoutFormat = getshaderStorageImageReadWithoutFormat(); // Object
-        clazzInfo.shaderStorageImageWriteWithoutFormat = getshaderStorageImageWriteWithoutFormat(); // Object
-        clazzInfo.shaderUniformBufferArrayDynamicIndexing = getshaderUniformBufferArrayDynamicIndexing(); // Object
-        clazzInfo.shaderSampledImageArrayDynamicIndexing = getshaderSampledImageArrayDynamicIndexing(); // Object
-        clazzInfo.shaderStorageBufferArrayDynamicIndexing = getshaderStorageBufferArrayDynamicIndexing(); // Object
-        clazzInfo.shaderStorageImageArrayDynamicIndexing = getshaderStorageImageArrayDynamicIndexing(); // Object
-        clazzInfo.shaderClipDistance = getshaderClipDistance(); // Object
-        clazzInfo.shaderCullDistance = getshaderCullDistance(); // Object
-        clazzInfo.shaderFloat64 = getshaderFloat64(); // Object
-        clazzInfo.shaderInt64 = getshaderInt64(); // Object
-        clazzInfo.shaderInt16 = getshaderInt16(); // Object
-        clazzInfo.shaderResourceResidency = getshaderResourceResidency(); // Object
-        clazzInfo.shaderResourceMinLod = getshaderResourceMinLod(); // Object
-        clazzInfo.sparseBinding = getsparseBinding(); // Object
-        clazzInfo.sparseResidencyBuffer = getsparseResidencyBuffer(); // Object
-        clazzInfo.sparseResidencyImage2D = getsparseResidencyImage2D(); // Object
-        clazzInfo.sparseResidencyImage3D = getsparseResidencyImage3D(); // Object
-        clazzInfo.sparseResidency2Samples = getsparseResidency2Samples(); // Object
-        clazzInfo.sparseResidency4Samples = getsparseResidency4Samples(); // Object
-        clazzInfo.sparseResidency8Samples = getsparseResidency8Samples(); // Object
-        clazzInfo.sparseResidency16Samples = getsparseResidency16Samples(); // Object
-        clazzInfo.sparseResidencyAliased = getsparseResidencyAliased(); // Object
-        clazzInfo.variableMultisampleRate = getvariableMultisampleRate(); // Object
-        clazzInfo.inheritedQueries = getinheritedQueries(); // Object
-        return clazzInfo;
+    void fromObject(VkPhysicalDeviceFeatures &clazzInfo) {
+        clazzInfo.robustBufferAccess = getrobustBufferAccess(); // Object bool
+        clazzInfo.fullDrawIndexUint32 = getfullDrawIndexUint32(); // Object bool
+        clazzInfo.imageCubeArray = getimageCubeArray(); // Object bool
+        clazzInfo.independentBlend = getindependentBlend(); // Object bool
+        clazzInfo.geometryShader = getgeometryShader(); // Object bool
+        clazzInfo.tessellationShader = gettessellationShader(); // Object bool
+        clazzInfo.sampleRateShading = getsampleRateShading(); // Object bool
+        clazzInfo.dualSrcBlend = getdualSrcBlend(); // Object bool
+        clazzInfo.logicOp = getlogicOp(); // Object bool
+        clazzInfo.multiDrawIndirect = getmultiDrawIndirect(); // Object bool
+        clazzInfo.drawIndirectFirstInstance = getdrawIndirectFirstInstance(); // Object bool
+        clazzInfo.depthClamp = getdepthClamp(); // Object bool
+        clazzInfo.depthBiasClamp = getdepthBiasClamp(); // Object bool
+        clazzInfo.fillModeNonSolid = getfillModeNonSolid(); // Object bool
+        clazzInfo.depthBounds = getdepthBounds(); // Object bool
+        clazzInfo.wideLines = getwideLines(); // Object bool
+        clazzInfo.largePoints = getlargePoints(); // Object bool
+        clazzInfo.alphaToOne = getalphaToOne(); // Object bool
+        clazzInfo.multiViewport = getmultiViewport(); // Object bool
+        clazzInfo.samplerAnisotropy = getsamplerAnisotropy(); // Object bool
+        clazzInfo.textureCompressionETC2 = gettextureCompressionETC2(); // Object bool
+        clazzInfo.textureCompressionASTC_LDR = gettextureCompressionASTC_LDR(); // Object bool
+        clazzInfo.textureCompressionBC = gettextureCompressionBC(); // Object bool
+        clazzInfo.occlusionQueryPrecise = getocclusionQueryPrecise(); // Object bool
+        clazzInfo.pipelineStatisticsQuery = getpipelineStatisticsQuery(); // Object bool
+        clazzInfo.vertexPipelineStoresAndAtomics = getvertexPipelineStoresAndAtomics(); // Object bool
+        clazzInfo.fragmentStoresAndAtomics = getfragmentStoresAndAtomics(); // Object bool
+        clazzInfo.shaderTessellationAndGeometryPointSize = getshaderTessellationAndGeometryPointSize(); // Object bool
+        clazzInfo.shaderImageGatherExtended = getshaderImageGatherExtended(); // Object bool
+        clazzInfo.shaderStorageImageExtendedFormats = getshaderStorageImageExtendedFormats(); // Object bool
+        clazzInfo.shaderStorageImageMultisample = getshaderStorageImageMultisample(); // Object bool
+        clazzInfo.shaderStorageImageReadWithoutFormat = getshaderStorageImageReadWithoutFormat(); // Object bool
+        clazzInfo.shaderStorageImageWriteWithoutFormat = getshaderStorageImageWriteWithoutFormat(); // Object bool
+        clazzInfo.shaderUniformBufferArrayDynamicIndexing = getshaderUniformBufferArrayDynamicIndexing(); // Object bool
+        clazzInfo.shaderSampledImageArrayDynamicIndexing = getshaderSampledImageArrayDynamicIndexing(); // Object bool
+        clazzInfo.shaderStorageBufferArrayDynamicIndexing = getshaderStorageBufferArrayDynamicIndexing(); // Object bool
+        clazzInfo.shaderStorageImageArrayDynamicIndexing = getshaderStorageImageArrayDynamicIndexing(); // Object bool
+        clazzInfo.shaderClipDistance = getshaderClipDistance(); // Object bool
+        clazzInfo.shaderCullDistance = getshaderCullDistance(); // Object bool
+        clazzInfo.shaderFloat64 = getshaderFloat64(); // Object bool
+        clazzInfo.shaderInt64 = getshaderInt64(); // Object bool
+        clazzInfo.shaderInt16 = getshaderInt16(); // Object bool
+        clazzInfo.shaderResourceResidency = getshaderResourceResidency(); // Object bool
+        clazzInfo.shaderResourceMinLod = getshaderResourceMinLod(); // Object bool
+        clazzInfo.sparseBinding = getsparseBinding(); // Object bool
+        clazzInfo.sparseResidencyBuffer = getsparseResidencyBuffer(); // Object bool
+        clazzInfo.sparseResidencyImage2D = getsparseResidencyImage2D(); // Object bool
+        clazzInfo.sparseResidencyImage3D = getsparseResidencyImage3D(); // Object bool
+        clazzInfo.sparseResidency2Samples = getsparseResidency2Samples(); // Object bool
+        clazzInfo.sparseResidency4Samples = getsparseResidency4Samples(); // Object bool
+        clazzInfo.sparseResidency8Samples = getsparseResidency8Samples(); // Object bool
+        clazzInfo.sparseResidency16Samples = getsparseResidency16Samples(); // Object bool
+        clazzInfo.sparseResidencyAliased = getsparseResidencyAliased(); // Object bool
+        clazzInfo.variableMultisampleRate = getvariableMultisampleRate(); // Object bool
+        clazzInfo.inheritedQueries = getinheritedQueries(); // Object bool
     }
 
     ~VkPhysicalDeviceFeaturesAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

@@ -1,11 +1,10 @@
 /*
  *  VkVertexInputAttributeDescriptionAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -26,7 +25,7 @@ private:
 private:
     jfieldID offsetField;
 public:
-    VkVertexInputAttributeDescriptionAccessor(JNIEnv *env, jobject obj) {
+    VkVertexInputAttributeDescriptionAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -54,18 +53,14 @@ public:
         return (uint32_t) (jint) env->GetIntField(obj, offsetField); // primitive
     }
 
-    VkVertexInputAttributeDescription fromObject() {
-        VkVertexInputAttributeDescription clazzInfo{};
-        clazzInfo.location = getlocation(); // Object
-        clazzInfo.binding = getbinding(); // Object
-        clazzInfo.format = getformat(); // Object
-        clazzInfo.offset = getoffset(); // Object
-        return clazzInfo;
+    void fromObject(VkVertexInputAttributeDescription &clazzInfo) {
+        clazzInfo.location = getlocation(); // Object uint32_t
+        clazzInfo.binding = getbinding(); // Object uint32_t
+        clazzInfo.format = getformat(); // Enum VkFormat
+        clazzInfo.offset = getoffset(); // Object uint32_t
     }
 
     ~VkVertexInputAttributeDescriptionAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

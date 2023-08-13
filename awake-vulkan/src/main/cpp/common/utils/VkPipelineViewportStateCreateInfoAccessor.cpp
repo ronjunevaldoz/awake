@@ -1,11 +1,10 @@
 /*
  *  VkPipelineViewportStateCreateInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -30,7 +29,7 @@ private:
 private:
     jfieldID pScissorsField;
 public:
-    VkPipelineViewportStateCreateInfoAccessor(JNIEnv *env, jobject obj) {
+    VkPipelineViewportStateCreateInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -49,61 +48,74 @@ public:
         return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     }
 
-    void *getpNext() {
-        return (void *) (jobject) env->GetObjectField(obj, pNextField); // Object??
+    void getpNext(VkPipelineViewportStateCreateInfo &clazzInfo) {
+        auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
+        clazzInfo.pNext = ref;
     }
 
     uint32_t getflags() {
         return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
     }
 
-    std::vector<VkViewport> getpViewports() {
+    void getpViewports(VkPipelineViewportStateCreateInfo &clazzInfo) {
         auto pViewportsArray = (jobjectArray) env->GetObjectField(obj, pViewportsField);
         if (pViewportsArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(pViewportsArray);
-        std::vector<VkViewport> array;
+        std::vector<VkViewport> pViewports;
         for (int i = 0; i < size; ++i) {
             auto element = (jobject) env->GetObjectArrayElement(pViewportsArray,
                                                                 i); // actual type is VkViewport[];
             // experimental optimize accessor
             VkViewportAccessor accessor(env, element);
-            array.push_back(accessor.fromObject());
+            VkViewport ref{};
+            accessor.fromObject(ref);
+            pViewports.push_back(ref);
         }
-        return array;
+        // processing
+        auto viewportCount = static_cast<uint32_t>(pViewports.size());
+        clazzInfo.viewportCount = viewportCount;
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkViewport[size];
+        std::copy(pViewports.begin(), pViewports.end(), copy);
+        clazzInfo.pViewports = copy;
     }
 
-    std::vector<VkRect2D> getpScissors() {
+    void getpScissors(VkPipelineViewportStateCreateInfo &clazzInfo) {
         auto pScissorsArray = (jobjectArray) env->GetObjectField(obj, pScissorsField);
         if (pScissorsArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(pScissorsArray);
-        std::vector<VkRect2D> array;
+        std::vector<VkRect2D> pScissors;
         for (int i = 0; i < size; ++i) {
             auto element = (jobject) env->GetObjectArrayElement(pScissorsArray,
                                                                 i); // actual type is VkRect2D[];
             // experimental optimize accessor
             VkRect2DAccessor accessor(env, element);
-            array.push_back(accessor.fromObject());
+            VkRect2D ref{};
+            accessor.fromObject(ref);
+            pScissors.push_back(ref);
         }
-        return array;
+        // processing
+        auto scissorCount = static_cast<uint32_t>(pScissors.size());
+        clazzInfo.scissorCount = scissorCount;
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkRect2D[size];
+        std::copy(pScissors.begin(), pScissors.end(), copy);
+        clazzInfo.pScissors = copy;
     }
 
-    VkPipelineViewportStateCreateInfo fromObject() {
-        VkPipelineViewportStateCreateInfo clazzInfo{};
-        clazzInfo.sType = getsType(); // Object
-        clazzInfo.pNext = getpNext(); // Object
-        clazzInfo.flags = getflags(); // Object
-        clazzInfo.pViewports = getpViewports().data(); // Object Array
-        clazzInfo.pScissors = getpScissors().data(); // Object Array
-        return clazzInfo;
+    void fromObject(VkPipelineViewportStateCreateInfo &clazzInfo) {
+        clazzInfo.sType = getsType(); // Enum VkStructureType
+        getpNext(clazzInfo); // Object void*
+        clazzInfo.flags = getflags(); // Object uint32_t
+        getpViewports(clazzInfo);  // VkViewport Object Array
+        getpScissors(clazzInfo);  // VkRect2D Object Array
     }
 
     ~VkPipelineViewportStateCreateInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

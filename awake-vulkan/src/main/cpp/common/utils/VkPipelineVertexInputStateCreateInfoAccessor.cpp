@@ -1,11 +1,10 @@
 /*
  *  VkPipelineVertexInputStateCreateInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -30,7 +29,7 @@ private:
 private:
     jfieldID pVertexAttributeDescriptionsField;
 public:
-    VkPipelineVertexInputStateCreateInfoAccessor(JNIEnv *env, jobject obj) {
+    VkPipelineVertexInputStateCreateInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -49,63 +48,73 @@ public:
         return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     }
 
-    void *getpNext() {
-        return (void *) (jobject) env->GetObjectField(obj, pNextField); // Object??
+    void getpNext(VkPipelineVertexInputStateCreateInfo &clazzInfo) {
+        auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
+        clazzInfo.pNext = ref;
     }
 
     uint32_t getflags() {
         return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
     }
 
-    std::vector<VkVertexInputBindingDescription> getpVertexBindingDescriptions() {
+    void getpVertexBindingDescriptions(VkPipelineVertexInputStateCreateInfo &clazzInfo) {
         auto pVertexBindingDescriptionsArray = (jobjectArray) env->GetObjectField(obj,
                                                                                   pVertexBindingDescriptionsField);
         if (pVertexBindingDescriptionsArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(pVertexBindingDescriptionsArray);
-        std::vector<VkVertexInputBindingDescription> array;
+        std::vector<VkVertexInputBindingDescription> pVertexBindingDescriptions;
         for (int i = 0; i < size; ++i) {
             auto element = (jobject) env->GetObjectArrayElement(pVertexBindingDescriptionsArray,
                                                                 i); // actual type is VkVertexInputBindingDescription[];
             // experimental optimize accessor
             VkVertexInputBindingDescriptionAccessor accessor(env, element);
-            array.push_back(accessor.fromObject());
+            VkVertexInputBindingDescription ref{};
+            accessor.fromObject(ref);
+            pVertexBindingDescriptions.push_back(ref);
         }
-        return array;
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkVertexInputBindingDescription[size];
+        std::copy(pVertexBindingDescriptions.begin(), pVertexBindingDescriptions.end(), copy);
+        clazzInfo.pVertexBindingDescriptions = copy;
     }
 
-    std::vector<VkVertexInputAttributeDescription> getpVertexAttributeDescriptions() {
+    void getpVertexAttributeDescriptions(VkPipelineVertexInputStateCreateInfo &clazzInfo) {
         auto pVertexAttributeDescriptionsArray = (jobjectArray) env->GetObjectField(obj,
                                                                                     pVertexAttributeDescriptionsField);
         if (pVertexAttributeDescriptionsArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(pVertexAttributeDescriptionsArray);
-        std::vector<VkVertexInputAttributeDescription> array;
+        std::vector<VkVertexInputAttributeDescription> pVertexAttributeDescriptions;
         for (int i = 0; i < size; ++i) {
             auto element = (jobject) env->GetObjectArrayElement(pVertexAttributeDescriptionsArray,
                                                                 i); // actual type is VkVertexInputAttributeDescription[];
             // experimental optimize accessor
             VkVertexInputAttributeDescriptionAccessor accessor(env, element);
-            array.push_back(accessor.fromObject());
+            VkVertexInputAttributeDescription ref{};
+            accessor.fromObject(ref);
+            pVertexAttributeDescriptions.push_back(ref);
         }
-        return array;
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkVertexInputAttributeDescription[size];
+        std::copy(pVertexAttributeDescriptions.begin(), pVertexAttributeDescriptions.end(), copy);
+        clazzInfo.pVertexAttributeDescriptions = copy;
     }
 
-    VkPipelineVertexInputStateCreateInfo fromObject() {
-        VkPipelineVertexInputStateCreateInfo clazzInfo{};
-        clazzInfo.sType = getsType(); // Object
-        clazzInfo.pNext = getpNext(); // Object
-        clazzInfo.flags = getflags(); // Object
-        clazzInfo.pVertexBindingDescriptions = getpVertexBindingDescriptions().data(); // Object Array
-        clazzInfo.pVertexAttributeDescriptions = getpVertexAttributeDescriptions().data(); // Object Array
-        return clazzInfo;
+    void fromObject(VkPipelineVertexInputStateCreateInfo &clazzInfo) {
+        clazzInfo.sType = getsType(); // Enum VkStructureType
+        getpNext(clazzInfo); // Object void*
+        clazzInfo.flags = getflags(); // Object uint32_t
+        getpVertexBindingDescriptions(clazzInfo);  // VkVertexInputBindingDescription Object Array
+        getpVertexAttributeDescriptions(
+                clazzInfo);  // VkVertexInputAttributeDescription Object Array
     }
 
     ~VkPipelineVertexInputStateCreateInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

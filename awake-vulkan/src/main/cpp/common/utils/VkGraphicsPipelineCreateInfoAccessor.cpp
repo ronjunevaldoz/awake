@@ -1,11 +1,10 @@
 /*
  *  VkGraphicsPipelineCreateInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -66,7 +65,7 @@ private:
 private:
     jfieldID stageCountField;
 public:
-    VkGraphicsPipelineCreateInfoAccessor(JNIEnv *env, jobject obj) {
+    VkGraphicsPipelineCreateInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -77,23 +76,23 @@ public:
         pStagesField = env->GetFieldID(clazz, "pStages",
                                        "[Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineShaderStageCreateInfo;");
         pVertexInputStateField = env->GetFieldID(clazz, "pVertexInputState",
-                                                 "Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineVertexInputStateCreateInfo;");
+                                                 "[Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineVertexInputStateCreateInfo;");
         pInputAssemblyStateField = env->GetFieldID(clazz, "pInputAssemblyState",
-                                                   "Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineInputAssemblyStateCreateInfo;");
+                                                   "[Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineInputAssemblyStateCreateInfo;");
         pTessellationStateField = env->GetFieldID(clazz, "pTessellationState",
-                                                  "Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineTessellationStateCreateInfo;");
+                                                  "[Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineTessellationStateCreateInfo;");
         pViewportStateField = env->GetFieldID(clazz, "pViewportState",
-                                              "Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineViewportStateCreateInfo;");
+                                              "[Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineViewportStateCreateInfo;");
         pRasterizationStateField = env->GetFieldID(clazz, "pRasterizationState",
-                                                   "Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineRasterizationStateCreateInfo;");
+                                                   "[Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineRasterizationStateCreateInfo;");
         pMultisampleStateField = env->GetFieldID(clazz, "pMultisampleState",
-                                                 "Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineMultisampleStateCreateInfo;");
+                                                 "[Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineMultisampleStateCreateInfo;");
         pDepthStencilStateField = env->GetFieldID(clazz, "pDepthStencilState",
-                                                  "Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineDepthStencilStateCreateInfo;");
+                                                  "[Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineDepthStencilStateCreateInfo;");
         pColorBlendStateField = env->GetFieldID(clazz, "pColorBlendState",
-                                                "Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineColorBlendStateCreateInfo;");
+                                                "[Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineColorBlendStateCreateInfo;");
         pDynamicStateField = env->GetFieldID(clazz, "pDynamicState",
-                                             "Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineDynamicStateCreateInfo;");
+                                             "[Lio/github/ronjunevaldoz/awake/vulkan/models/info/pipeline/VkPipelineDynamicStateCreateInfo;");
         layoutField = env->GetFieldID(clazz, "layout", "J");
         renderPassField = env->GetFieldID(clazz, "renderPass", "J");
         subpassField = env->GetFieldID(clazz, "subpass", "I");
@@ -107,126 +106,266 @@ public:
         return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     }
 
-    void *getpNext() {
-        return (void *) (jobject) env->GetObjectField(obj, pNextField); // Object??
+    void getpNext(VkGraphicsPipelineCreateInfo &clazzInfo) {
+        auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
+        clazzInfo.pNext = ref;
     }
 
     uint32_t getflags() {
         return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
     }
 
-    std::vector<VkPipelineShaderStageCreateInfo> getpStages() {
+    void getpStages(VkGraphicsPipelineCreateInfo &clazzInfo) {
         auto pStagesArray = (jobjectArray) env->GetObjectField(obj, pStagesField);
         if (pStagesArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(pStagesArray);
-        std::vector<VkPipelineShaderStageCreateInfo> array;
+        std::vector<VkPipelineShaderStageCreateInfo> pStages;
         for (int i = 0; i < size; ++i) {
             auto element = (jobject) env->GetObjectArrayElement(pStagesArray,
                                                                 i); // actual type is VkPipelineShaderStageCreateInfo[];
             // experimental optimize accessor
             VkPipelineShaderStageCreateInfoAccessor accessor(env, element);
-            array.push_back(accessor.fromObject());
+            VkPipelineShaderStageCreateInfo ref{};
+            accessor.fromObject(ref);
+            pStages.push_back(ref);
         }
-        return array;
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkPipelineShaderStageCreateInfo[size];
+        std::copy(pStages.begin(), pStages.end(), copy);
+        clazzInfo.pStages = copy;
     }
 
-    VkPipelineVertexInputStateCreateInfo getpVertexInputState() {
-        auto pVertexInputStateObj = (jobject) env->GetObjectField(obj, pVertexInputStateField);
-        VkPipelineVertexInputStateCreateInfoAccessor accessor(env, pVertexInputStateObj);
-        if (pVertexInputStateObj == nullptr) {
-            return {};
+    void getpVertexInputState(VkGraphicsPipelineCreateInfo &clazzInfo) {
+        auto pVertexInputStateArray = (jobjectArray) env->GetObjectField(obj,
+                                                                         pVertexInputStateField);
+        if (pVertexInputStateArray == nullptr) {
+            return;
         }
-        return (VkPipelineVertexInputStateCreateInfo) (accessor.fromObject()); // Object is null, should be accessed by an accessor
-    }
-
-    VkPipelineInputAssemblyStateCreateInfo getpInputAssemblyState() {
-        auto pInputAssemblyStateObj = (jobject) env->GetObjectField(obj, pInputAssemblyStateField);
-        VkPipelineInputAssemblyStateCreateInfoAccessor accessor(env, pInputAssemblyStateObj);
-        if (pInputAssemblyStateObj == nullptr) {
-            return {};
+        auto size = env->GetArrayLength(pVertexInputStateArray);
+        std::vector<VkPipelineVertexInputStateCreateInfo> pVertexInputState;
+        for (int i = 0; i < size; ++i) {
+            auto element = (jobject) env->GetObjectArrayElement(pVertexInputStateArray,
+                                                                i); // actual type is VkPipelineVertexInputStateCreateInfo[];
+            // experimental optimize accessor
+            VkPipelineVertexInputStateCreateInfoAccessor accessor(env, element);
+            VkPipelineVertexInputStateCreateInfo ref{};
+            accessor.fromObject(ref);
+            pVertexInputState.push_back(ref);
         }
-        return (VkPipelineInputAssemblyStateCreateInfo) (accessor.fromObject()); // Object is null, should be accessed by an accessor
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkPipelineVertexInputStateCreateInfo[size];
+        std::copy(pVertexInputState.begin(), pVertexInputState.end(), copy);
+        clazzInfo.pVertexInputState = copy;
     }
 
-    VkPipelineTessellationStateCreateInfo getpTessellationState() {
-        auto pTessellationStateObj = (jobject) env->GetObjectField(obj, pTessellationStateField);
-        VkPipelineTessellationStateCreateInfoAccessor accessor(env, pTessellationStateObj);
-        if (pTessellationStateObj == nullptr) {
-            return {};
+    void getpInputAssemblyState(VkGraphicsPipelineCreateInfo &clazzInfo) {
+        auto pInputAssemblyStateArray = (jobjectArray) env->GetObjectField(obj,
+                                                                           pInputAssemblyStateField);
+        if (pInputAssemblyStateArray == nullptr) {
+            return;
         }
-        return (VkPipelineTessellationStateCreateInfo) (accessor.fromObject()); // Object is null, should be accessed by an accessor
-    }
-
-    VkPipelineViewportStateCreateInfo getpViewportState() {
-        auto pViewportStateObj = (jobject) env->GetObjectField(obj, pViewportStateField);
-        VkPipelineViewportStateCreateInfoAccessor accessor(env, pViewportStateObj);
-        if (pViewportStateObj == nullptr) {
-            return {};
+        auto size = env->GetArrayLength(pInputAssemblyStateArray);
+        std::vector<VkPipelineInputAssemblyStateCreateInfo> pInputAssemblyState;
+        for (int i = 0; i < size; ++i) {
+            auto element = (jobject) env->GetObjectArrayElement(pInputAssemblyStateArray,
+                                                                i); // actual type is VkPipelineInputAssemblyStateCreateInfo[];
+            // experimental optimize accessor
+            VkPipelineInputAssemblyStateCreateInfoAccessor accessor(env, element);
+            VkPipelineInputAssemblyStateCreateInfo ref{};
+            accessor.fromObject(ref);
+            pInputAssemblyState.push_back(ref);
         }
-        return (VkPipelineViewportStateCreateInfo) (accessor.fromObject()); // Object is null, should be accessed by an accessor
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkPipelineInputAssemblyStateCreateInfo[size];
+        std::copy(pInputAssemblyState.begin(), pInputAssemblyState.end(), copy);
+        clazzInfo.pInputAssemblyState = copy;
     }
 
-    VkPipelineRasterizationStateCreateInfo getpRasterizationState() {
-        auto pRasterizationStateObj = (jobject) env->GetObjectField(obj, pRasterizationStateField);
-        VkPipelineRasterizationStateCreateInfoAccessor accessor(env, pRasterizationStateObj);
-        if (pRasterizationStateObj == nullptr) {
-            return {};
+    void getpTessellationState(VkGraphicsPipelineCreateInfo &clazzInfo) {
+        auto pTessellationStateArray = (jobjectArray) env->GetObjectField(obj,
+                                                                          pTessellationStateField);
+        if (pTessellationStateArray == nullptr) {
+            return;
         }
-        return (VkPipelineRasterizationStateCreateInfo) (accessor.fromObject()); // Object is null, should be accessed by an accessor
-    }
-
-    VkPipelineMultisampleStateCreateInfo getpMultisampleState() {
-        auto pMultisampleStateObj = (jobject) env->GetObjectField(obj, pMultisampleStateField);
-        VkPipelineMultisampleStateCreateInfoAccessor accessor(env, pMultisampleStateObj);
-        if (pMultisampleStateObj == nullptr) {
-            return {};
+        auto size = env->GetArrayLength(pTessellationStateArray);
+        std::vector<VkPipelineTessellationStateCreateInfo> pTessellationState;
+        for (int i = 0; i < size; ++i) {
+            auto element = (jobject) env->GetObjectArrayElement(pTessellationStateArray,
+                                                                i); // actual type is VkPipelineTessellationStateCreateInfo[];
+            // experimental optimize accessor
+            VkPipelineTessellationStateCreateInfoAccessor accessor(env, element);
+            VkPipelineTessellationStateCreateInfo ref{};
+            accessor.fromObject(ref);
+            pTessellationState.push_back(ref);
         }
-        return (VkPipelineMultisampleStateCreateInfo) (accessor.fromObject()); // Object is null, should be accessed by an accessor
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkPipelineTessellationStateCreateInfo[size];
+        std::copy(pTessellationState.begin(), pTessellationState.end(), copy);
+        clazzInfo.pTessellationState = copy;
     }
 
-    VkPipelineDepthStencilStateCreateInfo getpDepthStencilState() {
-        auto pDepthStencilStateObj = (jobject) env->GetObjectField(obj, pDepthStencilStateField);
-        VkPipelineDepthStencilStateCreateInfoAccessor accessor(env, pDepthStencilStateObj);
-        if (pDepthStencilStateObj == nullptr) {
-            return {};
+    void getpViewportState(VkGraphicsPipelineCreateInfo &clazzInfo) {
+        auto pViewportStateArray = (jobjectArray) env->GetObjectField(obj, pViewportStateField);
+        if (pViewportStateArray == nullptr) {
+            return;
         }
-        return (VkPipelineDepthStencilStateCreateInfo) (accessor.fromObject()); // Object is null, should be accessed by an accessor
-    }
-
-    VkPipelineColorBlendStateCreateInfo getpColorBlendState() {
-        auto pColorBlendStateObj = (jobject) env->GetObjectField(obj, pColorBlendStateField);
-        VkPipelineColorBlendStateCreateInfoAccessor accessor(env, pColorBlendStateObj);
-        if (pColorBlendStateObj == nullptr) {
-            return {};
+        auto size = env->GetArrayLength(pViewportStateArray);
+        std::vector<VkPipelineViewportStateCreateInfo> pViewportState;
+        for (int i = 0; i < size; ++i) {
+            auto element = (jobject) env->GetObjectArrayElement(pViewportStateArray,
+                                                                i); // actual type is VkPipelineViewportStateCreateInfo[];
+            // experimental optimize accessor
+            VkPipelineViewportStateCreateInfoAccessor accessor(env, element);
+            VkPipelineViewportStateCreateInfo ref{};
+            accessor.fromObject(ref);
+            pViewportState.push_back(ref);
         }
-        return (VkPipelineColorBlendStateCreateInfo) (accessor.fromObject()); // Object is null, should be accessed by an accessor
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkPipelineViewportStateCreateInfo[size];
+        std::copy(pViewportState.begin(), pViewportState.end(), copy);
+        clazzInfo.pViewportState = copy;
     }
 
-    VkPipelineDynamicStateCreateInfo getpDynamicState() {
-        auto pDynamicStateObj = (jobject) env->GetObjectField(obj, pDynamicStateField);
-        VkPipelineDynamicStateCreateInfoAccessor accessor(env, pDynamicStateObj);
-        if (pDynamicStateObj == nullptr) {
-            return {};
+    void getpRasterizationState(VkGraphicsPipelineCreateInfo &clazzInfo) {
+        auto pRasterizationStateArray = (jobjectArray) env->GetObjectField(obj,
+                                                                           pRasterizationStateField);
+        if (pRasterizationStateArray == nullptr) {
+            return;
         }
-        return (VkPipelineDynamicStateCreateInfo) (accessor.fromObject()); // Object is null, should be accessed by an accessor
+        auto size = env->GetArrayLength(pRasterizationStateArray);
+        std::vector<VkPipelineRasterizationStateCreateInfo> pRasterizationState;
+        for (int i = 0; i < size; ++i) {
+            auto element = (jobject) env->GetObjectArrayElement(pRasterizationStateArray,
+                                                                i); // actual type is VkPipelineRasterizationStateCreateInfo[];
+            // experimental optimize accessor
+            VkPipelineRasterizationStateCreateInfoAccessor accessor(env, element);
+            VkPipelineRasterizationStateCreateInfo ref{};
+            accessor.fromObject(ref);
+            pRasterizationState.push_back(ref);
+        }
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkPipelineRasterizationStateCreateInfo[size];
+        std::copy(pRasterizationState.begin(), pRasterizationState.end(), copy);
+        clazzInfo.pRasterizationState = copy;
     }
 
-    uint64_t getlayout() {
-        return (uint64_t) (jlong) env->GetLongField(obj, layoutField); // primitive
+    void getpMultisampleState(VkGraphicsPipelineCreateInfo &clazzInfo) {
+        auto pMultisampleStateArray = (jobjectArray) env->GetObjectField(obj,
+                                                                         pMultisampleStateField);
+        if (pMultisampleStateArray == nullptr) {
+            return;
+        }
+        auto size = env->GetArrayLength(pMultisampleStateArray);
+        std::vector<VkPipelineMultisampleStateCreateInfo> pMultisampleState;
+        for (int i = 0; i < size; ++i) {
+            auto element = (jobject) env->GetObjectArrayElement(pMultisampleStateArray,
+                                                                i); // actual type is VkPipelineMultisampleStateCreateInfo[];
+            // experimental optimize accessor
+            VkPipelineMultisampleStateCreateInfoAccessor accessor(env, element);
+            VkPipelineMultisampleStateCreateInfo ref{};
+            accessor.fromObject(ref);
+            pMultisampleState.push_back(ref);
+        }
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkPipelineMultisampleStateCreateInfo[size];
+        std::copy(pMultisampleState.begin(), pMultisampleState.end(), copy);
+        clazzInfo.pMultisampleState = copy;
     }
 
-    uint64_t getrenderPass() {
-        return (uint64_t) (jlong) env->GetLongField(obj, renderPassField); // primitive
+    void getpDepthStencilState(VkGraphicsPipelineCreateInfo &clazzInfo) {
+        auto pDepthStencilStateArray = (jobjectArray) env->GetObjectField(obj,
+                                                                          pDepthStencilStateField);
+        if (pDepthStencilStateArray == nullptr) {
+            return;
+        }
+        auto size = env->GetArrayLength(pDepthStencilStateArray);
+        std::vector<VkPipelineDepthStencilStateCreateInfo> pDepthStencilState;
+        for (int i = 0; i < size; ++i) {
+            auto element = (jobject) env->GetObjectArrayElement(pDepthStencilStateArray,
+                                                                i); // actual type is VkPipelineDepthStencilStateCreateInfo[];
+            // experimental optimize accessor
+            VkPipelineDepthStencilStateCreateInfoAccessor accessor(env, element);
+            VkPipelineDepthStencilStateCreateInfo ref{};
+            accessor.fromObject(ref);
+            pDepthStencilState.push_back(ref);
+        }
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkPipelineDepthStencilStateCreateInfo[size];
+        std::copy(pDepthStencilState.begin(), pDepthStencilState.end(), copy);
+        clazzInfo.pDepthStencilState = copy;
+    }
+
+    void getpColorBlendState(VkGraphicsPipelineCreateInfo &clazzInfo) {
+        auto pColorBlendStateArray = (jobjectArray) env->GetObjectField(obj, pColorBlendStateField);
+        if (pColorBlendStateArray == nullptr) {
+            return;
+        }
+        auto size = env->GetArrayLength(pColorBlendStateArray);
+        std::vector<VkPipelineColorBlendStateCreateInfo> pColorBlendState;
+        for (int i = 0; i < size; ++i) {
+            auto element = (jobject) env->GetObjectArrayElement(pColorBlendStateArray,
+                                                                i); // actual type is VkPipelineColorBlendStateCreateInfo[];
+            // experimental optimize accessor
+            VkPipelineColorBlendStateCreateInfoAccessor accessor(env, element);
+            VkPipelineColorBlendStateCreateInfo ref{};
+            accessor.fromObject(ref);
+            pColorBlendState.push_back(ref);
+        }
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkPipelineColorBlendStateCreateInfo[size];
+        std::copy(pColorBlendState.begin(), pColorBlendState.end(), copy);
+        clazzInfo.pColorBlendState = copy;
+    }
+
+    void getpDynamicState(VkGraphicsPipelineCreateInfo &clazzInfo) {
+        auto pDynamicStateArray = (jobjectArray) env->GetObjectField(obj, pDynamicStateField);
+        if (pDynamicStateArray == nullptr) {
+            return;
+        }
+        auto size = env->GetArrayLength(pDynamicStateArray);
+        std::vector<VkPipelineDynamicStateCreateInfo> pDynamicState;
+        for (int i = 0; i < size; ++i) {
+            auto element = (jobject) env->GetObjectArrayElement(pDynamicStateArray,
+                                                                i); // actual type is VkPipelineDynamicStateCreateInfo[];
+            // experimental optimize accessor
+            VkPipelineDynamicStateCreateInfoAccessor accessor(env, element);
+            VkPipelineDynamicStateCreateInfo ref{};
+            accessor.fromObject(ref);
+            pDynamicState.push_back(ref);
+        }
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkPipelineDynamicStateCreateInfo[size];
+        std::copy(pDynamicState.begin(), pDynamicState.end(), copy);
+        clazzInfo.pDynamicState = copy;
+    }
+
+    VkPipelineLayout getlayout() {
+        return reinterpret_cast<VkPipelineLayout>(env->GetLongField(obj, layoutField)); // VkHandle
+    }
+
+    VkRenderPass getrenderPass() {
+        return reinterpret_cast<VkRenderPass>(env->GetLongField(obj, renderPassField)); // VkHandle
     }
 
     uint32_t getsubpass() {
         return (uint32_t) (jint) env->GetIntField(obj, subpassField); // primitive
     }
 
-    uint64_t getbasePipelineHandle() {
-        return (uint64_t) (jlong) env->GetLongField(obj, basePipelineHandleField); // primitive
+    VkPipeline getbasePipelineHandle() {
+        return reinterpret_cast<VkPipeline>(env->GetLongField(obj,
+                                                              basePipelineHandleField)); // VkHandle
     }
 
     int32_t getbasePipelineIndex() {
@@ -237,42 +376,29 @@ public:
         return (uint32_t) (jint) env->GetIntField(obj, stageCountField); // primitive
     }
 
-    VkGraphicsPipelineCreateInfo fromObject() {
-        VkGraphicsPipelineCreateInfo clazzInfo{};
-        clazzInfo.sType = getsType(); // Object
-        clazzInfo.pNext = getpNext(); // Object
-        clazzInfo.flags = getflags(); // Object
-        clazzInfo.pStages = getpStages().data(); // Object Array
-        auto pVertexInputStatePtr = getpVertexInputState();
-        clazzInfo.pVertexInputState = pVertexInputStatePtr; // Pointer
-        auto pInputAssemblyStatePtr = getpInputAssemblyState();
-        clazzInfo.pInputAssemblyState = pInputAssemblyStatePtr; // Pointer
-        auto pTessellationStatePtr = getpTessellationState();
-        clazzInfo.pTessellationState = pTessellationStatePtr; // Pointer
-        auto pViewportStatePtr = getpViewportState();
-        clazzInfo.pViewportState = pViewportStatePtr; // Pointer
-        auto pRasterizationStatePtr = getpRasterizationState();
-        clazzInfo.pRasterizationState = pRasterizationStatePtr; // Pointer
-        auto pMultisampleStatePtr = getpMultisampleState();
-        clazzInfo.pMultisampleState = pMultisampleStatePtr; // Pointer
-        auto pDepthStencilStatePtr = getpDepthStencilState();
-        clazzInfo.pDepthStencilState = &pDepthStencilStatePtr; // Pointer
-        auto pColorBlendStatePtr = getpColorBlendState();
-        clazzInfo.pColorBlendState = pColorBlendStatePtr; // Pointer
-        auto pDynamicStatePtr = getpDynamicState();
-        clazzInfo.pDynamicState = pDynamicStatePtr; // Pointer
-        clazzInfo.layout = getlayout(); // Object
-        clazzInfo.renderPass = getrenderPass(); // Object
-        clazzInfo.subpass = getsubpass(); // Object
-        clazzInfo.basePipelineHandle = getbasePipelineHandle(); // Object
-        clazzInfo.basePipelineIndex = getbasePipelineIndex(); // Object
-        clazzInfo.stageCount = getstageCount(); // Object
-        return clazzInfo;
+    void fromObject(VkGraphicsPipelineCreateInfo &clazzInfo) {
+        clazzInfo.sType = getsType(); // Enum VkStructureType
+        getpNext(clazzInfo); // Object void*
+        clazzInfo.flags = getflags(); // Object uint32_t
+        getpStages(clazzInfo);  // VkPipelineShaderStageCreateInfo Object Array
+        getpVertexInputState(clazzInfo);  // VkPipelineVertexInputStateCreateInfo Object Array
+        getpInputAssemblyState(clazzInfo);  // VkPipelineInputAssemblyStateCreateInfo Object Array
+        getpTessellationState(clazzInfo);  // VkPipelineTessellationStateCreateInfo Object Array
+        getpViewportState(clazzInfo);  // VkPipelineViewportStateCreateInfo Object Array
+        getpRasterizationState(clazzInfo);  // VkPipelineRasterizationStateCreateInfo Object Array
+        getpMultisampleState(clazzInfo);  // VkPipelineMultisampleStateCreateInfo Object Array
+        getpDepthStencilState(clazzInfo);  // VkPipelineDepthStencilStateCreateInfo Object Array
+        getpColorBlendState(clazzInfo);  // VkPipelineColorBlendStateCreateInfo Object Array
+        getpDynamicState(clazzInfo);  // VkPipelineDynamicStateCreateInfo Object Array
+        clazzInfo.layout = getlayout(); // VkHandle
+        clazzInfo.renderPass = getrenderPass(); // VkHandle
+        clazzInfo.subpass = getsubpass(); // Object uint32_t
+        clazzInfo.basePipelineHandle = getbasePipelineHandle(); // VkHandle
+        clazzInfo.basePipelineIndex = getbasePipelineIndex(); // Object int32_t
+        clazzInfo.stageCount = getstageCount(); // Object uint32_t
     }
 
     ~VkGraphicsPipelineCreateInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

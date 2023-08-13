@@ -1,6 +1,7 @@
 # common/utils/CMakeLists.txt
 
 set(COMMON_UTILS_VULKAN_UTILS_SOURCES
+        VkAttachmentDescriptionAccessor.cpp
         VkDeviceQueueCreateInfoAccessor.cpp
         vulkan_utils.cpp
         VkShaderModuleCreateInfoConverter.cpp
@@ -12,15 +13,18 @@ set(COMMON_UTILS_VULKAN_UTILS_SOURCES
         VkSpecializationMapEntryAccessor.cpp
         VkPipelineColorBlendAttachmentStateAccessor.cpp
         VkImageViewCreateInfoConverter.cpp
+        VkSubpassDependencyAccessor.cpp
         VkStencilOpStateConverter.cpp
         VkPipelineColorBlendStateCreateInfoAccessor.cpp
         VkPhysicalDeviceFeaturesAccessor.cpp
         VkPipelineTessellationStateCreateInfoAccessor.cpp
         enum_utils.cpp
+        VkSubpassDescriptionAccessor.cpp
         VkPipelineLayoutCreateInfoAccessor.cpp
         VkPipelineInputAssemblyStateCreateInfoAccessor.cpp
         VkGraphicsPipelineCreateInfoAccessor.cpp
         VkPushConstantRangeAccessor.cpp
+        VkAttachmentReferenceAccessor.cpp
         VkSpecializationInfoAccessor.cpp
         VkVertexInputAttributeDescriptionAccessor.cpp
         VkPipelineShaderStageCreateInfoAccessor.cpp
@@ -37,6 +41,7 @@ set(COMMON_UTILS_VULKAN_UTILS_SOURCES
         VkPipelineRasterizationStateCreateInfoAccessor.cpp
         VkPipelineMultisampleStateCreateInfoAccessor.cpp
         VkStencilOpStateAccessor.cpp
+        VkRenderPassCreateInfoAccessor.cpp
         )
 
 add_library(common_utils_vulkan_utils STATIC ${COMMON_UTILS_VULKAN_UTILS_SOURCES})

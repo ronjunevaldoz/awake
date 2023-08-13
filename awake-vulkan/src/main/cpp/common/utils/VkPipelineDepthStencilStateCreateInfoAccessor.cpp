@@ -1,11 +1,10 @@
 /*
  *  VkPipelineDepthStencilStateCreateInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -43,7 +42,7 @@ private:
 private:
     jfieldID maxDepthBoundsField;
 public:
-    VkPipelineDepthStencilStateCreateInfoAccessor(JNIEnv *env, jobject obj) {
+    VkPipelineDepthStencilStateCreateInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -70,8 +69,9 @@ public:
         return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     }
 
-    void *getpNext() {
-        return (void *) (jobject) env->GetObjectField(obj, pNextField); // Object??
+    void getpNext(VkPipelineDepthStencilStateCreateInfo &clazzInfo) {
+        auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
+        clazzInfo.pNext = ref;
     }
 
     uint32_t getflags() {
@@ -99,22 +99,26 @@ public:
         return (bool) (jboolean) env->GetBooleanField(obj, stencilTestEnableField); // primitive
     }
 
-    VkStencilOpState getfront() {
+    void getfront(VkPipelineDepthStencilStateCreateInfo &clazzInfo) {
         auto frontObj = (jobject) env->GetObjectField(obj, frontField);
-        VkStencilOpStateAccessor accessor(env, frontObj);
         if (frontObj == nullptr) {
-            return {};
+            return;
         }
-        return (VkStencilOpState) (accessor.fromObject()); // Object is null, should be accessed by an accessor
+        VkStencilOpStateAccessor accessor(env, frontObj);
+        VkStencilOpState ref{};
+        accessor.fromObject(ref);
+        clazzInfo.front = ref;
     }
 
-    VkStencilOpState getback() {
+    void getback(VkPipelineDepthStencilStateCreateInfo &clazzInfo) {
         auto backObj = (jobject) env->GetObjectField(obj, backField);
-        VkStencilOpStateAccessor accessor(env, backObj);
         if (backObj == nullptr) {
-            return {};
+            return;
         }
-        return (VkStencilOpState) (accessor.fromObject()); // Object is null, should be accessed by an accessor
+        VkStencilOpStateAccessor accessor(env, backObj);
+        VkStencilOpState ref{};
+        accessor.fromObject(ref);
+        clazzInfo.back = ref;
     }
 
     float getminDepthBounds() {
@@ -125,26 +129,22 @@ public:
         return (float) (jfloat) env->GetFloatField(obj, maxDepthBoundsField); // primitive
     }
 
-    VkPipelineDepthStencilStateCreateInfo fromObject() {
-        VkPipelineDepthStencilStateCreateInfo clazzInfo{};
-        clazzInfo.sType = getsType(); // Object
-        clazzInfo.pNext = getpNext(); // Object
-        clazzInfo.flags = getflags(); // Object
-        clazzInfo.depthTestEnable = getdepthTestEnable(); // Object
-        clazzInfo.depthWriteEnable = getdepthWriteEnable(); // Object
-        clazzInfo.depthCompareOp = getdepthCompareOp(); // Object
-        clazzInfo.depthBoundsTestEnable = getdepthBoundsTestEnable(); // Object
-        clazzInfo.stencilTestEnable = getstencilTestEnable(); // Object
-        clazzInfo.front = getfront(); // Object
-        clazzInfo.back = getback(); // Object
-        clazzInfo.minDepthBounds = getminDepthBounds(); // Object
-        clazzInfo.maxDepthBounds = getmaxDepthBounds(); // Object
-        return clazzInfo;
+    void fromObject(VkPipelineDepthStencilStateCreateInfo &clazzInfo) {
+        clazzInfo.sType = getsType(); // Enum VkStructureType
+        getpNext(clazzInfo); // Object void*
+        clazzInfo.flags = getflags(); // Object uint32_t
+        clazzInfo.depthTestEnable = getdepthTestEnable(); // Object bool
+        clazzInfo.depthWriteEnable = getdepthWriteEnable(); // Object bool
+        clazzInfo.depthCompareOp = getdepthCompareOp(); // Enum VkCompareOp
+        clazzInfo.depthBoundsTestEnable = getdepthBoundsTestEnable(); // Object bool
+        clazzInfo.stencilTestEnable = getstencilTestEnable(); // Object bool
+        getfront(clazzInfo); // Object VkStencilOpState
+        getback(clazzInfo); // Object VkStencilOpState
+        clazzInfo.minDepthBounds = getminDepthBounds(); // Object float
+        clazzInfo.maxDepthBounds = getmaxDepthBounds(); // Object float
     }
 
     ~VkPipelineDepthStencilStateCreateInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

@@ -1,11 +1,10 @@
 /*
  *  VkPipelineColorBlendAttachmentStateAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -34,7 +33,7 @@ private:
 private:
     jfieldID colorWriteMaskField;
 public:
-    VkPipelineColorBlendAttachmentStateAccessor(JNIEnv *env, jobject obj) {
+    VkPipelineColorBlendAttachmentStateAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -92,22 +91,18 @@ public:
         return (uint32_t) (jint) env->GetIntField(obj, colorWriteMaskField); // primitive
     }
 
-    VkPipelineColorBlendAttachmentState fromObject() {
-        VkPipelineColorBlendAttachmentState clazzInfo{};
-        clazzInfo.blendEnable = getblendEnable(); // Object
-        clazzInfo.srcColorBlendFactor = getsrcColorBlendFactor(); // Object
-        clazzInfo.dstColorBlendFactor = getdstColorBlendFactor(); // Object
-        clazzInfo.colorBlendOp = getcolorBlendOp(); // Object
-        clazzInfo.srcAlphaBlendFactor = getsrcAlphaBlendFactor(); // Object
-        clazzInfo.dstAlphaBlendFactor = getdstAlphaBlendFactor(); // Object
-        clazzInfo.alphaBlendOp = getalphaBlendOp(); // Object
-        clazzInfo.colorWriteMask = getcolorWriteMask(); // Object
-        return clazzInfo;
+    void fromObject(VkPipelineColorBlendAttachmentState &clazzInfo) {
+        clazzInfo.blendEnable = getblendEnable(); // Object bool
+        clazzInfo.srcColorBlendFactor = getsrcColorBlendFactor(); // Enum VkBlendFactor
+        clazzInfo.dstColorBlendFactor = getdstColorBlendFactor(); // Enum VkBlendFactor
+        clazzInfo.colorBlendOp = getcolorBlendOp(); // Enum VkBlendOp
+        clazzInfo.srcAlphaBlendFactor = getsrcAlphaBlendFactor(); // Enum VkBlendFactor
+        clazzInfo.dstAlphaBlendFactor = getdstAlphaBlendFactor(); // Enum VkBlendFactor
+        clazzInfo.alphaBlendOp = getalphaBlendOp(); // Enum VkBlendOp
+        clazzInfo.colorWriteMask = getcolorWriteMask(); // Object uint32_t
     }
 
     ~VkPipelineColorBlendAttachmentStateAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

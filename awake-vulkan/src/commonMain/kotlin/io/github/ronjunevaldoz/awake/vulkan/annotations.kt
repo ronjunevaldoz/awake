@@ -23,6 +23,7 @@ import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
+@Deprecated("use VkArray instead")
 annotation class VkPointer
 
 @Target(AnnotationTarget.FIELD)

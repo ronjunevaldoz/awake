@@ -1,11 +1,10 @@
 /*
  *  VkRect2DAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -24,7 +23,7 @@ private:
 private:
     jfieldID extentField;
 public:
-    VkRect2DAccessor(JNIEnv *env, jobject obj) {
+    VkRect2DAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -34,34 +33,34 @@ public:
                                       "Lio/github/ronjunevaldoz/awake/vulkan/models/VkExtent2D;");
     }
 
-    VkOffset2D getoffset() {
+    void getoffset(VkRect2D &clazzInfo) {
         auto offsetObj = (jobject) env->GetObjectField(obj, offsetField);
-        VkOffset2DAccessor accessor(env, offsetObj);
         if (offsetObj == nullptr) {
-            return {};
+            return;
         }
-        return (VkOffset2D) (accessor.fromObject()); // Object is null, should be accessed by an accessor
+        VkOffset2DAccessor accessor(env, offsetObj);
+        VkOffset2D ref{};
+        accessor.fromObject(ref);
+        clazzInfo.offset = ref;
     }
 
-    VkExtent2D getextent() {
+    void getextent(VkRect2D &clazzInfo) {
         auto extentObj = (jobject) env->GetObjectField(obj, extentField);
-        VkExtent2DAccessor accessor(env, extentObj);
         if (extentObj == nullptr) {
-            return {};
+            return;
         }
-        return (VkExtent2D) (accessor.fromObject()); // Object is null, should be accessed by an accessor
+        VkExtent2DAccessor accessor(env, extentObj);
+        VkExtent2D ref{};
+        accessor.fromObject(ref);
+        clazzInfo.extent = ref;
     }
 
-    VkRect2D fromObject() {
-        VkRect2D clazzInfo{};
-        clazzInfo.offset = getoffset(); // Object
-        clazzInfo.extent = getextent(); // Object
-        return clazzInfo;
+    void fromObject(VkRect2D &clazzInfo) {
+        getoffset(clazzInfo); // Object VkOffset2D
+        getextent(clazzInfo); // Object VkExtent2D
     }
 
     ~VkRect2DAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

@@ -1,11 +1,10 @@
 /*
  *  VkPipelineMultisampleStateCreateInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -36,7 +35,7 @@ private:
 private:
     jfieldID alphaToOneEnableField;
 public:
-    VkPipelineMultisampleStateCreateInfoAccessor(JNIEnv *env, jobject obj) {
+    VkPipelineMultisampleStateCreateInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -58,8 +57,9 @@ public:
         return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     }
 
-    void *getpNext() {
-        return (void *) (jobject) env->GetObjectField(obj, pNextField); // Object??
+    void getpNext(VkPipelineMultisampleStateCreateInfo &clazzInfo) {
+        auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
+        clazzInfo.pNext = ref;
     }
 
     uint32_t getflags() {
@@ -80,8 +80,9 @@ public:
         return (float) (jfloat) env->GetFloatField(obj, minSampleShadingField); // primitive
     }
 
-    uint32_t *getpSampleMask() {
-        return reinterpret_cast<uint32_t *>(env->GetIntField(obj, pSampleMaskField)); // Pointer
+    void getpSampleMask(VkPipelineMultisampleStateCreateInfo &clazzInfo) {
+        auto ptr = (uint32_t) env->GetIntField(obj, pSampleMaskField); // Primitive Pointer
+        clazzInfo.pSampleMask = &ptr; // Primitive Pointer
     }
 
     bool getalphaToCoverageEnable() {
@@ -92,24 +93,19 @@ public:
         return (bool) (jboolean) env->GetBooleanField(obj, alphaToOneEnableField); // primitive
     }
 
-    VkPipelineMultisampleStateCreateInfo fromObject() {
-        VkPipelineMultisampleStateCreateInfo clazzInfo{};
-        clazzInfo.sType = getsType(); // Object
-        clazzInfo.pNext = getpNext(); // Object
-        clazzInfo.flags = getflags(); // Object
-        clazzInfo.rasterizationSamples = getrasterizationSamples(); // Object
-        clazzInfo.sampleShadingEnable = getsampleShadingEnable(); // Object
-        clazzInfo.minSampleShading = getminSampleShading(); // Object
-        auto pSampleMaskPtr = getpSampleMask();
-        clazzInfo.pSampleMask = pSampleMaskPtr; // Pointer
-        clazzInfo.alphaToCoverageEnable = getalphaToCoverageEnable(); // Object
-        clazzInfo.alphaToOneEnable = getalphaToOneEnable(); // Object
-        return clazzInfo;
+    void fromObject(VkPipelineMultisampleStateCreateInfo &clazzInfo) {
+        clazzInfo.sType = getsType(); // Enum VkStructureType
+        getpNext(clazzInfo); // Object void*
+        clazzInfo.flags = getflags(); // Object uint32_t
+        clazzInfo.rasterizationSamples = getrasterizationSamples(); // Enum VkSampleCountFlagBits
+        clazzInfo.sampleShadingEnable = getsampleShadingEnable(); // Object bool
+        clazzInfo.minSampleShading = getminSampleShading(); // Object float
+        getpSampleMask(clazzInfo); // Pointer
+        clazzInfo.alphaToCoverageEnable = getalphaToCoverageEnable(); // Object bool
+        clazzInfo.alphaToOneEnable = getalphaToOneEnable(); // Object bool
     }
 
     ~VkPipelineMultisampleStateCreateInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

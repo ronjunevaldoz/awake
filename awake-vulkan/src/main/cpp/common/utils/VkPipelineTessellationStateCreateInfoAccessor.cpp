@@ -1,11 +1,10 @@
 /*
  *  VkPipelineTessellationStateCreateInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -26,7 +25,7 @@ private:
 private:
     jfieldID patchControlPointsField;
 public:
-    VkPipelineTessellationStateCreateInfoAccessor(JNIEnv *env, jobject obj) {
+    VkPipelineTessellationStateCreateInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -42,8 +41,9 @@ public:
         return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     }
 
-    void *getpNext() {
-        return (void *) (jobject) env->GetObjectField(obj, pNextField); // Object??
+    void getpNext(VkPipelineTessellationStateCreateInfo &clazzInfo) {
+        auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
+        clazzInfo.pNext = ref;
     }
 
     uint32_t getflags() {
@@ -54,18 +54,14 @@ public:
         return (uint32_t) (jint) env->GetIntField(obj, patchControlPointsField); // primitive
     }
 
-    VkPipelineTessellationStateCreateInfo fromObject() {
-        VkPipelineTessellationStateCreateInfo clazzInfo{};
-        clazzInfo.sType = getsType(); // Object
-        clazzInfo.pNext = getpNext(); // Object
-        clazzInfo.flags = getflags(); // Object
-        clazzInfo.patchControlPoints = getpatchControlPoints(); // Object
-        return clazzInfo;
+    void fromObject(VkPipelineTessellationStateCreateInfo &clazzInfo) {
+        clazzInfo.sType = getsType(); // Enum VkStructureType
+        getpNext(clazzInfo); // Object void*
+        clazzInfo.flags = getflags(); // Object uint32_t
+        clazzInfo.patchControlPoints = getpatchControlPoints(); // Object uint32_t
     }
 
     ~VkPipelineTessellationStateCreateInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

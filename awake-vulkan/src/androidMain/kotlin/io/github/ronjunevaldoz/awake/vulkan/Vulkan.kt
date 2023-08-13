@@ -26,9 +26,11 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayoutCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceProperties
 import io.github.ronjunevaldoz.awake.vulkan.presentation.VkAndroidSurfaceCreateInfoKHR
@@ -154,4 +156,16 @@ actual object Vulkan {
     ): LongArray
 
     actual external fun vkDestroyPipeline(device: Long, pipeline: Long)
+    actual external fun vkCreatePipelineLayout(
+        device: Long,
+        createInfo: VkPipelineLayoutCreateInfo
+    ): Long
+
+    actual external fun vkDestroyPipelineLayout(device: Long, pipelineLayout: Long)
+    actual external fun vkCreateRenderPass(
+        device: Long,
+        createInfo: VkRenderPassCreateInfo
+    ): Long
+
+    actual external fun vkDestroyRenderPass(device: Long, renderPass: Long)
 }

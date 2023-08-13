@@ -17,16 +17,11 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan.enums
+package io.github.ronjunevaldoz.awake.vulkan.models
 
-import io.github.ronjunevaldoz.awake.vulkan.VkFlags
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkImageLayout
 
-enum class VkColorComponentFlagBits(val value: Int) {
-    VK_COLOR_COMPONENT_R_BIT(0x00000001),
-    VK_COLOR_COMPONENT_G_BIT(0x00000002),
-    VK_COLOR_COMPONENT_B_BIT(0x00000004),
-    VK_COLOR_COMPONENT_A_BIT(0x00000008),
-    VK_COLOR_COMPONENT_FLAG_BITS_MAX_ENUM(0x7FFFFFFF)
-}
-
-typealias VkColorComponentFlags = VkFlags
+data class VkAttachmentReference(
+    val attachment: Int = 0,
+    val layout: VkImageLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED
+)

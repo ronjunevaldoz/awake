@@ -26,9 +26,11 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayoutCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceProperties
 import io.github.ronjunevaldoz.awake.vulkan.presentation.VkAndroidSurfaceCreateInfoKHR
@@ -238,6 +240,8 @@ expect object Vulkan {
     fun vkDestroyShaderModule(device: Long, shaderModule: Long)
     fun vkCreatePipelineCache(device: Long, createInfo: VkPipelineCacheCreateInfo): Long
     fun vkDestroyPipelineCache(device: Long, pipelineCache: Long)
+    fun vkCreatePipelineLayout(device: Long, createInfo: VkPipelineLayoutCreateInfo): Long
+    fun vkDestroyPipelineLayout(device: Long, pipelineLayout: Long)
     fun vkCreateGraphicsPipeline(
         device: Long,
         pipelineCache: Long,
@@ -245,6 +249,13 @@ expect object Vulkan {
     ): LongArray
 
     fun vkDestroyPipeline(device: Long, pipeline: Long)
+
+    fun vkCreateRenderPass(
+        device: Long,
+        createInfo: VkRenderPassCreateInfo
+    ): Long
+
+    fun vkDestroyRenderPass(device: Long, renderPass: Long)
 
     // Debug messenger
     fun createDebugUtilsMessenger(instance: Long): Long

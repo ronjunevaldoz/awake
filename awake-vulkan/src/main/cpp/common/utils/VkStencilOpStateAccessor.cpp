@@ -1,11 +1,10 @@
 /*
  *  VkStencilOpStateAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -32,7 +31,7 @@ private:
 private:
     jfieldID referenceField;
 public:
-    VkStencilOpStateAccessor(JNIEnv *env, jobject obj) {
+    VkStencilOpStateAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -81,21 +80,17 @@ public:
         return (uint32_t) (jint) env->GetIntField(obj, referenceField); // primitive
     }
 
-    VkStencilOpState fromObject() {
-        VkStencilOpState clazzInfo{};
-        clazzInfo.failOp = getfailOp(); // Object
-        clazzInfo.passOp = getpassOp(); // Object
-        clazzInfo.depthFailOp = getdepthFailOp(); // Object
-        clazzInfo.compareOp = getcompareOp(); // Object
-        clazzInfo.compareMask = getcompareMask(); // Object
-        clazzInfo.writeMask = getwriteMask(); // Object
-        clazzInfo.reference = getreference(); // Object
-        return clazzInfo;
+    void fromObject(VkStencilOpState &clazzInfo) {
+        clazzInfo.failOp = getfailOp(); // Enum VkStencilOp
+        clazzInfo.passOp = getpassOp(); // Enum VkStencilOp
+        clazzInfo.depthFailOp = getdepthFailOp(); // Enum VkStencilOp
+        clazzInfo.compareOp = getcompareOp(); // Enum VkCompareOp
+        clazzInfo.compareMask = getcompareMask(); // Object uint32_t
+        clazzInfo.writeMask = getwriteMask(); // Object uint32_t
+        clazzInfo.reference = getreference(); // Object uint32_t
     }
 
     ~VkStencilOpStateAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

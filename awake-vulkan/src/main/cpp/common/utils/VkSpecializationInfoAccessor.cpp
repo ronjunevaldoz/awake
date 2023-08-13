@@ -1,11 +1,10 @@
 /*
  *  VkSpecializationInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -27,7 +26,7 @@ private:
 private:
     jfieldID pDataField;
 public:
-    VkSpecializationInfoAccessor(JNIEnv *env, jobject obj) {
+    VkSpecializationInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -42,54 +41,60 @@ public:
         return (uint32_t) (jint) env->GetIntField(obj, mapEntryCountField); // primitive
     }
 
-    std::vector<VkSpecializationMapEntry> getpMapEntries() {
+    void getpMapEntries(VkSpecializationInfo &clazzInfo) {
         auto pMapEntriesArray = (jobjectArray) env->GetObjectField(obj, pMapEntriesField);
         if (pMapEntriesArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(pMapEntriesArray);
-        std::vector<VkSpecializationMapEntry> array;
+        std::vector<VkSpecializationMapEntry> pMapEntries;
         for (int i = 0; i < size; ++i) {
             auto element = (jobject) env->GetObjectArrayElement(pMapEntriesArray,
                                                                 i); // actual type is VkSpecializationMapEntry[];
             // experimental optimize accessor
             VkSpecializationMapEntryAccessor accessor(env, element);
-            array.push_back(accessor.fromObject());
+            VkSpecializationMapEntry ref{};
+            accessor.fromObject(ref);
+            pMapEntries.push_back(ref);
         }
-        return array;
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkSpecializationMapEntry[size];
+        std::copy(pMapEntries.begin(), pMapEntries.end(), copy);
+        clazzInfo.pMapEntries = copy;
     }
 
     uint64_t getdataSize() {
         return (uint64_t) (jlong) env->GetLongField(obj, dataSizeField); // primitive
     }
 
-    std::vector<void *> getpData() {
+    void getpData(VkSpecializationInfo &clazzInfo) {
         auto pDataArray = (jobjectArray) env->GetObjectField(obj, pDataField);
         if (pDataArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(pDataArray);
-        std::vector<void *> array;
+        std::vector<void *> pData;
         for (int i = 0; i < size; ++i) {
             auto element = (jobject) env->GetObjectArrayElement(pDataArray,
                                                                 i); // actual type is Object[];
-            array.push_back(element); // type is Any??
+            pData.push_back(element); // type is Any??
         }
-        return array;
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new const void *[size];
+        std::copy(pData.begin(), pData.end(), copy);
+        clazzInfo.pData = copy;
     }
 
-    VkSpecializationInfo fromObject() {
-        VkSpecializationInfo clazzInfo{};
-        clazzInfo.mapEntryCount = getmapEntryCount(); // Object
-        clazzInfo.pMapEntries = getpMapEntries().data(); // Object Array
-        clazzInfo.dataSize = getdataSize(); // Object
-        clazzInfo.pData = getpData().data(); // Object Array
-        return clazzInfo;
+    void fromObject(VkSpecializationInfo &clazzInfo) {
+        clazzInfo.mapEntryCount = getmapEntryCount(); // Object uint32_t
+        getpMapEntries(clazzInfo);  // VkSpecializationMapEntry Object Array
+        clazzInfo.dataSize = getdataSize(); // Object uint64_t
+        getpData(clazzInfo);  // Object Object Array
     }
 
     ~VkSpecializationInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

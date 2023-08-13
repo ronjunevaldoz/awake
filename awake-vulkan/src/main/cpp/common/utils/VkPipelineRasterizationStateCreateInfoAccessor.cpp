@@ -1,11 +1,10 @@
 /*
  *  VkPipelineRasterizationStateCreateInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -44,7 +43,7 @@ private:
 private:
     jfieldID lineWidthField;
 public:
-    VkPipelineRasterizationStateCreateInfoAccessor(JNIEnv *env, jobject obj) {
+    VkPipelineRasterizationStateCreateInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -71,8 +70,9 @@ public:
         return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     }
 
-    void *getpNext() {
-        return (void *) (jobject) env->GetObjectField(obj, pNextField); // Object??
+    void getpNext(VkPipelineRasterizationStateCreateInfo &clazzInfo) {
+        auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
+        clazzInfo.pNext = ref;
     }
 
     uint32_t getflags() {
@@ -122,27 +122,23 @@ public:
         return (float) (jfloat) env->GetFloatField(obj, lineWidthField); // primitive
     }
 
-    VkPipelineRasterizationStateCreateInfo fromObject() {
-        VkPipelineRasterizationStateCreateInfo clazzInfo{};
-        clazzInfo.sType = getsType(); // Object
-        clazzInfo.pNext = getpNext(); // Object
-        clazzInfo.flags = getflags(); // Object
-        clazzInfo.depthClampEnable = getdepthClampEnable(); // Object
-        clazzInfo.rasterizerDiscardEnable = getrasterizerDiscardEnable(); // Object
-        clazzInfo.polygonMode = getpolygonMode(); // Object
-        clazzInfo.cullMode = getcullMode(); // Object
-        clazzInfo.frontFace = getfrontFace(); // Object
-        clazzInfo.depthBiasEnable = getdepthBiasEnable(); // Object
-        clazzInfo.depthBiasConstantFactor = getdepthBiasConstantFactor(); // Object
-        clazzInfo.depthBiasClamp = getdepthBiasClamp(); // Object
-        clazzInfo.depthBiasSlopeFactor = getdepthBiasSlopeFactor(); // Object
-        clazzInfo.lineWidth = getlineWidth(); // Object
-        return clazzInfo;
+    void fromObject(VkPipelineRasterizationStateCreateInfo &clazzInfo) {
+        clazzInfo.sType = getsType(); // Enum VkStructureType
+        getpNext(clazzInfo); // Object void*
+        clazzInfo.flags = getflags(); // Object uint32_t
+        clazzInfo.depthClampEnable = getdepthClampEnable(); // Object bool
+        clazzInfo.rasterizerDiscardEnable = getrasterizerDiscardEnable(); // Object bool
+        clazzInfo.polygonMode = getpolygonMode(); // Enum VkPolygonMode
+        clazzInfo.cullMode = getcullMode(); // Object uint32_t
+        clazzInfo.frontFace = getfrontFace(); // Enum VkFrontFace
+        clazzInfo.depthBiasEnable = getdepthBiasEnable(); // Object bool
+        clazzInfo.depthBiasConstantFactor = getdepthBiasConstantFactor(); // Object float
+        clazzInfo.depthBiasClamp = getdepthBiasClamp(); // Object float
+        clazzInfo.depthBiasSlopeFactor = getdepthBiasSlopeFactor(); // Object float
+        clazzInfo.lineWidth = getlineWidth(); // Object float
     }
 
     ~VkPipelineRasterizationStateCreateInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

@@ -1,11 +1,10 @@
 /*
  *  VkOffset2DAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -22,7 +21,7 @@ private:
 private:
     jfieldID yField;
 public:
-    VkOffset2DAccessor(JNIEnv *env, jobject obj) {
+    VkOffset2DAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -38,16 +37,12 @@ public:
         return (uint32_t) (jint) env->GetIntField(obj, yField); // primitive
     }
 
-    VkOffset2D fromObject() {
-        VkOffset2D clazzInfo{};
-        clazzInfo.x = getx(); // Object
-        clazzInfo.y = gety(); // Object
-        return clazzInfo;
+    void fromObject(VkOffset2D &clazzInfo) {
+        clazzInfo.x = getx(); // Object uint32_t
+        clazzInfo.y = gety(); // Object uint32_t
     }
 
     ~VkOffset2DAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

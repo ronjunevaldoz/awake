@@ -1,11 +1,10 @@
 /*
  *  VkVertexInputBindingDescriptionAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -24,7 +23,7 @@ private:
 private:
     jfieldID inputRateField;
 public:
-    VkVertexInputBindingDescriptionAccessor(JNIEnv *env, jobject obj) {
+    VkVertexInputBindingDescriptionAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -47,17 +46,13 @@ public:
         return (VkVertexInputRate) enum_utils::getEnumFromObject(env, inputRateEnum);
     }
 
-    VkVertexInputBindingDescription fromObject() {
-        VkVertexInputBindingDescription clazzInfo{};
-        clazzInfo.binding = getbinding(); // Object
-        clazzInfo.stride = getstride(); // Object
-        clazzInfo.inputRate = getinputRate(); // Object
-        return clazzInfo;
+    void fromObject(VkVertexInputBindingDescription &clazzInfo) {
+        clazzInfo.binding = getbinding(); // Object uint32_t
+        clazzInfo.stride = getstride(); // Object uint32_t
+        clazzInfo.inputRate = getinputRate(); // Enum VkVertexInputRate
     }
 
     ~VkVertexInputBindingDescriptionAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

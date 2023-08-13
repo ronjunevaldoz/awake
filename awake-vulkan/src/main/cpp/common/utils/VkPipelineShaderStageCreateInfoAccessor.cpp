@@ -1,11 +1,10 @@
 /*
  *  VkPipelineShaderStageCreateInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -33,7 +32,7 @@ private:
 private:
     jfieldID pSpecializationInfoField;
 public:
-    VkPipelineShaderStageCreateInfoAccessor(JNIEnv *env, jobject obj) {
+    VkPipelineShaderStageCreateInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -54,8 +53,9 @@ public:
         return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     }
 
-    void *getpNext() {
-        return (void *) (jobject) env->GetObjectField(obj, pNextField); // Object??
+    void getpNext(VkPipelineShaderStageCreateInfo &clazzInfo) {
+        auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
+        clazzInfo.pNext = ref;
     }
 
     uint32_t getflags() {
@@ -67,51 +67,53 @@ public:
         return (VkShaderStageFlagBits) enum_utils::getEnumFromObject(env, stageEnum);
     }
 
-    uint64_t getmodule() {
-        return (uint64_t) (jlong) env->GetLongField(obj, moduleField); // primitive
+    VkShaderModule getmodule() {
+        return reinterpret_cast<VkShaderModule>(env->GetLongField(obj, moduleField)); // VkHandle
     }
 
-    const char *getpName() {
+    void getpName(VkPipelineShaderStageCreateInfo &clazzInfo) {
         auto pNameObj = (jstring) env->GetObjectField(obj, pNameField);
         auto str = (const char *) env->GetStringUTFChars(pNameObj, nullptr);
         auto result = strdup(str); // Allocate memory and copy the string
         env->ReleaseStringUTFChars(pNameObj, str); // Release the local string reference
-        return result;
+        clazzInfo.pName = result;
     }
 
-    std::vector<VkSpecializationInfo> getpSpecializationInfo() {
+    void getpSpecializationInfo(VkPipelineShaderStageCreateInfo &clazzInfo) {
         auto pSpecializationInfoArray = (jobjectArray) env->GetObjectField(obj,
                                                                            pSpecializationInfoField);
         if (pSpecializationInfoArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(pSpecializationInfoArray);
-        std::vector<VkSpecializationInfo> array;
+        std::vector<VkSpecializationInfo> pSpecializationInfo;
         for (int i = 0; i < size; ++i) {
             auto element = (jobject) env->GetObjectArrayElement(pSpecializationInfoArray,
                                                                 i); // actual type is VkSpecializationInfo[];
             // experimental optimize accessor
             VkSpecializationInfoAccessor accessor(env, element);
-            array.push_back(accessor.fromObject());
+            VkSpecializationInfo ref{};
+            accessor.fromObject(ref);
+            pSpecializationInfo.push_back(ref);
         }
-        return array;
+        // processing
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkSpecializationInfo[size];
+        std::copy(pSpecializationInfo.begin(), pSpecializationInfo.end(), copy);
+        clazzInfo.pSpecializationInfo = copy;
     }
 
-    VkPipelineShaderStageCreateInfo fromObject() {
-        VkPipelineShaderStageCreateInfo clazzInfo{};
-        clazzInfo.sType = getsType(); // Object
-        clazzInfo.pNext = getpNext(); // Object
-        clazzInfo.flags = getflags(); // Object
-        clazzInfo.stage = getstage(); // Object
-        clazzInfo.module = getmodule(); // Object
-        clazzInfo.pName = getpName(); // Object
-        clazzInfo.pSpecializationInfo = getpSpecializationInfo().data(); // Object Array
-        return clazzInfo;
+    void fromObject(VkPipelineShaderStageCreateInfo &clazzInfo) {
+        clazzInfo.sType = getsType(); // Enum VkStructureType
+        getpNext(clazzInfo); // Object void*
+        clazzInfo.flags = getflags(); // Object uint32_t
+        clazzInfo.stage = getstage(); // Enum VkShaderStageFlagBits
+        clazzInfo.module = getmodule(); // VkHandle
+        getpName(clazzInfo); // Object const char*
+        getpSpecializationInfo(clazzInfo);  // VkSpecializationInfo Object Array
     }
 
     ~VkPipelineShaderStageCreateInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

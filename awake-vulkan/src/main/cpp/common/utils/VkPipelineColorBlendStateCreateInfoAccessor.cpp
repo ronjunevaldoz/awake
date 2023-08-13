@@ -1,11 +1,10 @@
 /*
  *  VkPipelineColorBlendStateCreateInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -35,7 +34,7 @@ private:
 private:
     jfieldID blendConstantsField;
 public:
-    VkPipelineColorBlendStateCreateInfoAccessor(JNIEnv *env, jobject obj) {
+    VkPipelineColorBlendStateCreateInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -57,8 +56,9 @@ public:
         return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     }
 
-    void *getpNext() {
-        return (void *) (jobject) env->GetObjectField(obj, pNextField); // Object??
+    void getpNext(VkPipelineColorBlendStateCreateInfo &clazzInfo) {
+        auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
+        clazzInfo.pNext = ref;
     }
 
     uint32_t getflags() {
@@ -78,45 +78,44 @@ public:
         return (uint32_t) (jint) env->GetIntField(obj, attachmentCountField); // primitive
     }
 
-    VkPipelineColorBlendAttachmentState getpAttachments() {
+    void getpAttachments(VkPipelineColorBlendStateCreateInfo &clazzInfo) {
         auto pAttachmentsObj = (jobject) env->GetObjectField(obj, pAttachmentsField);
-        VkPipelineColorBlendAttachmentStateAccessor accessor(env, pAttachmentsObj);
         if (pAttachmentsObj == nullptr) {
-            return {};
+            return;
         }
-        return (VkPipelineColorBlendAttachmentState) (accessor.fromObject()); // Object is null, should be accessed by an accessor
+        VkPipelineColorBlendAttachmentStateAccessor accessor(env, pAttachmentsObj);
+        VkPipelineColorBlendAttachmentState ref{};
+        accessor.fromObject(ref);
+        clazzInfo.pAttachments = &ref;
     }
 
-    std::vector<float> getblendConstants() {
+    void getblendConstants(VkPipelineColorBlendStateCreateInfo &clazzInfo) {
         auto blendConstantsArray = (jfloatArray) env->GetObjectField(obj, blendConstantsField);
         if (blendConstantsArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(blendConstantsArray);
-        std::vector<float> array(size);
+        // primitive array?
+        std::vector<float> blendConstants(size);
         env->GetFloatArrayRegion(blendConstantsArray, 0, size,
-                                 reinterpret_cast<jfloat *>(array.data()));
-        return array;
+                                 reinterpret_cast<jfloat *>(blendConstants.data()));
+        // processing
+        std::copy(blendConstants.begin(), blendConstants.end(),
+                  clazzInfo.blendConstants); // fixed array size
     }
 
-    VkPipelineColorBlendStateCreateInfo fromObject() {
-        VkPipelineColorBlendStateCreateInfo clazzInfo{};
-        clazzInfo.sType = getsType(); // Object
-        clazzInfo.pNext = getpNext(); // Object
-        clazzInfo.flags = getflags(); // Object
-        clazzInfo.logicOpEnable = getlogicOpEnable(); // Object
-        clazzInfo.logicOp = getlogicOp(); // Object
-        clazzInfo.attachmentCount = getattachmentCount(); // Object
-        auto pAttachmentsPtr = getpAttachments();
-        clazzInfo.pAttachments = pAttachmentsPtr; // Pointer
-        auto blendConstants = getblendConstants();  // float Primitive Array
-        std::copy(blendConstants.begin(), blendConstants.end(), clazzInfo.blendConstants);
-        return clazzInfo;
+    void fromObject(VkPipelineColorBlendStateCreateInfo &clazzInfo) {
+        clazzInfo.sType = getsType(); // Enum VkStructureType
+        getpNext(clazzInfo); // Object void*
+        clazzInfo.flags = getflags(); // Object uint32_t
+        clazzInfo.logicOpEnable = getlogicOpEnable(); // Object bool
+        clazzInfo.logicOp = getlogicOp(); // Enum VkLogicOp
+        clazzInfo.attachmentCount = getattachmentCount(); // Object uint32_t
+        getpAttachments(clazzInfo); // Pointer
+        getblendConstants(clazzInfo);  // float Object Array
     }
 
     ~VkPipelineColorBlendStateCreateInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

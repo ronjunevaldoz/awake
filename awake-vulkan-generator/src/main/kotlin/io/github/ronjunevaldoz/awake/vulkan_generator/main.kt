@@ -19,15 +19,20 @@
 
 package io.github.ronjunevaldoz.awake.vulkan_generator
 
+import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentDescription
+import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentReference
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkOffset2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkRect2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkStencilOpState
+import io.github.ronjunevaldoz.awake.vulkan.models.VkSubpassDependency
 import io.github.ronjunevaldoz.awake.vulkan.models.VkViewport
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSubpassDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendAttachmentState
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendStateCreateInfo
@@ -95,6 +100,12 @@ fun main(args: Array<String>) {
     generateJavaToVulkanCpp<VkRect2D>()
     generateJavaToVulkanCpp<VkViewport>()
     generateJavaToVulkanCpp<VkPipelineViewportStateCreateInfo>()
+    // render pass
+    generateJavaToVulkanCpp<VkAttachmentReference>()
+    generateJavaToVulkanCpp<VkAttachmentDescription>()
+    generateJavaToVulkanCpp<VkSubpassDescription>()
+    generateJavaToVulkanCpp<VkSubpassDependency>()
+    generateJavaToVulkanCpp<VkRenderPassCreateInfo>()
 
     println(cmakeListTemplate("awake-vulkan/src/main/cpp/common/utils/"))
 }

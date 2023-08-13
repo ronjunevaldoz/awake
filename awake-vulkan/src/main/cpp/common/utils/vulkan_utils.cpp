@@ -17,6 +17,8 @@
 #include "VkPipelineCacheCreateInfoAccessor.cpp"
 #include "VkApplicationInfoAccessor.cpp"
 #include "VkDeviceCreateInfoAccessor.cpp"
+#include "VkPipelineLayoutCreateInfoAccessor.cpp"
+#include "VkRenderPassCreateInfoAccessor.cpp"
 
 namespace vulkan_utils {
     bool VkPhysicalDeviceSparseProperties_fromObject(JNIEnv *env,
@@ -1011,7 +1013,8 @@ namespace vulkan_utils {
     }
 
     jlongArray createGraphicsPipeline(JNIEnv *env, jlong pDevice, jlong pPipelineCache,
-                                      jobjectArray createInfosObj) {
+                                      jobjectArray createInfosObj
+    ) {
         auto device = reinterpret_cast<VkDevice>(pDevice);
         auto pipelineCache = reinterpret_cast<VkPipelineCache>(pPipelineCache);
         auto createInfoSize = env->GetArrayLength(createInfosObj);
@@ -1023,7 +1026,7 @@ namespace vulkan_utils {
             accessor.fromObject(createInfo);
             createInfos[i] = createInfo;
         }
-        std::vector<VkPipeline> pipelines;
+        std::vector<VkPipeline> pipelines(createInfoSize);
         VkResult result = vkCreateGraphicsPipelines(device, pipelineCache,
                                                     static_cast<uint32_t>(createInfos.size()),
                                                     createInfos.data(), nullptr, pipelines.data());
@@ -1042,5 +1045,45 @@ namespace vulkan_utils {
         auto device = reinterpret_cast<VkDevice>(pDevice);
         auto pipeline = reinterpret_cast<VkPipeline>(pPipeline);
         vkDestroyPipeline(device, pipeline, nullptr);
+    }
+
+    jlong createPipelineLayout(JNIEnv *env, jlong pDevice, jobject pCreateInfo) {
+        auto device = reinterpret_cast<VkDevice>(pDevice);
+        VkPipelineLayoutCreateInfoAccessor accessor(env, pCreateInfo);
+        VkPipelineLayoutCreateInfo createInfo;
+        accessor.fromObject(createInfo);
+        VkPipelineLayout layout;
+        VkResult result = vkCreatePipelineLayout(device, &createInfo, nullptr, &layout);
+
+        if (result != VK_SUCCESS) {
+            return 0;
+        }
+        return reinterpret_cast<jlong>(layout);
+    }
+
+    void destroyPipelineLayout(jlong pDevice, jlong pPiplineLayout) {
+        auto device = reinterpret_cast<VkDevice>(pDevice);
+        auto piplineLayout = reinterpret_cast<VkPipelineLayout>(pPiplineLayout);
+        vkDestroyPipelineLayout(device, piplineLayout, nullptr);
+    }
+
+    jlong createRenderPass(JNIEnv *env, jlong pDevice, jobject pCreateInfo) {
+        auto device = reinterpret_cast<VkDevice>(pDevice);
+        VkRenderPassCreateInfoAccessor accessor(env, pCreateInfo);
+        VkRenderPassCreateInfo createInfo;
+        accessor.fromObject(createInfo);
+        VkRenderPass handle;
+        VkResult result = vkCreateRenderPass(device, &createInfo, nullptr, &handle);
+
+        if (result != VK_SUCCESS) {
+            return 0;
+        }
+        return reinterpret_cast<jlong>(handle);
+    }
+
+    void destroyRenderPass(jlong pDevice, jlong pRenderPass) {
+        auto device = reinterpret_cast<VkDevice>(pDevice);
+        auto renderPass = reinterpret_cast<VkRenderPass>(pRenderPass);
+        vkDestroyRenderPass(device, renderPass, nullptr);
     }
 }

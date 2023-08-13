@@ -1,11 +1,10 @@
 /*
  *  VkDeviceQueueCreateInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -30,7 +29,7 @@ private:
 private:
     jfieldID pQueuePrioritiesField;
 public:
-    VkDeviceQueueCreateInfoAccessor(JNIEnv *env, jobject obj) {
+    VkDeviceQueueCreateInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -48,8 +47,9 @@ public:
         return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     }
 
-    void *getpNext() {
-        return (void *) (jobject) env->GetObjectField(obj, pNextField); // Object??
+    void getpNext(VkDeviceQueueCreateInfo &clazzInfo) {
+        auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
+        clazzInfo.pNext = ref;
     }
 
     uint32_t getflags() {
@@ -64,33 +64,34 @@ public:
         return (uint32_t) (jint) env->GetIntField(obj, queueCountField); // primitive
     }
 
-    std::vector<float> getpQueuePriorities() {
+    void getpQueuePriorities(VkDeviceQueueCreateInfo &clazzInfo) {
         auto pQueuePrioritiesArray = (jfloatArray) env->GetObjectField(obj, pQueuePrioritiesField);
         if (pQueuePrioritiesArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(pQueuePrioritiesArray);
-        std::vector<float> array(size);
+        // primitive array?
+        std::vector<float> pQueuePriorities(size);
         env->GetFloatArrayRegion(pQueuePrioritiesArray, 0, size,
-                                 reinterpret_cast<jfloat *>(array.data()));
-        return array;
+                                 reinterpret_cast<jfloat *>(pQueuePriorities.data()));
+        // processing
+        // no array size generated
+        // Make a copy of the data to ensure proper memory management;
+        auto copy = new float[size];
+        std::copy(pQueuePriorities.begin(), pQueuePriorities.end(), copy);
+        clazzInfo.pQueuePriorities = copy;
     }
 
-    VkDeviceQueueCreateInfo fromObject() {
-        VkDeviceQueueCreateInfo clazzInfo{};
-        clazzInfo.sType = getsType(); // Object
-        clazzInfo.pNext = getpNext(); // Object
-        clazzInfo.flags = getflags(); // Object
-        clazzInfo.queueFamilyIndex = getqueueFamilyIndex(); // Object
-        clazzInfo.queueCount = getqueueCount(); // Object
-        auto pQueuePriorities = getpQueuePriorities();  // float Primitive Array
-        std::copy(pQueuePriorities.begin(), pQueuePriorities.end(), clazzInfo.pQueuePriorities);
-        return clazzInfo;
+    void fromObject(VkDeviceQueueCreateInfo &clazzInfo) {
+        clazzInfo.sType = getsType(); // Enum VkStructureType
+        getpNext(clazzInfo); // Object void*
+        clazzInfo.flags = getflags(); // Object uint32_t
+        clazzInfo.queueFamilyIndex = getqueueFamilyIndex(); // Object int32_t
+        clazzInfo.queueCount = getqueueCount(); // Object uint32_t
+        getpQueuePriorities(clazzInfo);  // float Object Array
     }
 
     ~VkDeviceQueueCreateInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

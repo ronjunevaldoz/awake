@@ -26,9 +26,11 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayoutCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceProperties
 import io.github.ronjunevaldoz.awake.vulkan.presentation.VkAndroidSurfaceCreateInfoKHR
@@ -316,5 +318,25 @@ actual object Vulkan {
     }
 
     actual fun destroyDebugUtilsMessenger(instance: Long, debugUtilsMessenger: Long) {
+    }
+
+    actual fun vkCreatePipelineLayout(
+        device: Long,
+        createInfo: VkPipelineLayoutCreateInfo
+    ): Long {
+        TODO("Not yet implemented")
+    }
+
+    actual fun vkDestroyPipelineLayout(device: Long, pipelineLayout: Long) {
+    }
+
+    actual fun vkCreateRenderPass(
+        device: Long,
+        createInfo: VkRenderPassCreateInfo
+    ): Long {
+        TODO("Not yet implemented")
+    }
+
+    actual fun vkDestroyRenderPass(device: Long, renderPass: Long) {
     }
 }

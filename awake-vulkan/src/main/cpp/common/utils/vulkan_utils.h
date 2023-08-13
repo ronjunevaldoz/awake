@@ -133,7 +133,8 @@ namespace vulkan_utils {
     void destroyPipelineCache(jlong device, jlong pipelineCache);
 
     jlongArray createGraphicsPipeline(JNIEnv *env, jlong pDevice, jlong pPipelineCache,
-                                      jobjectArray createInfosObj);
+                                      jobjectArray createInfosObj
+    );
 
     void destroyPipeline(jlong device, jlong graphicsPipeline);
 
@@ -142,6 +143,14 @@ namespace vulkan_utils {
     _jobjectArray *enumerateDeviceExtensionProperties(JNIEnv *env, jlong pPhysicalDevice);
 
     _jobjectArray *getSwapchainImagesKHR(JNIEnv *env, jlong pDevice, jlong pSwapchain);
+
+    jlong createPipelineLayout(JNIEnv *env, jlong device, jobject pCreateInfo);
+
+    void destroyPipelineLayout(jlong device, jlong piplineLayout);
+
+    jlong createRenderPass(JNIEnv *env, jlong device, jobject pCreateInfo);
+
+    void destroyRenderPass(jlong device, jlong renderPass);
 }
 
 #endif //AWAKE_VULKAN_UTILS_H

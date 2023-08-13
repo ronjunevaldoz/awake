@@ -17,16 +17,17 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan.enums
+package io.github.ronjunevaldoz.awake.vulkan.enums.flags
 
 import io.github.ronjunevaldoz.awake.vulkan.VkFlags
 
-enum class VkColorComponentFlagBits(val value: Int) {
-    VK_COLOR_COMPONENT_R_BIT(0x00000001),
-    VK_COLOR_COMPONENT_G_BIT(0x00000002),
-    VK_COLOR_COMPONENT_B_BIT(0x00000004),
-    VK_COLOR_COMPONENT_A_BIT(0x00000008),
-    VK_COLOR_COMPONENT_FLAG_BITS_MAX_ENUM(0x7FFFFFFF)
+enum class VkDependencyFlagBits(val value: Int) {
+    VK_DEPENDENCY_BY_REGION_BIT(0x00000001),
+    VK_DEPENDENCY_DEVICE_GROUP_BIT(0x00000004),
+    VK_DEPENDENCY_VIEW_LOCAL_BIT(0x00000002),
+    VK_DEPENDENCY_VIEW_LOCAL_BIT_KHR(VK_DEPENDENCY_VIEW_LOCAL_BIT.value),
+    VK_DEPENDENCY_DEVICE_GROUP_BIT_KHR(VK_DEPENDENCY_DEVICE_GROUP_BIT.value),
+    VK_DEPENDENCY_FLAG_BITS_MAX_ENUM(0x7FFFFFFF)
 }
 
-typealias VkColorComponentFlags = VkFlags
+typealias VkDependencyFlags = VkFlags

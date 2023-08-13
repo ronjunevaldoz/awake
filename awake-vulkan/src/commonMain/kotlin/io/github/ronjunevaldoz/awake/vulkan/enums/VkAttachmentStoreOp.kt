@@ -19,14 +19,12 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.enums
 
-import io.github.ronjunevaldoz.awake.vulkan.VkFlags
-
-enum class VkColorComponentFlagBits(val value: Int) {
-    VK_COLOR_COMPONENT_R_BIT(0x00000001),
-    VK_COLOR_COMPONENT_G_BIT(0x00000002),
-    VK_COLOR_COMPONENT_B_BIT(0x00000004),
-    VK_COLOR_COMPONENT_A_BIT(0x00000008),
-    VK_COLOR_COMPONENT_FLAG_BITS_MAX_ENUM(0x7FFFFFFF)
+enum class VkAttachmentStoreOp(val value: Int) {
+    STORE(0),
+    DONT_CARE(1),
+    NONE(1000301000),
+    NONE_KHR(NONE.value),
+    NONE_QCOM(NONE.value),
+    NONE_EXT(NONE.value),
+    MAX_ENUM(0x7FFFFFFF)
 }
-
-typealias VkColorComponentFlags = VkFlags

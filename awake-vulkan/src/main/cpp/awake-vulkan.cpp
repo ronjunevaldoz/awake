@@ -219,3 +219,31 @@ Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkDestroyPipeline(JNIEnv *env, 
                                                                    jlong device, jlong pipeline) {
     vulkan_utils::destroyPipeline(device, pipeline);
 }
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkCreatePipelineLayout(JNIEnv *env, jobject thiz,
+                                                                        jlong device,
+                                                                        jobject create_info) {
+    return vulkan_utils::createPipelineLayout(env, device, create_info);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkDestroyPipelineLayout(JNIEnv *env, jobject thiz,
+                                                                         jlong device,
+                                                                         jlong pipeline_layout) {
+    vulkan_utils::destroyPipelineLayout(device, pipeline_layout);
+}
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkCreateRenderPass(JNIEnv *env, jobject thiz,
+                                                                    jlong device,
+                                                                    jobject create_info) {
+    return vulkan_utils::createRenderPass(env, device, create_info);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkDestroyRenderPass(JNIEnv *env, jobject thiz,
+                                                                     jlong device,
+                                                                     jlong render_pass) {
+    vulkan_utils::destroyRenderPass(device, render_pass);
+}

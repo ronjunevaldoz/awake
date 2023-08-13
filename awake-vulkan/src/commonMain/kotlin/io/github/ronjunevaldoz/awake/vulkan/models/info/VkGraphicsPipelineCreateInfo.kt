@@ -41,23 +41,39 @@ class VkGraphicsPipelineCreateInfo(
     val flags: VkPipelineCreateFlags = 0,
     val pStages: Array<VkPipelineShaderStageCreateInfo> = emptyArray(),
     @VkPointer
-    val pVertexInputState: VkPipelineVertexInputStateCreateInfo = VkPipelineVertexInputStateCreateInfo(),
+    val pVertexInputState: Array<VkPipelineVertexInputStateCreateInfo> = arrayOf(
+        VkPipelineVertexInputStateCreateInfo()
+    ),
     @VkPointer
-    val pInputAssemblyState: VkPipelineInputAssemblyStateCreateInfo = VkPipelineInputAssemblyStateCreateInfo(),
+    val pInputAssemblyState: Array<VkPipelineInputAssemblyStateCreateInfo> = arrayOf(
+        VkPipelineInputAssemblyStateCreateInfo()
+    ),
     @VkPointer
-    val pTessellationState: VkPipelineTessellationStateCreateInfo = VkPipelineTessellationStateCreateInfo(),
+    val pTessellationState: Array<VkPipelineTessellationStateCreateInfo> = arrayOf(
+        VkPipelineTessellationStateCreateInfo()
+    ),
     @VkPointer
-    val pViewportState: VkPipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo(),
+    val pViewportState: Array<VkPipelineViewportStateCreateInfo> = arrayOf(
+        VkPipelineViewportStateCreateInfo()
+    ),
     @VkPointer
-    val pRasterizationState: VkPipelineRasterizationStateCreateInfo = VkPipelineRasterizationStateCreateInfo(),
+    val pRasterizationState: Array<VkPipelineRasterizationStateCreateInfo> = arrayOf(
+        VkPipelineRasterizationStateCreateInfo()
+    ),
     @VkPointer
-    val pMultisampleState: VkPipelineMultisampleStateCreateInfo = VkPipelineMultisampleStateCreateInfo(),
+    val pMultisampleState: Array<VkPipelineMultisampleStateCreateInfo> = arrayOf(
+        VkPipelineMultisampleStateCreateInfo()
+    ),
     @VkPointer
-    val pDepthStencilState: VkPipelineDepthStencilStateCreateInfo? = null,
+    val pDepthStencilState: Array<VkPipelineDepthStencilStateCreateInfo>? = null,
     @VkPointer
-    val pColorBlendState: VkPipelineColorBlendStateCreateInfo = VkPipelineColorBlendStateCreateInfo(),
+    val pColorBlendState: Array<VkPipelineColorBlendStateCreateInfo> = arrayOf(
+        VkPipelineColorBlendStateCreateInfo()
+    ),
     @VkPointer
-    val pDynamicState: VkPipelineDynamicStateCreateInfo = VkPipelineDynamicStateCreateInfo(),
+    val pDynamicState: Array<VkPipelineDynamicStateCreateInfo> = arrayOf(
+        VkPipelineDynamicStateCreateInfo()
+    ),
     @field:VkHandleRef("VkPipelineLayout")
     val layout: VkHandle = 0, // VkPipelineLayout handle
     @field:VkHandleRef("VkRenderPass")

@@ -1,11 +1,10 @@
 /*
  *  VkDeviceCreateInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -34,7 +33,7 @@ private:
 private:
     jfieldID pEnabledFeaturesField;
 public:
-    VkDeviceCreateInfoAccessor(JNIEnv *env, jobject obj) {
+    VkDeviceCreateInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -57,102 +56,126 @@ public:
         return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     }
 
-    void *getpNext() {
-        return (void *) (jobject) env->GetObjectField(obj, pNextField); // Object??
+    void getpNext(VkDeviceCreateInfo &clazzInfo) {
+        auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
+        clazzInfo.pNext = ref;
     }
 
     uint32_t getflags() {
         return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
     }
 
-    std::vector<VkDeviceQueueCreateInfo> getpQueueCreateInfos() {
+    void getpQueueCreateInfos(VkDeviceCreateInfo &clazzInfo) {
         auto pQueueCreateInfosArray = (jobjectArray) env->GetObjectField(obj,
                                                                          pQueueCreateInfosField);
         if (pQueueCreateInfosArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(pQueueCreateInfosArray);
-        std::vector<VkDeviceQueueCreateInfo> array;
+        std::vector<VkDeviceQueueCreateInfo> pQueueCreateInfos;
         for (int i = 0; i < size; ++i) {
             auto element = (jobject) env->GetObjectArrayElement(pQueueCreateInfosArray,
                                                                 i); // actual type is VkDeviceQueueCreateInfo[];
             // experimental optimize accessor
             VkDeviceQueueCreateInfoAccessor accessor(env, element);
-            array.push_back(accessor.fromObject());
+            VkDeviceQueueCreateInfo ref{};
+            accessor.fromObject(ref);
+            pQueueCreateInfos.push_back(ref);
         }
-        return array;
+        // processing
+        auto queueCreateInfoCount = static_cast<uint32_t>(pQueueCreateInfos.size());
+        clazzInfo.queueCreateInfoCount = queueCreateInfoCount;
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkDeviceQueueCreateInfo[size];
+        std::copy(pQueueCreateInfos.begin(), pQueueCreateInfos.end(), copy);
+        clazzInfo.pQueueCreateInfos = copy;
     }
 
-    std::vector<const char *> getppEnabledLayerNames() {
+    void getppEnabledLayerNames(VkDeviceCreateInfo &clazzInfo) {
         auto ppEnabledLayerNamesArray = (jobjectArray) env->GetObjectField(obj,
                                                                            ppEnabledLayerNamesField);
         if (ppEnabledLayerNamesArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(ppEnabledLayerNamesArray);
-        std::vector<const char *> array;
+        std::vector<const char *> ppEnabledLayerNames;
         for (int i = 0; i < size; ++i) {
             auto element = (jstring) env->GetObjectArrayElement(ppEnabledLayerNamesArray,
-                                                                i); // actual type is String[](ppEnabledLayerNamesArray, i);
+                                                                i); // actual type is String[];
             auto str = env->GetStringUTFChars(element, nullptr);
             auto result = strdup(str); // Allocate memory and copy the string
             env->ReleaseStringUTFChars(element, str); // Release the local string reference
-            array.push_back(result);
+            ppEnabledLayerNames.push_back(result);
         }
-        return array;
+        // processing
+        auto enabledLayerCount = static_cast<uint32_t>(ppEnabledLayerNames.size());
+        clazzInfo.enabledLayerCount = enabledLayerCount;
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new const char *[size];
+        std::copy(ppEnabledLayerNames.begin(), ppEnabledLayerNames.end(), copy);
+        clazzInfo.ppEnabledLayerNames = copy;
     }
 
-    std::vector<const char *> getppEnabledExtensionNames() {
+    void getppEnabledExtensionNames(VkDeviceCreateInfo &clazzInfo) {
         auto ppEnabledExtensionNamesArray = (jobjectArray) env->GetObjectField(obj,
                                                                                ppEnabledExtensionNamesField);
         if (ppEnabledExtensionNamesArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(ppEnabledExtensionNamesArray);
-        std::vector<const char *> array;
+        std::vector<const char *> ppEnabledExtensionNames;
         for (int i = 0; i < size; ++i) {
             auto element = (jstring) env->GetObjectArrayElement(ppEnabledExtensionNamesArray,
-                                                                i); // actual type is String[](ppEnabledLayerNamesArray, i);
+                                                                i); // actual type is String[];
             auto str = env->GetStringUTFChars(element, nullptr);
             auto result = strdup(str); // Allocate memory and copy the string
             env->ReleaseStringUTFChars(element, str); // Release the local string reference
-            array.push_back(result);
+            ppEnabledExtensionNames.push_back(result);
         }
-        return array;
+        // processing
+        auto enabledExtensionCount = static_cast<uint32_t>(ppEnabledExtensionNames.size());
+        clazzInfo.enabledExtensionCount = enabledExtensionCount;
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new const char *[size];
+        std::copy(ppEnabledExtensionNames.begin(), ppEnabledExtensionNames.end(), copy);
+        clazzInfo.ppEnabledExtensionNames = copy;
     }
 
-    std::vector<VkPhysicalDeviceFeatures> getpEnabledFeatures() {
+    void getpEnabledFeatures(VkDeviceCreateInfo &clazzInfo) {
         auto pEnabledFeaturesArray = (jobjectArray) env->GetObjectField(obj, pEnabledFeaturesField);
         if (pEnabledFeaturesArray == nullptr) {
-            return {};
+            return;
         }
         auto size = env->GetArrayLength(pEnabledFeaturesArray);
-        std::vector<VkPhysicalDeviceFeatures> array;
+        std::vector<VkPhysicalDeviceFeatures> pEnabledFeatures;
         for (int i = 0; i < size; ++i) {
             auto element = (jobject) env->GetObjectArrayElement(pEnabledFeaturesArray,
                                                                 i); // actual type is VkPhysicalDeviceFeatures[];
             // experimental optimize accessor
             VkPhysicalDeviceFeaturesAccessor accessor(env, element);
-            array.push_back(accessor.fromObject());
+            VkPhysicalDeviceFeatures ref{};
+            accessor.fromObject(ref);
+            pEnabledFeatures.push_back(ref);
         }
-        return array;
+        // processing
+        // no array size generated
+        // Make a copy of the object to ensure proper memory management;
+        auto copy = new VkPhysicalDeviceFeatures[size];
+        std::copy(pEnabledFeatures.begin(), pEnabledFeatures.end(), copy);
+        clazzInfo.pEnabledFeatures = copy;
     }
 
-    VkDeviceCreateInfo fromObject() {
-        VkDeviceCreateInfo clazzInfo{};
-        clazzInfo.sType = getsType(); // Object
-        clazzInfo.pNext = getpNext(); // Object
-        clazzInfo.flags = getflags(); // Object
-        clazzInfo.pQueueCreateInfos = getpQueueCreateInfos().data(); // Object Array
-        clazzInfo.ppEnabledLayerNames = getppEnabledLayerNames().data(); // Object Array
-        clazzInfo.ppEnabledExtensionNames = getppEnabledExtensionNames().data(); // Object Array
-        clazzInfo.pEnabledFeatures = getpEnabledFeatures().data(); // Object Array
-        return clazzInfo;
+    void fromObject(VkDeviceCreateInfo &clazzInfo) {
+        clazzInfo.sType = getsType(); // Enum VkStructureType
+        getpNext(clazzInfo); // Object void*
+        clazzInfo.flags = getflags(); // Object uint32_t
+        getpQueueCreateInfos(clazzInfo);  // VkDeviceQueueCreateInfo Object Array
+        getppEnabledLayerNames(clazzInfo);  // String Object Array
+        getppEnabledExtensionNames(clazzInfo);  // String Object Array
+        getpEnabledFeatures(clazzInfo);  // VkPhysicalDeviceFeatures Object Array
     }
 
     ~VkDeviceCreateInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };

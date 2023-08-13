@@ -316,6 +316,8 @@ private fun CppClassBuilder.generateVulkanGetters(
                             "const void*"
                         } else if (javaMember.toJavaType() == JNIType.JLong && javaMember.isVkHandle()) {
                             javaMember.getVkHandle().name
+                        } else if (javaMember.toJavaType() == JNIType.JInt) {
+                            "uint32_t"
                         } else {
                             javaMember.type.componentType.simpleName
                         }

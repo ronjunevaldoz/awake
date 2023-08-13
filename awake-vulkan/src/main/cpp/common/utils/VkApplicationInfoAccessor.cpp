@@ -1,11 +1,10 @@
 /*
  *  VkApplicationInfoAccessor.h
  *  Vulkan accessor e C++ header file
- *  Created by Ron June Valdoz on Wed Aug 09 11:53:19 PST 2023
- */
+ *  Created by Ron June Valdoz */
 
 #include <jni.h>
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -32,7 +31,7 @@ private:
 private:
     jfieldID apiVersionField;
 public:
-    VkApplicationInfoAccessor(JNIEnv *env, jobject obj) {
+    VkApplicationInfoAccessor(JNIEnv *env, jobject &obj) {
         this->env = env;
         this->obj = env->NewGlobalRef(obj);
         clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -51,28 +50,29 @@ public:
         return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     }
 
-    void *getpNext() {
-        return (void *) (jobject) env->GetObjectField(obj, pNextField); // Object??
+    void getpNext(VkApplicationInfo &clazzInfo) {
+        auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
+        clazzInfo.pNext = ref;
     }
 
-    const char *getpApplicationName() {
+    void getpApplicationName(VkApplicationInfo &clazzInfo) {
         auto pApplicationNameObj = (jstring) env->GetObjectField(obj, pApplicationNameField);
         auto str = (const char *) env->GetStringUTFChars(pApplicationNameObj, nullptr);
         auto result = strdup(str); // Allocate memory and copy the string
         env->ReleaseStringUTFChars(pApplicationNameObj, str); // Release the local string reference
-        return result;
+        clazzInfo.pApplicationName = result;
     }
 
     uint32_t getapplicationVersion() {
         return (uint32_t) (jint) env->GetIntField(obj, applicationVersionField); // primitive
     }
 
-    const char *getpEngineName() {
+    void getpEngineName(VkApplicationInfo &clazzInfo) {
         auto pEngineNameObj = (jstring) env->GetObjectField(obj, pEngineNameField);
         auto str = (const char *) env->GetStringUTFChars(pEngineNameObj, nullptr);
         auto result = strdup(str); // Allocate memory and copy the string
         env->ReleaseStringUTFChars(pEngineNameObj, str); // Release the local string reference
-        return result;
+        clazzInfo.pEngineName = result;
     }
 
     uint32_t getengineVersion() {
@@ -83,21 +83,17 @@ public:
         return (uint32_t) (jint) env->GetIntField(obj, apiVersionField); // primitive
     }
 
-    VkApplicationInfo fromObject() {
-        VkApplicationInfo clazzInfo{};
-        clazzInfo.sType = getsType(); // Object
-        clazzInfo.pNext = getpNext(); // Object
-        clazzInfo.pApplicationName = getpApplicationName(); // Object
-        clazzInfo.applicationVersion = getapplicationVersion(); // Object
-        clazzInfo.pEngineName = getpEngineName(); // Object
-        clazzInfo.engineVersion = getengineVersion(); // Object
-        clazzInfo.apiVersion = getapiVersion(); // Object
-        return clazzInfo;
+    void fromObject(VkApplicationInfo &clazzInfo) {
+        clazzInfo.sType = getsType(); // Enum VkStructureType
+        getpNext(clazzInfo); // Object void*
+        getpApplicationName(clazzInfo); // Object const char*
+        clazzInfo.applicationVersion = getapplicationVersion(); // Object uint32_t
+        getpEngineName(clazzInfo); // Object const char*
+        clazzInfo.engineVersion = getengineVersion(); // Object uint32_t
+        clazzInfo.apiVersion = getapiVersion(); // Object uint32_t
     }
 
     ~VkApplicationInfoAccessor() {
-        env->DeleteGlobalRef(obj);
-        env->DeleteGlobalRef(clazz);
     }
 
 };
