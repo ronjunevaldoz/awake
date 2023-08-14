@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan_generator.toolv2.dsl
+package io.github.ronjunevaldoz.awake.vulkan_generator.tool.dsl
 
 @DslMarker
 annotation class CppClassDSL

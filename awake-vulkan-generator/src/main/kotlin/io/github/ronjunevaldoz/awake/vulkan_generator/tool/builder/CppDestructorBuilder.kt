@@ -17,9 +17,9 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan_generator.toolv2.builder
+package io.github.ronjunevaldoz.awake.vulkan_generator.tool.builder
 
-import io.github.ronjunevaldoz.awake.vulkan_generator.toolv2.dsl.CppFunctionDSL
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.dsl.CppFunctionDSL
 
 @CppFunctionDSL
 class CppDestructorBuilder(private val indent: Int = 1, private val withInterface: Boolean) {

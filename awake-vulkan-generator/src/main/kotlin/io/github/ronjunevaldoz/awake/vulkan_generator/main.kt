@@ -54,27 +54,22 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputBi
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cmakeListTemplate
-import io.github.ronjunevaldoz.awake.vulkan_generator.toolv2.generateJavaToVulkanCpp
+import io.github.ronjunevaldoz.awake.vulkan_generator.vulkan.generateJavaToVulkanCpp
 
 fun main(args: Array<String>) {
     if (args.isNotEmpty()) {
         FileWriter.rootDir = args[0]
     }
-
     generateJavaToVulkanCpp<VkApplicationInfo>()
     generateJavaToVulkanCpp<VkPhysicalDeviceFeatures>()
     generateJavaToVulkanCpp<VkDeviceQueueCreateInfo>()
     generateJavaToVulkanCpp<VkDeviceCreateInfo>()
-
-    //
     generateJavaToVulkanCpp<VkExtent2D>()
 
     // pipeline
     generateJavaToVulkanCpp<VkSpecializationMapEntry>()
     generateJavaToVulkanCpp<VkSpecializationInfo>()
     generateJavaToVulkanCpp<VkPipelineShaderStageCreateInfo>()
-    generateJavaToVulkanCpp<VkGraphicsPipelineCreateInfo>()
-
     generateJavaToVulkanCpp<VkPushConstantRange>()
     generateJavaToVulkanCpp<VkPipelineLayoutCreateInfo>()
     generateJavaToVulkanCpp<VkPipelineCacheCreateInfo>()
@@ -88,7 +83,7 @@ fun main(args: Array<String>) {
     generateJavaToVulkanCpp<VkPipelineMultisampleStateCreateInfo>()
     generateJavaToVulkanCpp<VkPipelineRasterizationStateCreateInfo>()
     generateJavaToVulkanCpp<VkPipelineTessellationStateCreateInfo>()
-//    // dynamic state
+    // dynamic state
     generateJavaToVulkanCpp<VkPipelineDynamicStateCreateInfo>()
     // vertex input state
     generateJavaToVulkanCpp<VkVertexInputBindingDescription>()

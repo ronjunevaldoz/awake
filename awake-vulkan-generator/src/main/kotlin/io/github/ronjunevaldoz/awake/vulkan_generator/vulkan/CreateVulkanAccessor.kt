@@ -17,10 +17,13 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan_generator.toolv2
+package io.github.ronjunevaldoz.awake.vulkan_generator.vulkan
 
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.JNIType
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.builder.CppClassBuilder
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.builder.CppFunctionBodyBuilder
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cppClass
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getArrayElement
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getArrayElementJavaType
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getArrayRegion
@@ -35,16 +38,7 @@ import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toJavaSignature
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toJavaType
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toJavaTypeArray
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toVulkanType
-import io.github.ronjunevaldoz.awake.vulkan_generator.toolv2.builder.CppClassBuilder
-import io.github.ronjunevaldoz.awake.vulkan_generator.toolv2.builder.CppFunctionBodyBuilder
 import java.lang.reflect.Field
-
-
-inline fun <reified T : Any> generateJavaToVulkanCpp() {
-    val clazz = T::class.java
-    createVulkanAccessor(clazz)
-    createVulkanMutator(clazz)
-}
 
 fun createVulkanAccessor(clazz: Class<*>) {
     val declareMembers = clazz.declaredFields

@@ -17,11 +17,12 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan_generator.toolv2
+package io.github.ronjunevaldoz.awake.vulkan_generator.vulkan
 
 import io.github.ronjunevaldoz.awake.vulkan.VkDeserializer
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cast
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cppClass
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.setJavaValue
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toJavaSignature
 

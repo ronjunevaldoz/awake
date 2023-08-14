@@ -17,20 +17,10 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan_generator.toolv2.builder
+package io.github.ronjunevaldoz.awake.vulkan_generator.tool.dsl
 
-import io.github.ronjunevaldoz.awake.vulkan_generator.toolv2.dsl.CppFunctionBodyDSL
+@DslMarker
+annotation class CppFunctionDSL
 
-@CppFunctionBodyDSL
-class CppFunctionBodyBuilder(private val indent: Int) {
-    private val bodyContent = StringBuilder()
-
-    fun child(line: String) {
-        val indentation = "    ".repeat(indent)
-        bodyContent.append("$indentation$line\n")
-    }
-
-    fun build(): String {
-        return bodyContent.toString()
-    }
-}
+@DslMarker
+annotation class CppFunctionBodyDSL

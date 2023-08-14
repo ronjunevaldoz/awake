@@ -17,6 +17,20 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan_generator.toolv2
+package io.github.ronjunevaldoz.awake.vulkan_generator.tool.builder
 
-data class ClassMember(val accessModifier: String, val type: String, val name: String)
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.dsl.CppFunctionBodyDSL
+
+@CppFunctionBodyDSL
+class CppFunctionBodyBuilder(private val indent: Int) {
+    private val bodyContent = StringBuilder()
+
+    fun child(line: String) {
+        val indentation = "    ".repeat(indent)
+        bodyContent.append("$indentation$line\n")
+    }
+
+    fun build(): String {
+        return bodyContent.toString()
+    }
+}

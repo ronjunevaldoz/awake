@@ -503,3 +503,8 @@ fun Field.getVkArray(): VkArray? {
     }
     return null
 }
+
+fun Field.cast(value: String): String {
+    val type = toJavaType()
+    return "static_cast<$type>($value)"
+}

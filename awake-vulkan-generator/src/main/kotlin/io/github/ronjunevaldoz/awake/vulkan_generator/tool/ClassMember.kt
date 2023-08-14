@@ -17,10 +17,6 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan_generator.toolv2.dsl
+package io.github.ronjunevaldoz.awake.vulkan_generator.tool
 
-@DslMarker
-annotation class CppFunctionDSL
-
-@DslMarker
-annotation class CppFunctionBodyDSL
+data class ClassMember(val accessModifier: String, val type: String, val name: String)
