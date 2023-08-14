@@ -61,6 +61,8 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSubpassDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendAttachmentState
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineDynamicStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineInputAssemblyStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayoutCreateInfo
@@ -83,6 +85,7 @@ import java.nio.ByteOrder
 
 class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callback2 {
 
+    var debugUtilsMessenger: Long = 0
     var instance: Long = 0
     var surface: Long = 0
     var physicalDevice: Long = 0
@@ -90,9 +93,11 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
     var swapChain: Long = 0
     var swapChainExtent: VkExtent2D = VkExtent2D()
     var imageViews: List<Long> = emptyList()
-    var debugUtilsMessenger: Long = 0
-
     var swapChainImageFormat = VkFormat.VK_FORMAT_UNDEFINED
+    var renderPass: Long = 0
+    var pipelineCache: Long = 0
+    var pipelineLayout: Long = 0
+    var graphicsPipeline: LongArray = longArrayOf()
 
     init {
         Vulkan
@@ -130,7 +135,33 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         createLogicalDevice()
         // create swap chain
         swapChain()
+        createRenderPass()
         createGraphicsPipeline()
+    }
+
+    private fun createRenderPass() {
+        renderPass = Vulkan.vkCreateRenderPass(
+            device, VkRenderPassCreateInfo(
+                pAttachments = arrayOf(
+                    VkAttachmentDescription(
+                        format = swapChainImageFormat,
+                        initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                        finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+                    )
+                ),
+                pSubpasses = arrayOf(
+                    VkSubpassDescription(
+                        pipelineBindPoint = VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS,
+                        pColorAttachments = arrayOf(
+                            VkAttachmentReference(
+                                attachment = 0,
+                                layout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+                            )
+                        )
+                    )
+                )
+            )
+        )
     }
 
     private fun createInstance() {
@@ -331,29 +362,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             )
             val shaderStages = arrayOf(fragShaderStageInfo, vertShaderStageInfo)
 
-            val pipelineCache = Vulkan.vkCreatePipelineCache(device, VkPipelineCacheCreateInfo())
-            val pipelineLayout = Vulkan.vkCreatePipelineLayout(device, VkPipelineLayoutCreateInfo())
-            val renderPass = Vulkan.vkCreateRenderPass(
-                device, VkRenderPassCreateInfo(
-                    pAttachments = arrayOf(
-                        VkAttachmentDescription(
-                            format = swapChainImageFormat,
-                            initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                        )
-                    ),
-                    pSubpasses = arrayOf(
-                        VkSubpassDescription(
-                            pipelineBindPoint = VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS,
-                            pColorAttachments = arrayOf(
-                                VkAttachmentReference(
-                                    attachment = 0,
-                                    layout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                                )
-                            )
-                        )
-                    )
-                )
-            )
+            pipelineLayout = Vulkan.vkCreatePipelineLayout(device, VkPipelineLayoutCreateInfo())
             val createInfos = arrayOf(
                 VkGraphicsPipelineCreateInfo(
                     pStages = shaderStages,
@@ -388,6 +397,11 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
                             )
                         )
                     ),
+                    pColorBlendState = arrayOf(
+                        VkPipelineColorBlendStateCreateInfo(
+                            pAttachments = arrayOf(VkPipelineColorBlendAttachmentState())
+                        )
+                    ),
                     layout = pipelineLayout,
                     renderPass = renderPass,
                     subpass = 0,
@@ -395,7 +409,8 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
                     basePipelineIndex = -1 // Optional
                 )
             )
-            val graphicsPipeline = Vulkan.vkCreateGraphicsPipeline(
+            pipelineCache = Vulkan.vkCreatePipelineCache(device, VkPipelineCacheCreateInfo())
+            graphicsPipeline = Vulkan.vkCreateGraphicsPipeline(
                 device, pipelineCache, createInfos
             )
 
@@ -458,6 +473,11 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         imageViews.forEach { imageView ->
             Vulkan.vkDestroyImageView(device, imageView)
         }
+        graphicsPipeline.forEach { pipeline ->
+            Vulkan.vkDestroyPipeline(device, pipeline)
+        }
+        Vulkan.vkDestroyRenderPass(device, renderPass)
+        Vulkan.vkDestroyPipelineCache(device, pipelineCache)
+        Vulkan.vkDestroyPipelineLayout(device, pipelineLayout)
     }
-
 }

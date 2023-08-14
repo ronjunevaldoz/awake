@@ -49,7 +49,7 @@ inline fun <reified T : Any> generateJavaToVulkanCpp() {
 fun createVulkanAccessor(clazz: Class<*>) {
     val declareMembers = clazz.declaredFields
     val cppClassCode =
-        cppClass(clazz.simpleName + "Accessor", "Vulkan accessor e C++ header file") {
+        cppClass(clazz.simpleName + "Accessor", "Vulkan accessor for ${clazz.simpleName}") {
             import("<jni.h>")
             import("<vulkan/vulkan_core.h>")
             import("<string>")
@@ -66,8 +66,8 @@ fun createVulkanAccessor(clazz: Class<*>) {
             destructor {
                 // default destructor
                 body(2) {
-//                    child("env->DeleteGlobalRef(obj);")
-//                    child("env->DeleteGlobalRef(clazz);")
+                    child("env->DeleteGlobalRef(obj);")
+                    child("env->DeleteGlobalRef(clazz);")
                 }
             }
 
@@ -75,7 +75,7 @@ fun createVulkanAccessor(clazz: Class<*>) {
                 false,
                 1, listOf(
                     Pair("env", "JNIEnv*"),
-                    Pair("obj", "jobject&"),
+                    Pair("obj", "jobject"),
                 )
             ) {
                 body(2) {
@@ -105,9 +105,15 @@ fun createVulkanAccessor(clazz: Class<*>) {
             generateVulkanFromObject(clazz, declareMembers, hasArrayField)
         }
 
-    val awakeVulkanCpp = "awake-vulkan/src/main/cpp/common/utils/"
-    FileWriter.writeFile("$awakeVulkanCpp${clazz.simpleName + "Accessor"}.cpp", cppClassCode)
-    println(cppClassCode)
+    val awakeVulkanCpp = "awake-vulkan/src/main/cpp/common/utils"
+    FileWriter.writeFile(
+        "$awakeVulkanCpp/includes/${clazz.simpleName + "Accessor"}.h",
+        cppClassCode.first
+    )
+    FileWriter.writeFile(
+        "$awakeVulkanCpp/${clazz.simpleName + "Accessor"}.cpp",
+        cppClassCode.second
+    )
 }
 
 
@@ -182,15 +188,23 @@ private fun CppClassBuilder.generateVulkanGetters(
             val localVariable = javaMember.name + suffix
             val arrayName = javaMember.name
             fun processArray() {
-                child("auto $localVariable = ($type) $javaValue;")
-                child("if($localVariable == nullptr) {")
-                if (void) {
-                    child("     return;")
-                } else {
-                    child("     return {};")
+                fun processDefaultArrayData(clazzInfo: String) {
+                    // generate array size assignee
+                    val vkArray = javaMember.getVkArray()
+                    if (vkArray != null) {
+                        val arraySizeName = vkArray.sizeAlias // javaMember.name + "Count"
+                        if (arraySizeName.isNotEmpty()) {
+                            child("    $clazzInfo.${arraySizeName} = 0;")
+                        }
+                        child("    clazzInfo.$arrayName = nullptr;")
+                    } else if (javaMember.isVkConstArray()) {
+                        child("    // const array")
+                        child("    // clazzInfo.$arrayName = nullptr;")
+                    } else {
+                        child("    clazzInfo.$arrayName = nullptr;")
+                    }
                 }
-                child("}")
-                child("auto size = env->GetArrayLength($localVariable);")
+
                 fun processStringArray(javaType: JNIType) {
                     child("$returnType $arrayName;")
                     child("for (int i = 0; i < size; ++i) {")
@@ -274,13 +288,7 @@ private fun CppClassBuilder.generateVulkanGetters(
                     )
                 }
 
-                when (val javaElementType = javaMember.getArrayElementJavaType()) {
-                    JNIType.JString -> processStringArray(javaElementType)
-                    JNIType.JObject -> processObjectArray(javaElementType)
-                    else -> processPrimitiveArray()
-                }
-
-                fun processArrayData(clazzInfo: String, comment: String) {
+                fun processArrayData(clazzInfo: String) {
                     val elementType = javaMember.type.componentType
                     // generate array size assignee
                     val vkArray = javaMember.getVkArray()
@@ -327,12 +335,24 @@ private fun CppClassBuilder.generateVulkanGetters(
                     }
                 }
 
-//                if(!void) {
-//                    child("return $arrayName;")
-//                } else {
-                child("// processing")
-                processArrayData("clazzInfo", "process")
-//                }
+
+                child("auto $localVariable = ($type) $javaValue;")
+                child("if($localVariable == nullptr) {")
+                processDefaultArrayData("clazzInfo")
+                if (void) {
+                    child("    return;")
+                } else {
+                    child("    return {};")
+                }
+                child("}")
+                child("auto size = env->GetArrayLength($localVariable);")
+                when (val javaElementType = javaMember.getArrayElementJavaType()) {
+                    JNIType.JString -> processStringArray(javaElementType)
+                    JNIType.JObject -> processObjectArray(javaElementType)
+                    else -> processPrimitiveArray()
+                }
+                child("// processing array data")
+                processArrayData("clazzInfo")
             }
 
             fun processObject() {
@@ -392,7 +412,11 @@ private fun CppClassBuilder.generateVulkanGetters(
 
             fun processPrimitive() {
                 if (javaMember.isVkHandle()) {
-                    child("return reinterpret_cast<$returnType>($javaValue); // VkHandle")
+                    child("auto value = $javaValue;")
+                    child("if(value == 0) {")
+                    child("     return VK_NULL_HANDLE;")
+                    child("}")
+                    child("return reinterpret_cast<$returnType>(value); // VkHandle")
                 } else if (javaMember.isVkPointer()) {
                     child("auto ptr = ($returnType) $javaValue; // Primitive Pointer")
                     child("clazzInfo.${javaMember.name} = &ptr; // Primitive Pointer")

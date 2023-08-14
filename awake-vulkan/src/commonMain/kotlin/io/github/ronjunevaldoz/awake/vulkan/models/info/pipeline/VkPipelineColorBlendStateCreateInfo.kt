@@ -19,10 +19,10 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline
 
+import io.github.ronjunevaldoz.awake.vulkan.VkArray
 import io.github.ronjunevaldoz.awake.vulkan.VkBool32
 import io.github.ronjunevaldoz.awake.vulkan.VkConstArray
 import io.github.ronjunevaldoz.awake.vulkan.VkFlags
-import io.github.ronjunevaldoz.awake.vulkan.VkPointer
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkBlendFactor
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkBlendOp
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkColorComponentFlagBits
@@ -48,9 +48,8 @@ class VkPipelineColorBlendStateCreateInfo(
     val flags: VkPipelineColorBlendStateCreateFlags = 0,
     val logicOpEnable: VkBool32 = false,
     val logicOp: VkLogicOp = VkLogicOp.VK_LOGIC_OP_COPY,
-    val attachmentCount: Int = 0,
-    @VkPointer
-    val pAttachments: VkPipelineColorBlendAttachmentState? = null,
+    @field:VkArray("attachmentCount")
+    val pAttachments: Array<VkPipelineColorBlendAttachmentState>? = null,
     @VkConstArray
     val blendConstants: FloatArray = floatArrayOf(0.0f, 0.0f, 0.0f, 0.0f)
 )

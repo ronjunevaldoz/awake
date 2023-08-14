@@ -1,58 +1,46 @@
 /*
- *  VkVertexInputBindingDescriptionAccessor.h
- *  Vulkan accessor e C++ header file
+ *  VkVertexInputBindingDescriptionAccessor.cpp
+ *  Vulkan accessor for VkVertexInputBindingDescription
  *  Created by Ron June Valdoz */
 
-#include <jni.h>
-#include <vulkan/vulkan_core.h>
-#include <string>
-#include <vector>
-#include <enum_utils.h>
+#include  <includes/VkVertexInputBindingDescriptionAccessor.h>
 
-class VkVertexInputBindingDescriptionAccessor {
-private:
-    JNIEnv *env;
-private:
-    jobject obj;
-private:
-    jclass clazz;
-private:
-    jfieldID bindingField;
-private:
-    jfieldID strideField;
-private:
-    jfieldID inputRateField;
-public:
-    VkVertexInputBindingDescriptionAccessor(JNIEnv *env, jobject &obj) {
-        this->env = env;
-        this->obj = env->NewGlobalRef(obj);
-        clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
-        bindingField = env->GetFieldID(clazz, "binding", "I");
-        strideField = env->GetFieldID(clazz, "stride", "I");
-        inputRateField = env->GetFieldID(clazz, "inputRate",
-                                         "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkVertexInputRate;");
-    }
+VkVertexInputBindingDescriptionAccessor::VkVertexInputBindingDescriptionAccessor(JNIEnv *env,
+                                                                                 jobject obj) {
+    this->env = env;
+    this->obj = env->NewGlobalRef(obj);
+    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+    bindingField = env->GetFieldID(clazz, "binding", "I");
+    strideField = env->GetFieldID(clazz, "stride", "I");
+    inputRateField = env->GetFieldID(clazz, "inputRate",
+                                     "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkVertexInputRate;");
+}
 
-    uint32_t getbinding() {
-        return (uint32_t) (jint) env->GetIntField(obj, bindingField); // primitive
-    }
+uint32_t
+VkVertexInputBindingDescriptionAccessor::getbinding() {
+    return (uint32_t) (jint) env->GetIntField(obj, bindingField); // primitive
+}
 
-    uint32_t getstride() {
-        return (uint32_t) (jint) env->GetIntField(obj, strideField); // primitive
-    }
+VkVertexInputRate
+VkVertexInputBindingDescriptionAccessor::getinputRate() {
+    auto inputRateEnum = (jobject) env->GetObjectField(obj, inputRateField);
+    return (VkVertexInputRate) enum_utils::getEnumFromObject(env, inputRateEnum);
+}
 
-    VkVertexInputRate getinputRate() {
-        auto inputRateEnum = (jobject) env->GetObjectField(obj, inputRateField);
-        return (VkVertexInputRate) enum_utils::getEnumFromObject(env, inputRateEnum);
-    }
+uint32_t
+VkVertexInputBindingDescriptionAccessor::getstride() {
+    return (uint32_t) (jint) env->GetIntField(obj, strideField); // primitive
+}
 
-    void fromObject(VkVertexInputBindingDescription &clazzInfo) {
-        clazzInfo.binding = getbinding(); // Object uint32_t
-        clazzInfo.stride = getstride(); // Object uint32_t
-        clazzInfo.inputRate = getinputRate(); // Enum VkVertexInputRate
-    }
+void
+VkVertexInputBindingDescriptionAccessor::fromObject(VkVertexInputBindingDescription &clazzInfo) {
+    clazzInfo.binding = getbinding(); // Object uint32_t
+    clazzInfo.stride = getstride(); // Object uint32_t
+    clazzInfo.inputRate = getinputRate(); // Enum VkVertexInputRate
+}
 
-    ~VkVertexInputBindingDescriptionAccessor() {
-    }
+VkVertexInputBindingDescriptionAccessor::~VkVertexInputBindingDescriptionAccessor() {
+    env->DeleteGlobalRef(obj);
+    env->DeleteGlobalRef(clazz);
+}
 
-};

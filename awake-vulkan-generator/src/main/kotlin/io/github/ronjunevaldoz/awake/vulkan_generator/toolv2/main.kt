@@ -25,10 +25,10 @@ fun cppClass(
     className: String,
     fileDescription: String,
     block: CppClassBuilder.() -> Unit
-): String {
+): Pair<String, String> {
     val builder = CppClassBuilder(className, fileDescription)
     builder.block()
-    return builder.build()
+    return Pair(builder.buildInterface(), builder.buildClass())
 }
 
 fun main() {

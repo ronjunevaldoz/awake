@@ -30,7 +30,7 @@ data class VkAttachmentDescription(
     val flags: VkAttachmentDescriptionFlags = 0,
     val format: VkFormat = VkFormat.VK_FORMAT_UNDEFINED,
     val samples: VkSampleCountFlagBits = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
-    val loadOp: VkAttachmentLoadOp = VkAttachmentLoadOp.LOAD,
+    val loadOp: VkAttachmentLoadOp = VkAttachmentLoadOp.CLEAR,
     val storeOp: VkAttachmentStoreOp = VkAttachmentStoreOp.STORE,
     val stencilLoadOp: VkAttachmentLoadOp = VkAttachmentLoadOp.DONT_CARE,
     val stencilStoreOp: VkAttachmentStoreOp = VkAttachmentStoreOp.DONT_CARE,

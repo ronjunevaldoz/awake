@@ -355,7 +355,7 @@ namespace vulkan_utils {
         }
 
 
-        std::vector<const char *> enabled_inst_exts{};
+        std::vector<const char *> enabled_inst_exts;
 
         // check if androidSurfaceExtensionSupported
         uint32_t extensionCount = 0;
@@ -1018,27 +1018,28 @@ namespace vulkan_utils {
         auto device = reinterpret_cast<VkDevice>(pDevice);
         auto pipelineCache = reinterpret_cast<VkPipelineCache>(pPipelineCache);
         auto createInfoSize = env->GetArrayLength(createInfosObj);
-        std::vector<VkGraphicsPipelineCreateInfo> createInfos(createInfoSize);
-        for (int i = 0; i < createInfoSize; ++i) {
-            auto createInfoObj = env->GetObjectArrayElement(createInfosObj, i);
-            VkGraphicsPipelineCreateInfoAccessor accessor(env, createInfoObj);
-            VkGraphicsPipelineCreateInfo createInfo{};
-            accessor.fromObject(createInfo);
-            createInfos[i] = createInfo;
-        }
-        std::vector<VkPipeline> pipelines(createInfoSize);
-        VkResult result = vkCreateGraphicsPipelines(device, pipelineCache,
-                                                    static_cast<uint32_t>(createInfos.size()),
-                                                    createInfos.data(), nullptr, pipelines.data());
+        std::vector<VkGraphicsPipelineCreateInfo> createInfos;
+//        for (int i = 0; i < createInfoSize; ++i) {
+        auto createInfoObj = env->GetObjectArrayElement(createInfosObj, 0);
+        VkGraphicsPipelineCreateInfoAccessor accessor(env, createInfoObj);
+        VkGraphicsPipelineCreateInfo createInfo{};
+        accessor.fromObject(createInfo);
+        createInfos.push_back(createInfo);
+//        }
+//        std::vector<VkPipeline> pipelines(createInfoSize);
+        VkPipeline pipeline;
+        VkResult result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE,
+                                                    1,
+                                                    &createInfo, nullptr, &pipeline);
         if (result != VK_SUCCESS) {
             return jlongArray();
         }
-        jlongArray pipelineHandles = env->NewLongArray((jsize) pipelines.size());
-        for (int i = 0; i < pipelines.size(); ++i) {
-            auto pipeline = reinterpret_cast<jlong>(pipelines[i]);
-            env->SetLongArrayRegion(pipelineHandles, i, 1, &pipeline);
-        }
-        return pipelineHandles;
+//        jlongArray pipelineHandles = env->NewLongArray((jsize) pipelines.size());
+//        for (int i = 0; i < pipelines.size(); ++i) {
+//            auto pipeline = reinterpret_cast<jlong>(pipelines[i]);
+//            env->SetLongArrayRegion(pipelineHandles, i, 1, &pipeline);
+//        }
+        return nullptr;
     }
 
     void destroyPipeline(jlong pDevice, jlong pPipeline) {

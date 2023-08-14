@@ -81,7 +81,7 @@ class VkGraphicsPipelineCreateInfo(
     val subpass: Int = 0,
     @field:VkHandleRef("VkPipeline")
     val basePipelineHandle: VkHandle = 0, // VkPipeline handle
-    val basePipelineIndex: Int = 0
+    val basePipelineIndex: Int = -1
 ) {
     val stageCount: Int = pStages.size
 }

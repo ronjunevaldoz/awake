@@ -1,80 +1,64 @@
 /*
- *  VkViewportAccessor.h
- *  Vulkan accessor e C++ header file
+ *  VkViewportAccessor.cpp
+ *  Vulkan accessor for VkViewport
  *  Created by Ron June Valdoz */
 
-#include <jni.h>
-#include <vulkan/vulkan_core.h>
-#include <string>
-#include <vector>
-#include <enum_utils.h>
+#include  <includes/VkViewportAccessor.h>
 
-class VkViewportAccessor {
-private:
-    JNIEnv *env;
-private:
-    jobject obj;
-private:
-    jclass clazz;
-private:
-    jfieldID xField;
-private:
-    jfieldID yField;
-private:
-    jfieldID widthField;
-private:
-    jfieldID heightField;
-private:
-    jfieldID minDepthField;
-private:
-    jfieldID maxDepthField;
-public:
-    VkViewportAccessor(JNIEnv *env, jobject &obj) {
-        this->env = env;
-        this->obj = env->NewGlobalRef(obj);
-        clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
-        xField = env->GetFieldID(clazz, "x", "F");
-        yField = env->GetFieldID(clazz, "y", "F");
-        widthField = env->GetFieldID(clazz, "width", "F");
-        heightField = env->GetFieldID(clazz, "height", "F");
-        minDepthField = env->GetFieldID(clazz, "minDepth", "F");
-        maxDepthField = env->GetFieldID(clazz, "maxDepth", "F");
-    }
+VkViewportAccessor::VkViewportAccessor(JNIEnv *env, jobject obj) {
+    this->env = env;
+    this->obj = env->NewGlobalRef(obj);
+    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+    xField = env->GetFieldID(clazz, "x", "F");
+    yField = env->GetFieldID(clazz, "y", "F");
+    widthField = env->GetFieldID(clazz, "width", "F");
+    heightField = env->GetFieldID(clazz, "height", "F");
+    minDepthField = env->GetFieldID(clazz, "minDepth", "F");
+    maxDepthField = env->GetFieldID(clazz, "maxDepth", "F");
+}
 
-    float getx() {
-        return (float) (jfloat) env->GetFloatField(obj, xField); // primitive
-    }
+float
+VkViewportAccessor::getminDepth() {
+    return (float) (jfloat) env->GetFloatField(obj, minDepthField); // primitive
+}
 
-    float gety() {
-        return (float) (jfloat) env->GetFloatField(obj, yField); // primitive
-    }
+float
+VkViewportAccessor::getheight() {
+    return (float) (jfloat) env->GetFloatField(obj, heightField); // primitive
+}
 
-    float getwidth() {
-        return (float) (jfloat) env->GetFloatField(obj, widthField); // primitive
-    }
+float
+VkViewportAccessor::getx() {
+    return (float) (jfloat) env->GetFloatField(obj, xField); // primitive
+}
 
-    float getheight() {
-        return (float) (jfloat) env->GetFloatField(obj, heightField); // primitive
-    }
+void
+VkViewportAccessor::fromObject(VkViewport &clazzInfo) {
+    clazzInfo.x = getx(); // Object float
+    clazzInfo.y = gety(); // Object float
+    clazzInfo.width = getwidth(); // Object float
+    clazzInfo.height = getheight(); // Object float
+    clazzInfo.minDepth = getminDepth(); // Object float
+    clazzInfo.maxDepth = getmaxDepth(); // Object float
+}
 
-    float getminDepth() {
-        return (float) (jfloat) env->GetFloatField(obj, minDepthField); // primitive
-    }
+float
+VkViewportAccessor::gety() {
+    return (float) (jfloat) env->GetFloatField(obj, yField); // primitive
+}
 
-    float getmaxDepth() {
-        return (float) (jfloat) env->GetFloatField(obj, maxDepthField); // primitive
-    }
+float
+VkViewportAccessor::getwidth() {
+    return (float) (jfloat) env->GetFloatField(obj, widthField); // primitive
+}
 
-    void fromObject(VkViewport &clazzInfo) {
-        clazzInfo.x = getx(); // Object float
-        clazzInfo.y = gety(); // Object float
-        clazzInfo.width = getwidth(); // Object float
-        clazzInfo.height = getheight(); // Object float
-        clazzInfo.minDepth = getminDepth(); // Object float
-        clazzInfo.maxDepth = getmaxDepth(); // Object float
-    }
+float
+VkViewportAccessor::getmaxDepth() {
+    return (float) (jfloat) env->GetFloatField(obj, maxDepthField); // primitive
+}
 
-    ~VkViewportAccessor() {
-    }
+VkViewportAccessor::~VkViewportAccessor() {
+    env->DeleteGlobalRef(obj);
+    env->DeleteGlobalRef(clazz);
+}
 
-};

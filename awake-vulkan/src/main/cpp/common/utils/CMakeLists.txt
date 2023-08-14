@@ -14,7 +14,6 @@ set(COMMON_UTILS_VULKAN_UTILS_SOURCES
         VkPipelineColorBlendAttachmentStateAccessor.cpp
         VkImageViewCreateInfoConverter.cpp
         VkSubpassDependencyAccessor.cpp
-        VkStencilOpStateConverter.cpp
         VkPipelineColorBlendStateCreateInfoAccessor.cpp
         VkPhysicalDeviceFeaturesAccessor.cpp
         VkPipelineTessellationStateCreateInfoAccessor.cpp
@@ -44,6 +43,8 @@ set(COMMON_UTILS_VULKAN_UTILS_SOURCES
         VkRenderPassCreateInfoAccessor.cpp
         )
 
+# Set the path to your header file directory
+include_directories(includes)
 add_library(common_utils_vulkan_utils STATIC ${COMMON_UTILS_VULKAN_UTILS_SOURCES})
 
 target_include_directories(common_utils_vulkan_utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

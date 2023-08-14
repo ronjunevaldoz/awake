@@ -33,7 +33,7 @@ class VkPipelineShaderStageCreateInfo(
     @field:VkHandleRef("VkShaderModule")
     val module: VkHandle = 0, // VkShaderModule
     val pName: String? = null,
-    val pSpecializationInfo: Array<VkSpecializationInfo> = emptyArray()
+    val pSpecializationInfo: Array<VkSpecializationInfo>? = null
 )
 
 class VkSpecializationInfo(

@@ -31,7 +31,7 @@ fun createVulkanMutator(clazz: Class<*>) {
     }
     val declareMembers = clazz.declaredFields
     val cppClassCode =
-        cppClass(clazz.simpleName + "Mutator", "Vulkan mutator e C++ header file") {
+        cppClass(clazz.simpleName + "Mutator", "Vulkan mutator for ${clazz.simpleName}") {
             import("<jni.h>")
             import("<vulkan/vulkan.h>")
             import("<string>")
@@ -93,7 +93,10 @@ fun createVulkanMutator(clazz: Class<*>) {
             }
         }
 
-    val awakeVulkanCpp = "awake-vulkan/src/main/cpp/common/utils/"
-    FileWriter.writeFile("$awakeVulkanCpp${clazz.simpleName + "Mutator"}.cpp", cppClassCode)
-    println(cppClassCode)
+    val awakeVulkanCpp = "awake-vulkan/src/main/cpp/common/utils"
+    FileWriter.writeFile(
+        "$awakeVulkanCpp/includes/${clazz.simpleName + "Mutator"}.h",
+        cppClassCode.first
+    )
+    FileWriter.writeFile("$awakeVulkanCpp/${clazz.simpleName + "Mutator"}.cpp", cppClassCode.second)
 }

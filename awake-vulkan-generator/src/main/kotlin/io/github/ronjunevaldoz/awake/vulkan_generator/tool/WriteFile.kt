@@ -26,6 +26,9 @@ object FileWriter {
     var rootDir: String? = null
     fun writeFile(fileName: String, content: String) {
         val file = File(rootDir, fileName)
+
+        // Ensure that the directory exists
+        file.parentFile.mkdirs()
         try {
             file.createNewFile()
             file.writeText(content)
@@ -49,6 +52,8 @@ fun cmakeListTemplate(path: String = ""): String {
         }
         append("        )\n\n")
 
+        append("# Set the path to your header file directory\n")
+        append("include_directories(includes)\n")
         // Create a static library for the common utilities
         append("add_library(common_utils_vulkan_utils STATIC \${COMMON_UTILS_VULKAN_UTILS_SOURCES})\n\n")
 

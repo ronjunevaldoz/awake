@@ -23,11 +23,6 @@ package io.github.ronjunevaldoz.awake.vulkan
 val VK_UUID_SIZE = 16U
 
 
-//typedef uint32_t VkBool32;
-//typedef uint64_t VkDeviceAddress;
-//typedef uint64_t VkDeviceSize;
-//typedef uint32_t VkFlags;
-//typedef uint32_t VkSampleMask;
 typealias VkBool32 = Boolean
 typealias VkDeviceAddress = Long
 typealias VkDeviceSize = Long
