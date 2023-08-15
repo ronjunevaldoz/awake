@@ -13,7 +13,7 @@ cmake_minimum_required(VERSION 3.22.1)
 project("awake-vulkan")
 
 # Add the 'common/utils' subdirectory
-add_subdirectory(common/utils)
+add_subdirectory(vulkan-kotlin)
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
@@ -38,6 +38,6 @@ find_library(log-lib log)
 # build script, prebuilt third-party libraries, or Android system libraries.
 target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
-        common_utils_vulkan_utils
+        vulkan_kotlin
         android
         log)

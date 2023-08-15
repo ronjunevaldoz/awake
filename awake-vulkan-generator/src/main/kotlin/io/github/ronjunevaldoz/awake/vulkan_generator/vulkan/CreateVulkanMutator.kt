@@ -94,7 +94,7 @@ fun createVulkanMutator(clazz: Class<*>) {
             }
         }
 
-    val awakeVulkanCpp = "awake-vulkan/src/main/cpp/common/utils"
+    val awakeVulkanCpp = "awake-vulkan/src/main/cpp/vulkan-kotlin"
     FileWriter.writeFile(
         "$awakeVulkanCpp/includes/${clazz.simpleName + "Mutator"}.h",
         cppClassCode.first

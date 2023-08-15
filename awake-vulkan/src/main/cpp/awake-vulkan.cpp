@@ -1,9 +1,9 @@
 #include "jni.h"
-#include "common/utils/vulkan_utils.h"
+#include "vulkan-kotlin/vulkan_utils.h"
 
 
 extern "C" {
-JNIEXPORT jlong JNICALL
+JNIEXPORT jlong
 Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkCreateInstance(JNIEnv *env, jobject thiz,
                                                                   jobject app_info) {
     return vulkan_utils::createInstance(env, app_info);

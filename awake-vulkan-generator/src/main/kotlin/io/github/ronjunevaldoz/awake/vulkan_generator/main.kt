@@ -102,5 +102,5 @@ fun main(args: Array<String>) {
     generateJavaToVulkanCpp<VkSubpassDependency>()
     generateJavaToVulkanCpp<VkRenderPassCreateInfo>()
 
-    println(cmakeListTemplate("awake-vulkan/src/main/cpp/common/utils/"))
+    println(cmakeListTemplate("awake-vulkan/src/main/cpp/vulkan-kotlin/"))
 }

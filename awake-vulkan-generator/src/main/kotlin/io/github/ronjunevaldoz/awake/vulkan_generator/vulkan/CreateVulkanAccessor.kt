@@ -99,7 +99,7 @@ fun createVulkanAccessor(clazz: Class<*>) {
             generateVulkanFromObject(clazz, declareMembers, hasArrayField)
         }
 
-    val awakeVulkanCpp = "awake-vulkan/src/main/cpp/common/utils"
+    val awakeVulkanCpp = "awake-vulkan/src/main/cpp/vulkan-kotlin"
     FileWriter.writeFile(
         "$awakeVulkanCpp/includes/${clazz.simpleName + "Accessor"}.h",
         cppClassCode.first

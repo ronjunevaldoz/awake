@@ -1,6 +1,6 @@
-# common/utils/CMakeLists.txt
+# vulkan-kotlin/CMakeLists.txt
 
-set(COMMON_UTILS_VULKAN_UTILS_SOURCES
+set(VULKAN_KOTLIN_SOURCES
         VkAttachmentDescriptionAccessor.cpp
         VkDeviceQueueCreateInfoAccessor.cpp
         vulkan_utils.cpp
@@ -45,6 +45,6 @@ set(COMMON_UTILS_VULKAN_UTILS_SOURCES
 
 # Set the path to your header file directory
 include_directories(includes)
-add_library(common_utils_vulkan_utils STATIC ${COMMON_UTILS_VULKAN_UTILS_SOURCES})
+add_library(vulkan_kotlin STATIC ${VULKAN_KOTLIN_SOURCES})
 
-target_include_directories(common_utils_vulkan_utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(vulkan_kotlin PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

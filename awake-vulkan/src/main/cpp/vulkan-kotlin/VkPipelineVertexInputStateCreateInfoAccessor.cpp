@@ -59,7 +59,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexAttributeDescriptions(
         return;
     }
     auto size = env->GetArrayLength(pVertexAttributeDescriptionsArray);
-    std::vector<VkVertexInputAttributeDescription> pVertexAttributeDescriptions;
+    std::vector <VkVertexInputAttributeDescription> pVertexAttributeDescriptions;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pVertexAttributeDescriptionsArray,
                                                             i); // actual type is VkVertexInputAttributeDescription[];
@@ -89,7 +89,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexBindingDescriptions(
         return;
     }
     auto size = env->GetArrayLength(pVertexBindingDescriptionsArray);
-    std::vector<VkVertexInputBindingDescription> pVertexBindingDescriptions;
+    std::vector <VkVertexInputBindingDescription> pVertexBindingDescriptions;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pVertexBindingDescriptionsArray,
                                                             i); // actual type is VkVertexInputBindingDescription[];
