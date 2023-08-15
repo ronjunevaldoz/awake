@@ -42,6 +42,7 @@ import io.github.ronjunevaldoz.awake.vulkan.enums.VkPrimitiveTopology
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkShaderStageFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSharingMode
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSurfaceTransformFlagBitsKHR
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkVertexInputRate
 import io.github.ronjunevaldoz.awake.vulkan.has
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentReference
@@ -69,6 +70,8 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayou
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineShaderStageCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineVertexInputStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineViewportStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputAttributeDescription
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputBindingDescription
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDevice
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.eq
 import io.github.ronjunevaldoz.awake.vulkan.presentation.VkAndroidSurfaceCreateInfoKHR
@@ -145,7 +148,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
                 pAttachments = arrayOf(
                     VkAttachmentDescription(
                         format = swapChainImageFormat,
-                        initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                        initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
                         finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
                     )
                 ),
@@ -366,7 +369,25 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             val createInfos = arrayOf(
                 VkGraphicsPipelineCreateInfo(
                     pStages = shaderStages,
-                    pVertexInputState = arrayOf(VkPipelineVertexInputStateCreateInfo()),
+                    pVertexInputState = arrayOf(
+                        VkPipelineVertexInputStateCreateInfo(
+                            pVertexBindingDescriptions = arrayOf(
+                                VkVertexInputBindingDescription(
+                                    0,  // Index of the binding
+                                    4, // Size of each vertex data element
+                                    VkVertexInputRate.VK_VERTEX_INPUT_RATE_VERTEX // Input rate (per vertex)
+                                )
+                            ),
+                            pVertexAttributeDescriptions = arrayOf(
+                                VkVertexInputAttributeDescription(
+                                    0, // Which binding this attribute (position) is associated with
+                                    0, // Corresponds to layout (location = 0) in the shader
+                                    VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT, // Format of the attribute data
+                                    0
+                                )
+                            )
+                        )
+                    ),
                     pDynamicState = arrayOf(
                         VkPipelineDynamicStateCreateInfo(
                             pDynamicStates = arrayOf(

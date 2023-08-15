@@ -54,6 +54,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexAttributeDescriptions(
     auto pVertexAttributeDescriptionsArray = (jobjectArray) env->GetObjectField(obj,
                                                                                 pVertexAttributeDescriptionsField);
     if (pVertexAttributeDescriptionsArray == nullptr) {
+        clazzInfo.vertexAttributeDescriptionCount = 0;
         clazzInfo.pVertexAttributeDescriptions = nullptr;
         return;
     }
@@ -69,6 +70,8 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexAttributeDescriptions(
         pVertexAttributeDescriptions.push_back(ref);
     }
     // processing array data
+    auto vertexAttributeDescriptionCount = static_cast<uint32_t>(pVertexAttributeDescriptions.size());
+    clazzInfo.vertexAttributeDescriptionCount = vertexAttributeDescriptionCount;
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkVertexInputAttributeDescription[size];
     std::copy(pVertexAttributeDescriptions.begin(), pVertexAttributeDescriptions.end(), copy);
@@ -81,6 +84,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexBindingDescriptions(
     auto pVertexBindingDescriptionsArray = (jobjectArray) env->GetObjectField(obj,
                                                                               pVertexBindingDescriptionsField);
     if (pVertexBindingDescriptionsArray == nullptr) {
+        clazzInfo.vertexBindingDescriptionCount = 0;
         clazzInfo.pVertexBindingDescriptions = nullptr;
         return;
     }
@@ -96,6 +100,8 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexBindingDescriptions(
         pVertexBindingDescriptions.push_back(ref);
     }
     // processing array data
+    auto vertexBindingDescriptionCount = static_cast<uint32_t>(pVertexBindingDescriptions.size());
+    clazzInfo.vertexBindingDescriptionCount = vertexBindingDescriptionCount;
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkVertexInputBindingDescription[size];
     std::copy(pVertexBindingDescriptions.begin(), pVertexBindingDescriptions.end(), copy);
