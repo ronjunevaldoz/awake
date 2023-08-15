@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkStencilOpStateAccessor.cpp>
+#include <VkStencilOpStateAccessor.h>
 
 class VkPipelineDepthStencilStateCreateInfoAccessor {
 private:

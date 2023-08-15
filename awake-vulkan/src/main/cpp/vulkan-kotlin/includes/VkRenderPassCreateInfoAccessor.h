@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkAttachmentDescriptionAccessor.cpp>
-#include <VkSubpassDescriptionAccessor.cpp>
-#include <VkSubpassDependencyAccessor.cpp>
+#include <VkAttachmentDescriptionAccessor.h>
+#include <VkSubpassDescriptionAccessor.h>
+#include <VkSubpassDependencyAccessor.h>
 
 class VkRenderPassCreateInfoAccessor {
 private:

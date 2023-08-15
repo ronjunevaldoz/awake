@@ -75,7 +75,6 @@ public:
     VkPhysicalDeviceFeaturesMutator(JNIEnv *env);
 
     jobject toObject(VkPhysicalDeviceFeatures source);
-
     ~VkPhysicalDeviceFeaturesMutator();
 };
 

@@ -28,11 +28,8 @@ public:
     VkStencilOpStateAccessor(JNIEnv *env, jobject obj);
 
     VkStencilOp getfailOp();
-
     uint32_t getcompareMask();
-
     uint32_t getreference();
-
     VkCompareOp getcompareOp();
 
     uint32_t getwriteMask();
@@ -40,9 +37,7 @@ public:
     void fromObject(VkStencilOpState &clazzInfo);
 
     VkStencilOp getpassOp();
-
     VkStencilOp getdepthFailOp();
-
     ~VkStencilOpStateAccessor();
 };
 

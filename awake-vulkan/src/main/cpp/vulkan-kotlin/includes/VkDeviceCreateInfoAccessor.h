@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkDeviceQueueCreateInfoAccessor.cpp>
-#include <VkPhysicalDeviceFeaturesAccessor.cpp>
+#include <VkDeviceQueueCreateInfoAccessor.h>
+#include <VkPhysicalDeviceFeaturesAccessor.h>
 
 class VkDeviceCreateInfoAccessor {
 private:

@@ -34,15 +34,10 @@ public:
     VkPipelineRasterizationStateCreateInfoAccessor(JNIEnv *env, jobject obj);
 
     float getlineWidth();
-
     VkPolygonMode getpolygonMode();
-
     float getdepthBiasConstantFactor();
-
     float getdepthBiasClamp();
-
     VkFrontFace getfrontFace();
-
     bool getdepthClampEnable();
 
     VkStructureType getsType();
@@ -50,9 +45,7 @@ public:
     void getpNext(VkPipelineRasterizationStateCreateInfo &clazzInfo);
 
     uint32_t getflags();
-
     float getdepthBiasSlopeFactor();
-
     bool getdepthBiasEnable();
 
     bool getrasterizerDiscardEnable();
@@ -60,7 +53,6 @@ public:
     void fromObject(VkPipelineRasterizationStateCreateInfo &clazzInfo);
 
     uint32_t getcullMode();
-
     ~VkPipelineRasterizationStateCreateInfoAccessor();
 };
 

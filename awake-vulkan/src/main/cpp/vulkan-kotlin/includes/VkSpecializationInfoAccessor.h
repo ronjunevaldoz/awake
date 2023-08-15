@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkSpecializationMapEntryAccessor.cpp>
+#include <VkSpecializationMapEntryAccessor.h>
 
 class VkSpecializationInfoAccessor {
 private:

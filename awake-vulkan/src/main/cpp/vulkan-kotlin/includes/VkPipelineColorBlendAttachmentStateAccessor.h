@@ -35,17 +35,11 @@ public:
     void fromObject(VkPipelineColorBlendAttachmentState &clazzInfo);
 
     uint32_t getcolorWriteMask();
-
     VkBlendFactor getdstColorBlendFactor();
-
     VkBlendFactor getsrcAlphaBlendFactor();
-
     VkBlendOp getalphaBlendOp();
-
     VkBlendFactor getdstAlphaBlendFactor();
-
     bool getblendEnable();
-
     ~VkPipelineColorBlendAttachmentStateAccessor();
 };
 

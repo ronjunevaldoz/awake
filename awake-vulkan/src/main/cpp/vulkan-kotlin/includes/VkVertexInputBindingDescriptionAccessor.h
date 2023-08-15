@@ -24,7 +24,6 @@ public:
     VkVertexInputBindingDescriptionAccessor(JNIEnv *env, jobject obj);
 
     uint32_t getbinding();
-
     VkVertexInputRate getinputRate();
 
     uint32_t getstride();

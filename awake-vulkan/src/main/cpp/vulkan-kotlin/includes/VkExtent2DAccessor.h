@@ -27,7 +27,6 @@ public:
     void fromObject(VkExtent2D &clazzInfo);
 
     uint32_t getheight();
-
     ~VkExtent2DAccessor();
 };
 

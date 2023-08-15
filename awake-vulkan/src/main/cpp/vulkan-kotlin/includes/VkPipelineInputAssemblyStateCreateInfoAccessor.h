@@ -26,7 +26,6 @@ public:
     VkPipelineInputAssemblyStateCreateInfoAccessor(JNIEnv *env, jobject obj);
 
     VkStructureType getsType();
-
     uint32_t getflags();
 
     bool getprimitiveRestartEnable();

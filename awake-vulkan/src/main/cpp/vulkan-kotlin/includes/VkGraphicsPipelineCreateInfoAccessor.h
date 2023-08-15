@@ -11,16 +11,16 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkPipelineShaderStageCreateInfoAccessor.cpp>
-#include <VkPipelineVertexInputStateCreateInfoAccessor.cpp>
-#include <VkPipelineInputAssemblyStateCreateInfoAccessor.cpp>
-#include <VkPipelineTessellationStateCreateInfoAccessor.cpp>
-#include <VkPipelineViewportStateCreateInfoAccessor.cpp>
-#include <VkPipelineRasterizationStateCreateInfoAccessor.cpp>
-#include <VkPipelineMultisampleStateCreateInfoAccessor.cpp>
-#include <VkPipelineDepthStencilStateCreateInfoAccessor.cpp>
-#include <VkPipelineColorBlendStateCreateInfoAccessor.cpp>
-#include <VkPipelineDynamicStateCreateInfoAccessor.cpp>
+#include <VkPipelineShaderStageCreateInfoAccessor.h>
+#include <VkPipelineVertexInputStateCreateInfoAccessor.h>
+#include <VkPipelineInputAssemblyStateCreateInfoAccessor.h>
+#include <VkPipelineTessellationStateCreateInfoAccessor.h>
+#include <VkPipelineViewportStateCreateInfoAccessor.h>
+#include <VkPipelineRasterizationStateCreateInfoAccessor.h>
+#include <VkPipelineMultisampleStateCreateInfoAccessor.h>
+#include <VkPipelineDepthStencilStateCreateInfoAccessor.h>
+#include <VkPipelineColorBlendStateCreateInfoAccessor.h>
+#include <VkPipelineDynamicStateCreateInfoAccessor.h>
 
 class VkGraphicsPipelineCreateInfoAccessor {
 private:

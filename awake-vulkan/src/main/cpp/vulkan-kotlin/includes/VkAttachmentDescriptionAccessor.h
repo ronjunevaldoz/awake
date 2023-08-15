@@ -30,19 +30,12 @@ public:
     VkAttachmentDescriptionAccessor(JNIEnv *env, jobject obj);
 
     uint32_t getflags();
-
     VkSampleCountFlagBits getsamples();
-
     VkAttachmentStoreOp getstencilStoreOp();
-
     VkAttachmentLoadOp getloadOp();
-
     VkImageLayout getfinalLayout();
-
     VkAttachmentStoreOp getstoreOp();
-
     VkImageLayout getinitialLayout();
-
     VkFormat getformat();
 
     VkAttachmentLoadOp getstencilLoadOp();

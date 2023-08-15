@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkOffset2DAccessor.cpp>
-#include <VkExtent2DAccessor.cpp>
+#include <VkOffset2DAccessor.h>
+#include <VkExtent2DAccessor.h>
 
 class VkRect2DAccessor {
 private:

@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkAttachmentReferenceAccessor.cpp>
+#include <VkAttachmentReferenceAccessor.h>
 
 class VkSubpassDescriptionAccessor {
 private:

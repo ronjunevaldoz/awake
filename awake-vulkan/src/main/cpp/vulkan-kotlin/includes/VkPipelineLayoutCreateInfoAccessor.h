@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkPushConstantRangeAccessor.cpp>
+#include <VkPushConstantRangeAccessor.h>
 
 class VkPipelineLayoutCreateInfoAccessor {
 private:

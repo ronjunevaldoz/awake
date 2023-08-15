@@ -171,7 +171,7 @@ class CppClassBuilder(
             append("#define $header\n\n")
 
             for (import in imports) {
-                append("#include $import\n")
+                append("#include ${import.replace(".cpp", ".h")}\n")
             }
             if (imports.isNotEmpty()) {
                 append("\n")

@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkViewportAccessor.cpp>
-#include <VkRect2DAccessor.cpp>
+#include <VkViewportAccessor.h>
+#include <VkRect2DAccessor.h>
 
 class VkPipelineViewportStateCreateInfoAccessor {
 private:

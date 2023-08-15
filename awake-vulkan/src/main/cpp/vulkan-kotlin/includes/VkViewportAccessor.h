@@ -27,7 +27,6 @@ public:
     VkViewportAccessor(JNIEnv *env, jobject obj);
 
     float getminDepth();
-
     float getheight();
 
     float getx();
@@ -35,11 +34,8 @@ public:
     void fromObject(VkViewport &clazzInfo);
 
     float gety();
-
     float getwidth();
-
     float getmaxDepth();
-
     ~VkViewportAccessor();
 };
 

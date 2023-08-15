@@ -31,9 +31,7 @@ public:
     void fromObject(VkVertexInputAttributeDescription &clazzInfo);
 
     VkFormat getformat();
-
     uint32_t getoffset();
-
     ~VkVertexInputAttributeDescriptionAccessor();
 };
 

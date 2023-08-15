@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkVertexInputBindingDescriptionAccessor.cpp>
-#include <VkVertexInputAttributeDescriptionAccessor.cpp>
+#include <VkVertexInputBindingDescriptionAccessor.h>
+#include <VkVertexInputAttributeDescriptionAccessor.h>
 
 class VkPipelineVertexInputStateCreateInfoAccessor {
 private:

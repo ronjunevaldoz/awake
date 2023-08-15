@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkPipelineColorBlendAttachmentStateAccessor.cpp>
+#include <VkPipelineColorBlendAttachmentStateAccessor.h>
 
 class VkPipelineColorBlendStateCreateInfoAccessor {
 private:

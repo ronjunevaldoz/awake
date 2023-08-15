@@ -76,65 +76,35 @@ public:
     VkPhysicalDeviceFeaturesAccessor(JNIEnv *env, jobject obj);
 
     bool gettessellationShader();
-
     bool getfullDrawIndexUint32();
-
     bool getdepthBounds();
-
     bool getsparseResidency4Samples();
-
     bool getpipelineStatisticsQuery();
-
     bool getsparseResidencyBuffer();
-
     bool getshaderStorageImageReadWithoutFormat();
-
     bool getsparseResidency8Samples();
-
     bool getalphaToOne();
-
     bool getshaderStorageImageMultisample();
-
     bool getshaderStorageImageArrayDynamicIndexing();
-
     bool getshaderInt64();
-
     bool getwideLines();
-
     bool getshaderClipDistance();
-
     bool getshaderInt16();
-
     bool getshaderUniformBufferArrayDynamicIndexing();
-
     bool getfragmentStoresAndAtomics();
-
     bool getshaderStorageImageExtendedFormats();
-
     bool getsparseResidency2Samples();
-
     bool getshaderSampledImageArrayDynamicIndexing();
-
     bool getlogicOp();
-
     bool gettextureCompressionASTC_LDR();
-
     bool getfillModeNonSolid();
-
     bool getimageCubeArray();
-
     bool getsparseResidencyImage2D();
-
     bool getdualSrcBlend();
-
     bool getshaderResourceResidency();
-
     bool getmultiViewport();
-
     bool getshaderStorageBufferArrayDynamicIndexing();
-
     bool getinheritedQueries();
-
     bool getshaderTessellationAndGeometryPointSize();
 
     bool getshaderImageGatherExtended();
@@ -142,51 +112,28 @@ public:
     void fromObject(VkPhysicalDeviceFeatures &clazzInfo);
 
     bool getrobustBufferAccess();
-
     bool getsparseResidencyImage3D();
-
     bool getsparseResidencyAliased();
-
     bool getocclusionQueryPrecise();
-
     bool getshaderStorageImageWriteWithoutFormat();
-
     bool getshaderResourceMinLod();
-
     bool getvariableMultisampleRate();
-
     bool gettextureCompressionETC2();
-
     bool getshaderFloat64();
-
     bool getshaderCullDistance();
-
     bool getgeometryShader();
-
     bool getindependentBlend();
-
     bool getsampleRateShading();
-
     bool getmultiDrawIndirect();
-
     bool gettextureCompressionBC();
-
     bool getdepthClamp();
-
     bool getlargePoints();
-
     bool getsparseBinding();
-
     bool getsamplerAnisotropy();
-
     bool getdrawIndirectFirstInstance();
-
     bool getvertexPipelineStoresAndAtomics();
-
     bool getdepthBiasClamp();
-
     bool getsparseResidency16Samples();
-
     ~VkPhysicalDeviceFeaturesAccessor();
 };
 

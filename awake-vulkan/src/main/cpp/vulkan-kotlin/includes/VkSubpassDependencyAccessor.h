@@ -28,15 +28,10 @@ public:
     VkSubpassDependencyAccessor(JNIEnv *env, jobject obj);
 
     uint32_t getdstStageMask();
-
     uint32_t getdstAccessMask();
-
     uint32_t getsrcSubpass();
-
     uint32_t getdstSubpass();
-
     uint32_t getdependencyFlags();
-
     uint32_t getsrcAccessMask();
 
     uint32_t getsrcStageMask();
