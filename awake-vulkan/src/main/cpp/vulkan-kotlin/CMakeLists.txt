@@ -13,15 +13,20 @@ set(VULKAN_KOTLIN_SOURCES
         VkRect2DAccessor.cpp
         VkDeviceCreateInfoAccessor.cpp
         VkPhysicalDeviceSparsePropertiesAccessor.cpp
+        VkDebugUtilsMessengerCallbackDataEXTMutator.cpp
         VkSpecializationMapEntryAccessor.cpp
         VkPipelineColorBlendAttachmentStateAccessor.cpp
+        VkDebugUtilsObjectNameInfoEXTAccessor.cpp
+        VkDebugUtilsLabelEXTAccessor.cpp
         VkSubpassDependencyAccessor.cpp
         VkPipelineColorBlendStateCreateInfoAccessor.cpp
         VkPhysicalDeviceFeaturesAccessor.cpp
         VkPipelineTessellationStateCreateInfoAccessor.cpp
+        VkDebugUtilsMessengerCallbackDataEXTAccessor.cpp
         enum_utils.cpp
         VkSubpassDescriptionAccessor.cpp
         VkPhysicalDeviceLimitsAccessor.cpp
+        VkDebugUtilsMessengerCreateInfoEXTAccessor.cpp
         VkPhysicalDeviceLimitsMutator.cpp
         VkPipelineLayoutCreateInfoAccessor.cpp
         VkShaderModuleCreateInfoAccessor.cpp
