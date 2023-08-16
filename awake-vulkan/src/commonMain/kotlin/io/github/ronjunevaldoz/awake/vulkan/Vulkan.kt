@@ -29,6 +29,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.VkDebugUtilsMessengerCreateInfoEXT
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayoutCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
@@ -258,6 +259,10 @@ expect object Vulkan {
     fun vkDestroyRenderPass(device: Long, renderPass: Long)
 
     // Debug messenger
-    fun createDebugUtilsMessenger(instance: Long): Long
+    fun createDebugUtilsMessenger(
+        instance: Long,
+        createInfo: VkDebugUtilsMessengerCreateInfoEXT
+    ): Long
+
     fun destroyDebugUtilsMessenger(instance: Long, debugUtilsMessenger: Long)
 }

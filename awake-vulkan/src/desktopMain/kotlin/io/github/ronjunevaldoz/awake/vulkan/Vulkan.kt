@@ -29,6 +29,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.VkDebugUtilsMessengerCreateInfoEXT
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayoutCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
@@ -313,7 +314,10 @@ actual object Vulkan {
     actual fun vkDestroyPipeline(device: Long, pipeline: Long) {
     }
 
-    actual fun createDebugUtilsMessenger(instance: Long): Long {
+    actual fun createDebugUtilsMessenger(
+        instance: Long,
+        createInfo: VkDebugUtilsMessengerCreateInfoEXT
+    ): Long {
         TODO("Not yet implemented")
     }
 

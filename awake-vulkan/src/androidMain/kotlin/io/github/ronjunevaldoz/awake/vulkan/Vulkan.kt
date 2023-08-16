@@ -29,6 +29,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.VkDebugUtilsMessengerCreateInfoEXT
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayoutCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
@@ -125,7 +126,11 @@ actual object Vulkan {
         swapchainKHR: Long
     )
 
-    actual external fun createDebugUtilsMessenger(instance: Long): Long
+    actual external fun createDebugUtilsMessenger(
+        instance: Long,
+        createInfo: VkDebugUtilsMessengerCreateInfoEXT
+    ): Long
+
     actual external fun destroyDebugUtilsMessenger(instance: Long, debugUtilsMessenger: Long)
     actual external fun vkCreateImageView(
         device: Long,

@@ -43,6 +43,7 @@ import io.github.ronjunevaldoz.awake.vulkan.enums.VkShaderStageFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSharingMode
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSurfaceTransformFlagBitsKHR
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkVertexInputRate
+import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkDebugUtilsMessageSeverityFlagBitsEXT
 import io.github.ronjunevaldoz.awake.vulkan.has
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentReference
@@ -61,6 +62,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSubpassDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.VkDebugUtilsMessengerCreateInfoEXT
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendAttachmentState
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendStateCreateInfo
@@ -237,7 +239,35 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
     }
 
     private fun setupDebugMessenger() {
-        debugUtilsMessenger = Vulkan.createDebugUtilsMessenger(instance)
+        val createInfo = VkDebugUtilsMessengerCreateInfoEXT(
+            pfnUserCallback = { severity, messageType, callbackData, userData ->
+
+                val severityString = severity
+                val typeString = messageType
+                val messageIdNumber = callbackData.messageIdNumber
+                val logMessage = String.format(
+                    "%s %s: \n[%s] Code %d :\n%s",
+                    typeString,
+                    severityString,
+                    "messageIdName",
+                    messageIdNumber,
+                    "message"
+                )
+                when (severity) {
+                    VkDebugUtilsMessageSeverityFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT ->
+                        Log.w("AwakeVk", logMessage)
+
+                    VkDebugUtilsMessageSeverityFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT ->
+                        Log.e("AwakeVk", logMessage)
+
+                    else -> Log.d("AwakeVk", logMessage)
+                }
+                Log.d("Userdata", "${userData}")
+                false
+            },
+            pUserData = null
+        )
+        debugUtilsMessenger = Vulkan.createDebugUtilsMessenger(instance, createInfo)
     }
 
     private fun swapChain() {

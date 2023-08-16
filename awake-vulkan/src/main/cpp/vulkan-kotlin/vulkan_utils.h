@@ -18,11 +18,6 @@ namespace vulkan_utils {
 
     jobjectArray queueFamilyPropertiesObj_fromVkQueueFamilyProperties(JNIEnv *pEnv, jlong device);
 
-    _jobject *extent2DObj_fromExtend2D(JNIEnv *env, VkExtent2D &extent2D);
-
-    _jobject *surfaceTransformFlagBitsKHRObj_fromVkSurfaceTransformFlagBitsKHR(JNIEnv *env,
-                                                                               VkSurfaceTransformFlagBitsKHR &flagBitsKhr);
-
     _jobject *formatObj_fromVkSurfaceFormatKHR(JNIEnv *env, VkFormat &format);
 
     _jobject *colorSpaceObj_fromVkColorSpaceKHR(JNIEnv *env, VkColorSpaceKHR &colorSpace);
@@ -52,13 +47,8 @@ namespace vulkan_utils {
     bool checkValidationLayerSupported(const std::vector<const char *> &layers);
 
     // Create debug utils messenger
-    VkDebugUtilsMessengerEXT createDebugUtilsMessenger(VkInstance instance);
-    // Debug utils message callback
-    VKAPI_ATTR VkBool32 VKAPI_CALL onDebugUtilsMessage(
-            VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-            VkDebugUtilsMessageTypeFlagsEXT messageTypes,
-            const VkDebugUtilsMessengerCallbackDataEXT *callbackData,
-            void *userData);
+    VkDebugUtilsMessengerEXT
+    createDebugUtilsMessenger(JNIEnv *env, VkInstance instance, jobject pCreateInfo);
 
     // Destroy debug utils messenger
     void

@@ -23,6 +23,7 @@
 #include "VkSwapchainCreateInfoKHRAccessor.h"
 #include "VkImageViewCreateInfoAccessor.h"
 #include "VkShaderModuleCreateInfoAccessor.h"
+#include "VkDebugUtilsMessengerCreateInfoEXTAccessor.h"
 
 namespace vulkan_utils {
 
@@ -383,10 +384,11 @@ namespace vulkan_utils {
         return validationLayersAvailable; // or false depending on the validation layer availability
     }
 
-    // TODO check for possible leak??
 // Function to create the debug utils messenger
     VkDebugUtilsMessengerEXT createDebugUtilsMessenger(
-            VkInstance instance) {
+            JNIEnv *env,
+            VkInstance instance,
+            jobject pCreateInfo) {
         auto pfnCreateDebugUtilsMessengerEXT =
                 (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(
                         instance, "vkCreateDebugUtilsMessengerEXT");
@@ -396,18 +398,9 @@ namespace vulkan_utils {
         }
 
         VkDebugUtilsMessengerCreateInfoEXT messengerInfo = {};
-        messengerInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-        messengerInfo.pNext = nullptr;
-        messengerInfo.flags = 0;
-        messengerInfo.messageSeverity =
-                VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
-                VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
-        messengerInfo.messageType =
-                VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-        messengerInfo.pfnUserCallback = &onDebugUtilsMessage;
-        messengerInfo.pUserData = nullptr; // Custom user data passed to the callback
+
+        VkDebugUtilsMessengerCreateInfoEXTAccessor::init(env, pCreateInfo);
+        VkDebugUtilsMessengerCreateInfoEXTAccessor::getInstance().fromObject(messengerInfo);
 
         VkDebugUtilsMessengerEXT debugUtilsMessenger = VK_NULL_HANDLE;
         VkResult result = pfnCreateDebugUtilsMessengerEXT(
@@ -419,55 +412,6 @@ namespace vulkan_utils {
 
         return debugUtilsMessenger;
     }
-
-
-    VKAPI_ATTR VkBool32
-
-    VKAPI_CALL onDebugUtilsMessage(
-            VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-            VkDebugUtilsMessageTypeFlagsEXT messageTypes,
-            const VkDebugUtilsMessengerCallbackDataEXT *callbackData,
-            void *userData) {
-        const char validation[] = "Validation";
-        const char performance[] = "Performance";
-        const char error[] = "ERROR";
-        const char warning[] = "WARNING";
-        const char unknownType[] = "UNKNOWN_TYPE";
-        const char unknownSeverity[] = "UNKNOWN_SEVERITY";
-        const char *typeString = unknownType;
-        const char *severityString = unknownSeverity;
-        const char *messageIdName = callbackData->pMessageIdName;
-        int32_t messageIdNumber = callbackData->messageIdNumber;
-        const char *message = callbackData->pMessage;
-        android_LogPriority priority = ANDROID_LOG_UNKNOWN;
-
-        if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
-            severityString = error;
-            priority = ANDROID_LOG_ERROR;
-        } else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
-            severityString = warning;
-            priority = ANDROID_LOG_WARN;
-        }
-        if (messageTypes & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT) {
-            typeString = validation;
-        } else if (messageTypes & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT) {
-            typeString = performance;
-        }
-
-        __android_log_print(priority,
-                            "Awake Vulkan",
-                            "%s %s: \n[%s] Code %i :\n%s",
-                            typeString,
-                            severityString,
-                            messageIdName,
-                            messageIdNumber,
-                            message);
-
-        // Returning false tells the layer not to stop when the event occurs, so
-        // they see the same behavior with and without validation layers enabled.
-        return VK_FALSE;
-    }
-
 
 // Function to destroy the debug utils messenger
     void destroyDebugUtilsMessenger(
@@ -658,7 +602,9 @@ namespace vulkan_utils {
                              jobject create_info_khr) {
         auto device = reinterpret_cast<VkDevice>(pDevice);
         VkSwapchainKHR swapchain{};
-        auto createInfo = vulkan_utils::VkSwapchainCreateInfoKHR_fromObject(env, create_info_khr);
+        VkSwapchainCreateInfoKHR createInfo{};
+        VkSwapchainCreateInfoKHRAccessor(env, create_info_khr).fromObject(createInfo);
+//        auto createInfo = vulkan_utils::VkSwapchainCreateInfoKHR_fromObject(env, create_info_khr);
         VkResult result = vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapchain);
         if (result != VK_SUCCESS) {
             return 0;

@@ -12,10 +12,11 @@ Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkCreateInstance(JNIEnv *env, j
 JNIEXPORT jlong JNICALL
 Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_createDebugUtilsMessenger(JNIEnv *env,
                                                                            jobject thiz,
-                                                                           jlong instance) {
+                                                                           jlong instance,
+                                                                           jobject create_info) {
     auto instanceHandle = reinterpret_cast<VkInstance>(instance);
     VkDebugUtilsMessengerEXT debugUtilsMessenger = vulkan_utils::createDebugUtilsMessenger(
-            instanceHandle);
+            env, instanceHandle, create_info);
     return reinterpret_cast<jlong>(debugUtilsMessenger);
 }
 JNIEXPORT void JNICALL

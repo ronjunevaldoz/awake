@@ -108,6 +108,8 @@ fun Field.toVulkanType(): String {
     } else if (isArray) {
         return if (this.isVkHandle()) {
             "std::vector<${this.getVkHandle().name}>"
+        } else if (simpleName.startsWith("vk")) {
+            "std::vector<$elementType>"
         } else {
             "std::vector<$type>"
         }

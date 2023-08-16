@@ -39,6 +39,9 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSubpassDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.VkDebugUtilsLabelEXT
+import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.VkDebugUtilsMessengerCallbackDataEXT
+import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.VkDebugUtilsObjectNameInfoEXT
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendAttachmentState
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendStateCreateInfo
@@ -71,6 +74,13 @@ fun main(args: Array<String>) {
     if (args.isNotEmpty()) {
         FileWriter.rootDir = args[0]
     }
+    // debug utils
+//    generateJavaToVulkanCpp<VkDebugUtilsMessengerCreateInfoEXT>()
+    generateJavaToVulkanCpp<VkDebugUtilsLabelEXT>()
+    generateJavaToVulkanCpp<VkDebugUtilsObjectNameInfoEXT>()
+    generateJavaToVulkanCpp<VkDebugUtilsMessengerCallbackDataEXT>()
+
+    // application
     generateJavaToVulkanCpp<VkApplicationInfo>()
     generateJavaToVulkanCpp<VkPhysicalDeviceSparseProperties>()
     generateJavaToVulkanCpp<VkPhysicalDeviceProperties>()
