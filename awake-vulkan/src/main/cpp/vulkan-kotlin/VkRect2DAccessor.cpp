@@ -25,24 +25,28 @@ void
 VkRect2DAccessor::getoffset(VkRect2D &clazzInfo) {
     auto offsetObj = (jobject) env->GetObjectField(obj, offsetField);
     if (offsetObj == nullptr) {
+        env->DeleteLocalRef(offsetObj); // Delete null object reference
         return;
     }
     VkOffset2DAccessor accessor(env, offsetObj);
     VkOffset2D ref{};
     accessor.fromObject(ref);
     clazzInfo.offset = ref;
+    env->DeleteLocalRef(offsetObj); // Delete object reference
 }
 
 void
 VkRect2DAccessor::getextent(VkRect2D &clazzInfo) {
     auto extentObj = (jobject) env->GetObjectField(obj, extentField);
     if (extentObj == nullptr) {
+        env->DeleteLocalRef(extentObj); // Delete null object reference
         return;
     }
     VkExtent2DAccessor accessor(env, extentObj);
     VkExtent2D ref{};
     accessor.fromObject(ref);
     clazzInfo.extent = ref;
+    env->DeleteLocalRef(extentObj); // Delete object reference
 }
 
 VkRect2DAccessor::~VkRect2DAccessor() {

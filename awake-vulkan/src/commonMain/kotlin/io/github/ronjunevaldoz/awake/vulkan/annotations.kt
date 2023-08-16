@@ -37,14 +37,12 @@ annotation class VkHandleRef(val name: String)
 
 /**
  * @param sizeAlias <elementType> [sizeAlias] otherwise do not generate
- * @param elementCast std::vector<[elementCast]>
  * @param stride multiplier for array size for example given UInt::class -> sizeOf(uint32_t)
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class VkArray(
     val sizeAlias: String = "",
-    val elementCast: KClass<*> = Nothing::class,
     val stride: KClass<*> = Nothing::class
 )
 

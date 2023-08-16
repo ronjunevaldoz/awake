@@ -40,12 +40,14 @@ VkQueueFamilyPropertiesAccessor::getminImageTransferGranularity(
     auto minImageTransferGranularityObj = (jobject) env->GetObjectField(obj,
                                                                         minImageTransferGranularityField);
     if (minImageTransferGranularityObj == nullptr) {
+        env->DeleteLocalRef(minImageTransferGranularityObj); // Delete null object reference
         return;
     }
     VkExtent3DAccessor accessor(env, minImageTransferGranularityObj);
     VkExtent3D ref{};
     accessor.fromObject(ref);
     clazzInfo.minImageTransferGranularity = ref;
+    env->DeleteLocalRef(minImageTransferGranularityObj); // Delete object reference
 }
 
 uint32_t

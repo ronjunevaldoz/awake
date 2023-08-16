@@ -29,12 +29,14 @@ void
 VkSurfaceCapabilitiesKHRAccessor::getcurrentExtent(VkSurfaceCapabilitiesKHR &clazzInfo) {
     auto currentExtentObj = (jobject) env->GetObjectField(obj, currentExtentField);
     if (currentExtentObj == nullptr) {
+        env->DeleteLocalRef(currentExtentObj); // Delete null object reference
         return;
     }
     VkExtent2DAccessor accessor(env, currentExtentObj);
     VkExtent2D ref{};
     accessor.fromObject(ref);
     clazzInfo.currentExtent = ref;
+    env->DeleteLocalRef(currentExtentObj); // Delete object reference
 }
 
 uint32_t
@@ -46,12 +48,14 @@ void
 VkSurfaceCapabilitiesKHRAccessor::getminImageExtent(VkSurfaceCapabilitiesKHR &clazzInfo) {
     auto minImageExtentObj = (jobject) env->GetObjectField(obj, minImageExtentField);
     if (minImageExtentObj == nullptr) {
+        env->DeleteLocalRef(minImageExtentObj); // Delete null object reference
         return;
     }
     VkExtent2DAccessor accessor(env, minImageExtentObj);
     VkExtent2D ref{};
     accessor.fromObject(ref);
     clazzInfo.minImageExtent = ref;
+    env->DeleteLocalRef(minImageExtentObj); // Delete object reference
 }
 
 uint32_t
@@ -82,12 +86,14 @@ void
 VkSurfaceCapabilitiesKHRAccessor::getmaxImageExtent(VkSurfaceCapabilitiesKHR &clazzInfo) {
     auto maxImageExtentObj = (jobject) env->GetObjectField(obj, maxImageExtentField);
     if (maxImageExtentObj == nullptr) {
+        env->DeleteLocalRef(maxImageExtentObj); // Delete null object reference
         return;
     }
     VkExtent2DAccessor accessor(env, maxImageExtentObj);
     VkExtent2D ref{};
     accessor.fromObject(ref);
     clazzInfo.maxImageExtent = ref;
+    env->DeleteLocalRef(maxImageExtentObj); // Delete object reference
 }
 
 uint32_t

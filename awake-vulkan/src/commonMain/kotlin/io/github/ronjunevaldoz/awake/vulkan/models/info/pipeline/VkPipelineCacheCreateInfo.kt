@@ -26,6 +26,6 @@ class VkPipelineCacheCreateInfo(
     val sType: VkStructureType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO,
     val pNext: Any? = null,
     val flags: Int = 0,
-    @field:VkArray("initialDataSize", Any::class)
+    @field:VkArray("initialDataSize")
     val pInitialData: Array<Any>? = null
 )

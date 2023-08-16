@@ -9,11 +9,8 @@
 #include <android/native_window_jni.h>
 #include "vulkan_utils.h"
 #include "enum_utils.h"
-#include "VkImageViewCreateInfoConverter.h"
 #include "includes/VkPhysicalDeviceFeaturesMutator.h"
-#include "VkShaderModuleCreateInfoConverter.h"
 #include "includes/VkGraphicsPipelineCreateInfoAccessor.h"
-#include "VkSwapchainCreateInfoKHRConverter.h"
 #include "includes/VkPipelineCacheCreateInfoAccessor.h"
 #include "includes/VkApplicationInfoAccessor.h"
 #include "includes/VkDeviceCreateInfoAccessor.h"
@@ -23,6 +20,9 @@
 #include "VkPhysicalDevicePropertiesMutator.h"
 #include "VkQueueFamilyPropertiesMutator.h"
 #include "VkSurfaceCapabilitiesKHRMutator.h"
+#include "VkSwapchainCreateInfoKHRAccessor.h"
+#include "VkImageViewCreateInfoAccessor.h"
+#include "VkShaderModuleCreateInfoAccessor.h"
 
 namespace vulkan_utils {
 
@@ -51,7 +51,7 @@ namespace vulkan_utils {
         uint32_t queueFamilyCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
 
-        std::vector <VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+        std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount,
                                                  queueFamilies.data());
 
@@ -93,11 +93,11 @@ namespace vulkan_utils {
                                                                                VkSurfaceTransformFlagBitsKHR &flagBitsKhr) {
         jclass enumClass = env->FindClass(
                 "io/github/ronjunevaldoz/awake/vulkan/enums/VkSurfaceTransformFlagBitsKHR");
-        auto enumValues = (jobjectArray)(env->CallStaticObjectMethod(enumClass,
-                                                                     env->GetStaticMethodID(
-                                                                             enumClass,
-                                                                             "values",
-                                                                             "()[Lio/github/ronjunevaldoz/awake/vulkan/enums/VkSurfaceTransformFlagBitsKHR;")));
+        auto enumValues = (jobjectArray) (env->CallStaticObjectMethod(enumClass,
+                                                                      env->GetStaticMethodID(
+                                                                              enumClass,
+                                                                              "values",
+                                                                              "()[Lio/github/ronjunevaldoz/awake/vulkan/enums/VkSurfaceTransformFlagBitsKHR;")));
 
         jsize numEnumValues = env->GetArrayLength(enumValues);
         jint index = std::min(static_cast<jint>(flagBitsKhr), numEnumValues - 1);
@@ -112,11 +112,11 @@ namespace vulkan_utils {
     // TODO check better to delete local ref
     _jobject *formatObj_fromVkSurfaceFormatKHR(JNIEnv *env, VkFormat &format) {
         jclass enumClass = env->FindClass("io/github/ronjunevaldoz/awake/vulkan/enums/VkFormat");
-        auto enumValues = (jobjectArray)(env->CallStaticObjectMethod(enumClass,
-                                                                     env->GetStaticMethodID(
-                                                                             enumClass,
-                                                                             "values",
-                                                                             "()[Lio/github/ronjunevaldoz/awake/vulkan/enums/VkFormat;")));
+        auto enumValues = (jobjectArray) (env->CallStaticObjectMethod(enumClass,
+                                                                      env->GetStaticMethodID(
+                                                                              enumClass,
+                                                                              "values",
+                                                                              "()[Lio/github/ronjunevaldoz/awake/vulkan/enums/VkFormat;")));
         jsize numEnumValues = env->GetArrayLength(enumValues);
         jint index = std::min(static_cast<jint>(format), numEnumValues - 1);
         jobject enumObj = env->GetObjectArrayElement(enumValues, index);
@@ -132,11 +132,11 @@ namespace vulkan_utils {
     _jobject *colorSpaceObj_fromVkColorSpaceKHR(JNIEnv *env, VkColorSpaceKHR &colorSpace) {
         jclass enumClass = env->FindClass(
                 "io/github/ronjunevaldoz/awake/vulkan/enums/VkColorSpaceKHR");
-        auto enumValues = (jobjectArray)(env->CallStaticObjectMethod(enumClass,
-                                                                     env->GetStaticMethodID(
-                                                                             enumClass,
-                                                                             "values",
-                                                                             "()[Lio/github/ronjunevaldoz/awake/vulkan/enums/VkColorSpaceKHR;")));
+        auto enumValues = (jobjectArray) (env->CallStaticObjectMethod(enumClass,
+                                                                      env->GetStaticMethodID(
+                                                                              enumClass,
+                                                                              "values",
+                                                                              "()[Lio/github/ronjunevaldoz/awake/vulkan/enums/VkColorSpaceKHR;")));
         jsize numEnumValues = env->GetArrayLength(enumValues);
         jint index = std::min(static_cast<jint>(colorSpace), numEnumValues - 1);
         jobject enumObj = env->GetObjectArrayElement(enumValues, index);
@@ -167,11 +167,11 @@ namespace vulkan_utils {
     _jobject *presentModeKHRObj_fromVkPresentModeKHR(JNIEnv *env, VkPresentModeKHR &presentMode) {
         jclass enumClass = env->FindClass(
                 "io/github/ronjunevaldoz/awake/vulkan/enums/VkPresentModeKHR");
-        auto enumValues = (jobjectArray)(env->CallStaticObjectMethod(enumClass,
-                                                                     env->GetStaticMethodID(
-                                                                             enumClass,
-                                                                             "values",
-                                                                             "()[Lio/github/ronjunevaldoz/awake/vulkan/enums/VkPresentModeKHR;")));
+        auto enumValues = (jobjectArray) (env->CallStaticObjectMethod(enumClass,
+                                                                      env->GetStaticMethodID(
+                                                                              enumClass,
+                                                                              "values",
+                                                                              "()[Lio/github/ronjunevaldoz/awake/vulkan/enums/VkPresentModeKHR;")));
         jsize numEnumValues = env->GetArrayLength(enumValues);
         jint index = std::min(static_cast<jint>(presentMode), numEnumValues - 1);
         jobject enumObj = env->GetObjectArrayElement(enumValues, index);
@@ -184,7 +184,9 @@ namespace vulkan_utils {
 
     VkSwapchainCreateInfoKHR
     VkSwapchainCreateInfoKHR_fromObject(JNIEnv *env, jobject pSwapchainObj) {
-        return VkSwapchainCreateInfoKHRConverter(env).fromObject(pSwapchainObj);
+        VkSwapchainCreateInfoKHR createInfo{};
+        VkSwapchainCreateInfoKHRAccessor(env, pSwapchainObj).fromObject(createInfo);
+        return createInfo;
     }
 
     bool
@@ -218,7 +220,7 @@ namespace vulkan_utils {
             }
             // Call enumeratePhysicalDevices again to fill the physical device handles in the direct ByteBuffer
             auto deviceCount = static_cast<uint32_t>(intArray[0]);
-            std::vector <VkPhysicalDevice> devices(deviceCount);
+            std::vector<VkPhysicalDevice> devices(deviceCount);
             vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
             // fill the buffer
             for (int i = 0; i < deviceCount; ++i) {
@@ -247,7 +249,7 @@ namespace vulkan_utils {
         // check if androidSurfaceExtensionSupported
         uint32_t extensionCount = 0;
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-        std::vector <VkExtensionProperties> extensions(extensionCount);
+        std::vector<VkExtensionProperties> extensions(extensionCount);
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
         bool androidSurfaceExtensionSupported = false;
         bool surfaceExtensionSupported = false;
@@ -327,7 +329,7 @@ namespace vulkan_utils {
         // Also check the layers for the debug utils extension.
         uint32_t layerCount;
         vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-        std::vector <VkLayerProperties> layer_props(layerCount);
+        std::vector<VkLayerProperties> layer_props(layerCount);
         vkEnumerateInstanceLayerProperties(&layerCount, layer_props.data());
 
         bool debugUtilsExtAvailable = false;
@@ -337,7 +339,7 @@ namespace vulkan_utils {
             vkEnumerateInstanceExtensionProperties(layer.layerName, &layer_ext_count, nullptr);
             if (layer_ext_count == 0) continue;
 
-            std::vector <VkExtensionProperties> layer_exts(layer_ext_count);
+            std::vector<VkExtensionProperties> layer_exts(layer_ext_count);
             vkEnumerateInstanceExtensionProperties(layer.layerName, &layer_ext_count,
                                                    layer_exts.data());
             debugUtilsExtAvailable = std::any_of(layer_exts.begin(), layer_exts.end(),
@@ -362,7 +364,7 @@ namespace vulkan_utils {
         vkEnumerateInstanceLayerProperties(&instance_layer_present_count, nullptr);
 
         // Enumerate layers with a valid pointer in the last parameter.
-        std::vector <VkLayerProperties> layer_props(instance_layer_present_count);
+        std::vector<VkLayerProperties> layer_props(instance_layer_present_count);
         vkEnumerateInstanceLayerProperties(&instance_layer_present_count, layer_props.data());
 
         // Make sure selected validation layers are available.
@@ -584,7 +586,7 @@ namespace vulkan_utils {
         vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, nullptr);
 
         if (formatCount != 0) {
-            std::vector <VkSurfaceFormatKHR> formats;
+            std::vector<VkSurfaceFormatKHR> formats;
             formats.resize(formatCount);
             vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount,
                                                  formats.data());
@@ -624,7 +626,7 @@ namespace vulkan_utils {
                                                   nullptr);
 
         if (presentModeCount != 0) {
-            std::vector <VkPresentModeKHR> presentModes;
+            std::vector<VkPresentModeKHR> presentModes;
             presentModes.resize(presentModeCount);
             vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount,
                                                       presentModes.data());
@@ -691,7 +693,7 @@ namespace vulkan_utils {
     _jobjectArray *enumerateInstanceExtensionProperties(JNIEnv *env) {
         uint32_t extensionCount = 0;
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-        std::vector <VkExtensionProperties> extensions(extensionCount);
+        std::vector<VkExtensionProperties> extensions(extensionCount);
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
         // init class and constructors
@@ -728,7 +730,7 @@ namespace vulkan_utils {
 
         uint32_t extensionCount = 0;
         vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, nullptr);
-        std::vector <VkExtensionProperties> extensions(extensionCount);
+        std::vector<VkExtensionProperties> extensions(extensionCount);
         vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount,
                                              extensions.data());
 
@@ -769,7 +771,7 @@ namespace vulkan_utils {
 
         uint32_t imageCount = 0;
         vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
-        std::vector <VkImage> swapChainImages(imageCount);
+        std::vector<VkImage> swapChainImages(imageCount);
         vkGetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data());
 
         // init class and constructors
@@ -802,9 +804,8 @@ namespace vulkan_utils {
     ) {
         auto device = reinterpret_cast<VkDevice>(pDevice);
 
-        VkImageViewCreateInfoConverter converter(env);
-
-        auto createInfo = converter.fromObject(p_create_nfo);
+        VkImageViewCreateInfo createInfo{};
+        VkImageViewCreateInfoAccessor(env, p_create_nfo).fromObject(createInfo);
 
         VkImageView imageView;
         VkResult result = vkCreateImageView(device, &createInfo, nullptr, &imageView);
@@ -826,9 +827,8 @@ namespace vulkan_utils {
     }
 
     jlong createShaderModule(JNIEnv *env, jlong pDevice, jobject pCreateInfo) {
-        VkShaderModuleCreateInfoConverter converter(env);
-        VkShaderModuleCreateInfo createInfo = converter.fromObject(pCreateInfo);
-
+        VkShaderModuleCreateInfo createInfo{};
+        VkShaderModuleCreateInfoAccessor(env, pCreateInfo).fromObject(createInfo);
         auto device = reinterpret_cast<VkDevice>(pDevice);
         VkShaderModule shaderModule;
         VkResult result = vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule);
@@ -872,7 +872,7 @@ namespace vulkan_utils {
         auto device = reinterpret_cast<VkDevice>(pDevice);
         auto pipelineCache = reinterpret_cast<VkPipelineCache>(pPipelineCache);
         auto createInfoSize = env->GetArrayLength(createInfosObj);
-        std::vector <VkGraphicsPipelineCreateInfo> createInfos;
+        std::vector<VkGraphicsPipelineCreateInfo> createInfos;
         for (int i = 0; i < createInfoSize; ++i) {
             auto createInfoObj = env->GetObjectArrayElement(createInfosObj, i);
             VkGraphicsPipelineCreateInfoAccessor accessor(env, createInfoObj);
@@ -880,7 +880,7 @@ namespace vulkan_utils {
             accessor.fromObject(createInfo);
             createInfos.push_back(createInfo);
         }
-        std::vector <VkPipeline> pipelines(createInfoSize);
+        std::vector<VkPipeline> pipelines(createInfoSize);
         VkResult result = vkCreateGraphicsPipelines(device, pipelineCache,
                                                     static_cast<uint32_t>(createInfos.size()),
                                                     createInfos.data(), nullptr, pipelines.data());

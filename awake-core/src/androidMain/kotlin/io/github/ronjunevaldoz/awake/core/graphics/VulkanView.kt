@@ -296,7 +296,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             compositeAlpha = compositeAlpha,
             presentMode = presentMode,
             clipped = true,
-            oldSwapchain = null
+            oldSwapchain = 0
         )
         swapChainImageFormat = format
         swapChain = Vulkan.vkCreateSwapchainKHR(device, createInfo)

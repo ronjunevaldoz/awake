@@ -51,7 +51,7 @@ VkDeviceQueueCreateInfoAccessor::getpQueuePriorities(VkDeviceQueueCreateInfo &cl
                              reinterpret_cast<jfloat *>(pQueuePriorities.data()));
     // processing array data
     // no array size generated
-    // Make a copy of the data to ensure proper memory management;
+    // Make a copy of the primitive to ensure proper memory management;
     auto copy = new float[size];
     std::copy(pQueuePriorities.begin(), pQueuePriorities.end(), copy);
     clazzInfo.pQueuePriorities = copy;

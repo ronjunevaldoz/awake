@@ -51,5 +51,5 @@ class VkSwapchainCreateInfoKHR(
     val presentMode: VkPresentModeKHR = VkPresentModeKHR.VK_PRESENT_MODE_IMMEDIATE_KHR,
     val clipped: VkBool32 = false,
     @field:VkHandleRef("VkSwapchainKHR")
-    val oldSwapchain: VkHandle? = null// VkSwapchainKHR
+    val oldSwapchain: VkHandle = 0// VkSwapchainKHR
 )

@@ -43,12 +43,14 @@ VkPipelineDepthStencilStateCreateInfoAccessor::getfront(
         VkPipelineDepthStencilStateCreateInfo &clazzInfo) {
     auto frontObj = (jobject) env->GetObjectField(obj, frontField);
     if (frontObj == nullptr) {
+        env->DeleteLocalRef(frontObj); // Delete null object reference
         return;
     }
     VkStencilOpStateAccessor accessor(env, frontObj);
     VkStencilOpState ref{};
     accessor.fromObject(ref);
     clazzInfo.front = ref;
+    env->DeleteLocalRef(frontObj); // Delete object reference
 }
 
 void
@@ -113,12 +115,14 @@ VkPipelineDepthStencilStateCreateInfoAccessor::getback(
         VkPipelineDepthStencilStateCreateInfo &clazzInfo) {
     auto backObj = (jobject) env->GetObjectField(obj, backField);
     if (backObj == nullptr) {
+        env->DeleteLocalRef(backObj); // Delete null object reference
         return;
     }
     VkStencilOpStateAccessor accessor(env, backObj);
     VkStencilOpState ref{};
     accessor.fromObject(ref);
     clazzInfo.back = ref;
+    env->DeleteLocalRef(backObj); // Delete object reference
 }
 
 VkCompareOp

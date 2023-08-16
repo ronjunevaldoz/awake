@@ -27,10 +27,8 @@ class VkShaderModuleCreateInfo(
     val sType: VkStructureType = VkStructureType.VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
     val pNext: Any? = null,
     val flags: VkShaderModuleCreateFlags = 0,
-//    val codeSize: Long = 0,
-    @VkArray(sizeAlias = "codeSize", elementCast = UInt::class, stride = UInt::class)
-    val pCode: IntArray// = byteArrayOf()
-//    val pCode: ByteArray = byteArrayOf()
+    @VkArray(sizeAlias = "codeSize", stride = UInt::class)
+    val pCode: IntArray
 )
 
 typealias VkShaderModuleCreateFlags = VkFlags

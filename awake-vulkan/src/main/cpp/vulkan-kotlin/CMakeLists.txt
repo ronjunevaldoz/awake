@@ -5,18 +5,16 @@ set(VULKAN_KOTLIN_SOURCES
         VkExtent2DMutator.cpp
         VkDeviceQueueCreateInfoAccessor.cpp
         vulkan_utils.cpp
-        VkShaderModuleCreateInfoConverter.cpp
         VkPhysicalDeviceSparsePropertiesMutator.cpp
         VkOffset2DAccessor.cpp
         VkPhysicalDeviceFeaturesMutator.cpp
+        VkImageSubresourceRangeAccessor.cpp
         VkPhysicalDevicePropertiesAccessor.cpp
         VkRect2DAccessor.cpp
         VkDeviceCreateInfoAccessor.cpp
         VkPhysicalDeviceSparsePropertiesAccessor.cpp
-        VkSwapchainCreateInfoKHRConverter.cpp
         VkSpecializationMapEntryAccessor.cpp
         VkPipelineColorBlendAttachmentStateAccessor.cpp
-        VkImageViewCreateInfoConverter.cpp
         VkSubpassDependencyAccessor.cpp
         VkPipelineColorBlendStateCreateInfoAccessor.cpp
         VkPhysicalDeviceFeaturesAccessor.cpp
@@ -26,8 +24,11 @@ set(VULKAN_KOTLIN_SOURCES
         VkPhysicalDeviceLimitsAccessor.cpp
         VkPhysicalDeviceLimitsMutator.cpp
         VkPipelineLayoutCreateInfoAccessor.cpp
+        VkShaderModuleCreateInfoAccessor.cpp
         VkPipelineInputAssemblyStateCreateInfoAccessor.cpp
+        VkSwapchainCreateInfoKHRAccessor.cpp
         VkGraphicsPipelineCreateInfoAccessor.cpp
+        VkComponentMappingAccessor.cpp
         VkPushConstantRangeAccessor.cpp
         VkAttachmentReferenceAccessor.cpp
         VkSpecializationInfoAccessor.cpp
@@ -46,7 +47,6 @@ set(VULKAN_KOTLIN_SOURCES
         VkSurfaceCapabilitiesKHRAccessor.cpp
         VkSurfaceCapabilitiesKHRMutator.cpp
         VkQueueFamilyPropertiesMutator.cpp
-        VkExtent2DConverter.cpp
         VkViewportAccessor.cpp
         VkExtent3DAccessor.cpp
         VkPipelineRasterizationStateCreateInfoAccessor.cpp
@@ -54,6 +54,7 @@ set(VULKAN_KOTLIN_SOURCES
         VkStencilOpStateAccessor.cpp
         VkRenderPassCreateInfoAccessor.cpp
         VkPhysicalDevicePropertiesMutator.cpp
+        VkImageViewCreateInfoAccessor.cpp
         )
 
 # Set the path to your header file directory

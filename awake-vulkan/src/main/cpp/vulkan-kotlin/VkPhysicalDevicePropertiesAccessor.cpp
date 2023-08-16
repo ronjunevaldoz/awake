@@ -45,24 +45,28 @@ void
 VkPhysicalDevicePropertiesAccessor::getlimits(VkPhysicalDeviceProperties &clazzInfo) {
     auto limitsObj = (jobject) env->GetObjectField(obj, limitsField);
     if (limitsObj == nullptr) {
+        env->DeleteLocalRef(limitsObj); // Delete null object reference
         return;
     }
     VkPhysicalDeviceLimitsAccessor accessor(env, limitsObj);
     VkPhysicalDeviceLimits ref{};
     accessor.fromObject(ref);
     clazzInfo.limits = ref;
+    env->DeleteLocalRef(limitsObj); // Delete object reference
 }
 
 void
 VkPhysicalDevicePropertiesAccessor::getsparseProperties(VkPhysicalDeviceProperties &clazzInfo) {
     auto sparsePropertiesObj = (jobject) env->GetObjectField(obj, sparsePropertiesField);
     if (sparsePropertiesObj == nullptr) {
+        env->DeleteLocalRef(sparsePropertiesObj); // Delete null object reference
         return;
     }
     VkPhysicalDeviceSparsePropertiesAccessor accessor(env, sparsePropertiesObj);
     VkPhysicalDeviceSparseProperties ref{};
     accessor.fromObject(ref);
     clazzInfo.sparseProperties = ref;
+    env->DeleteLocalRef(sparsePropertiesObj); // Delete object reference
 }
 
 uint32_t

@@ -34,11 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GlslValidator plugin for pre-compiling glsl to spv in the demo project.
 
 ### Known Issues
-
-- vkCreateGraphicsPipelines hangs on emulator when shader location is using dynamic and
-  pVertexInputState is null or empty
-- Vulkan validation error (VkDeviceQueueCreateInfo-pQueuePriorities ) is not between 0 and 1 (
-  inclusive) actual device (Tested only in Xiaomi MI lite 12)
+ 
 - Possible memory leak when using Vulkan.
 - Incomplete text rendering.
 - Desktop OpenGL texture rendering is leaking.

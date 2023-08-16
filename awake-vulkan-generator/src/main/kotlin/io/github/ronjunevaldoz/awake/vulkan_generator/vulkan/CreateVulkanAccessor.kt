@@ -291,7 +291,12 @@ private fun CppClassBuilder.generateVulkanGetters(
                     if (vkArray != null) {
                         val arraySizeName = vkArray.sizeAlias // javaMember.name + "Count"
                         if (arraySizeName.isNotEmpty()) {
-                            child("auto $arraySizeName = static_cast<uint32_t>($arrayName.size());")
+                            val stride = if (vkArray.stride == UInt::class) {
+                                " * sizeof(uint32_t)"
+                            } else {
+                                ""
+                            }
+                            child("auto $arraySizeName = static_cast<uint32_t>($arrayName.size()$stride);")
                             child("$clazzInfo.${arraySizeName} = $arraySizeName;")
                         } else {
                             child("// no array size generated")
@@ -302,8 +307,12 @@ private fun CppClassBuilder.generateVulkanGetters(
                             // fixed size array
                             child("std::copy(${arrayName}.begin(), ${arrayName}.end(), $clazzInfo.${arrayName}); // fixed array size")
                         } else {
-                            child("// Make a copy of the data to ensure proper memory management;")
-                            val newData = javaMember.type.componentType.simpleName
+                            child("// Make a copy of the primitive to ensure proper memory management;")
+                            val newData = if (javaMember.toJavaTypeArray() == JNIType.JIntArray) {
+                                "uint32_t"
+                            } else {
+                                javaMember.type.componentType.simpleName
+                            }
                             child("auto copy = new ${newData}[size];")
                             child("std::copy(${arrayName}.begin(), ${arrayName}.end(), copy);")
                             child("clazzInfo.$arrayName = copy;")
