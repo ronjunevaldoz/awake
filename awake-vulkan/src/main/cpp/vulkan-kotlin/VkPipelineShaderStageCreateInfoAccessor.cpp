@@ -30,8 +30,7 @@ VkPipelineShaderStageCreateInfoAccessor::getsType() {
 
 uint32_t
 VkPipelineShaderStageCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 void
@@ -44,7 +43,7 @@ VkPipelineShaderStageCreateInfoAccessor::getpSpecializationInfo(
         return;
     }
     auto size = env->GetArrayLength(pSpecializationInfoArray);
-    std::vector <VkSpecializationInfo> pSpecializationInfo;
+    std::vector<VkSpecializationInfo> pSpecializationInfo;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pSpecializationInfoArray,
                                                             i); // actual type is VkSpecializationInfo[];
@@ -82,11 +81,11 @@ VkPipelineShaderStageCreateInfoAccessor::getmodule() {
 void
 VkPipelineShaderStageCreateInfoAccessor::fromObject(VkPipelineShaderStageCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
     clazzInfo.stage = getstage(); // Enum VkShaderStageFlagBits
     clazzInfo.module = getmodule(); // VkHandle
-    getpName(clazzInfo); // Object const char*
+    getpName(clazzInfo); // Other const char*
     getpSpecializationInfo(clazzInfo);  // VkSpecializationInfo Object Array
 }
 

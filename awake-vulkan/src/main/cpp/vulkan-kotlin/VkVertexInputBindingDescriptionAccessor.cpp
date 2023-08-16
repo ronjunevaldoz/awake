@@ -18,8 +18,7 @@ VkVertexInputBindingDescriptionAccessor::VkVertexInputBindingDescriptionAccessor
 
 uint32_t
 VkVertexInputBindingDescriptionAccessor::getbinding() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, bindingField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, bindingField); // primitive
 }
 
 VkVertexInputRate
@@ -30,14 +29,13 @@ VkVertexInputBindingDescriptionAccessor::getinputRate() {
 
 uint32_t
 VkVertexInputBindingDescriptionAccessor::getstride() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, strideField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, strideField); // primitive
 }
 
 void
 VkVertexInputBindingDescriptionAccessor::fromObject(VkVertexInputBindingDescription &clazzInfo) {
-    clazzInfo.binding = getbinding(); // Object uint32_t
-    clazzInfo.stride = getstride(); // Object uint32_t
+    clazzInfo.binding = getbinding(); // Primitive uint32_t
+    clazzInfo.stride = getstride(); // Primitive uint32_t
     clazzInfo.inputRate = getinputRate(); // Enum VkVertexInputRate
 }
 

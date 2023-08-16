@@ -5,10 +5,13 @@ set(VULKAN_KOTLIN_SOURCES
         VkDeviceQueueCreateInfoAccessor.cpp
         vulkan_utils.cpp
         VkShaderModuleCreateInfoConverter.cpp
+        VkPhysicalDeviceSparsePropertiesMutator.cpp
         VkOffset2DAccessor.cpp
         VkPhysicalDeviceFeaturesMutator.cpp
+        VkPhysicalDevicePropertiesAccessor.cpp
         VkRect2DAccessor.cpp
         VkDeviceCreateInfoAccessor.cpp
+        VkPhysicalDeviceSparsePropertiesAccessor.cpp
         VkSwapchainCreateInfoKHRConverter.cpp
         VkSpecializationMapEntryAccessor.cpp
         VkPipelineColorBlendAttachmentStateAccessor.cpp
@@ -19,6 +22,8 @@ set(VULKAN_KOTLIN_SOURCES
         VkPipelineTessellationStateCreateInfoAccessor.cpp
         enum_utils.cpp
         VkSubpassDescriptionAccessor.cpp
+        VkPhysicalDeviceLimitsAccessor.cpp
+        VkPhysicalDeviceLimitsMutator.cpp
         VkPipelineLayoutCreateInfoAccessor.cpp
         VkPipelineInputAssemblyStateCreateInfoAccessor.cpp
         VkGraphicsPipelineCreateInfoAccessor.cpp
@@ -29,18 +34,23 @@ set(VULKAN_KOTLIN_SOURCES
         VkPipelineShaderStageCreateInfoAccessor.cpp
         VkPipelineViewportStateCreateInfoAccessor.cpp
         VkPipelineDepthStencilStateCreateInfoAccessor.cpp
+        VkExtent3DMutator.cpp
         VkPipelineCacheCreateInfoAccessor.cpp
         VkPipelineDynamicStateCreateInfoAccessor.cpp
         VkApplicationInfoAccessor.cpp
         VkVertexInputBindingDescriptionAccessor.cpp
         VkExtent2DAccessor.cpp
         VkPipelineVertexInputStateCreateInfoAccessor.cpp
+        VkQueueFamilyPropertiesAccessor.cpp
+        VkQueueFamilyPropertiesMutator.cpp
         VkExtent2DConverter.cpp
         VkViewportAccessor.cpp
+        VkExtent3DAccessor.cpp
         VkPipelineRasterizationStateCreateInfoAccessor.cpp
         VkPipelineMultisampleStateCreateInfoAccessor.cpp
         VkStencilOpStateAccessor.cpp
         VkRenderPassCreateInfoAccessor.cpp
+        VkPhysicalDevicePropertiesMutator.cpp
         )
 
 # Set the path to your header file directory

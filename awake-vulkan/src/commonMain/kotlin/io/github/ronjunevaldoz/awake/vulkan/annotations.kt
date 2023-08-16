@@ -28,7 +28,7 @@ annotation class VkPointer
 
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class VkConstArray
+annotation class VkConstArray(val arraySize: String = "")
 
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
@@ -52,4 +52,4 @@ annotation class VkArray(
  * Allows to generate toObject cpp method
  */
 @Target(AnnotationTarget.CLASS)
-annotation class VkDeserializer
+annotation class VkMutator

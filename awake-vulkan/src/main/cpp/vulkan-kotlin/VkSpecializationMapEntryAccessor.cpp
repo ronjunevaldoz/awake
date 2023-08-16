@@ -16,27 +16,24 @@ VkSpecializationMapEntryAccessor::VkSpecializationMapEntryAccessor(JNIEnv *env, 
 
 void
 VkSpecializationMapEntryAccessor::fromObject(VkSpecializationMapEntry &clazzInfo) {
-    clazzInfo.constantID = getconstantID(); // Object uint32_t
-    clazzInfo.offset = getoffset(); // Object uint32_t
-    clazzInfo.size = getsize(); // Object uint64_t
+    clazzInfo.constantID = getconstantID(); // Primitive uint32_t
+    clazzInfo.offset = getoffset(); // Primitive uint32_t
+    clazzInfo.size = getsize(); // Primitive uint64_t
 }
 
 uint64_t
 VkSpecializationMapEntryAccessor::getsize() {
-    return (uint64_t)(jlong)
-    env->GetLongField(obj, sizeField); // primitive
+    return (uint64_t) (jlong) env->GetLongField(obj, sizeField); // primitive
 }
 
 uint32_t
 VkSpecializationMapEntryAccessor::getconstantID() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, constantIDField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, constantIDField); // primitive
 }
 
 uint32_t
 VkSpecializationMapEntryAccessor::getoffset() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, offsetField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, offsetField); // primitive
 }
 
 VkSpecializationMapEntryAccessor::~VkSpecializationMapEntryAccessor() {

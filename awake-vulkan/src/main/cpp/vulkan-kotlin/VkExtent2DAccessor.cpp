@@ -15,20 +15,18 @@ VkExtent2DAccessor::VkExtent2DAccessor(JNIEnv *env, jobject obj) {
 
 uint32_t
 VkExtent2DAccessor::getwidth() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, widthField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, widthField); // primitive
 }
 
 void
 VkExtent2DAccessor::fromObject(VkExtent2D &clazzInfo) {
-    clazzInfo.width = getwidth(); // Object uint32_t
-    clazzInfo.height = getheight(); // Object uint32_t
+    clazzInfo.width = getwidth(); // Primitive uint32_t
+    clazzInfo.height = getheight(); // Primitive uint32_t
 }
 
 uint32_t
 VkExtent2DAccessor::getheight() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, heightField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, heightField); // primitive
 }
 
 VkExtent2DAccessor::~VkExtent2DAccessor() {

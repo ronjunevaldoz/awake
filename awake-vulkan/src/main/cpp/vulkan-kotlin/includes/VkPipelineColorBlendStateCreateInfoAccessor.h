@@ -30,11 +30,11 @@ public:
 
     VkStructureType getsType();
 
+    VkBool32 getlogicOpEnable();
+
     uint32_t getflags();
 
     void getpAttachments(VkPipelineColorBlendStateCreateInfo &clazzInfo);
-
-    bool getlogicOpEnable();
 
     void fromObject(VkPipelineColorBlendStateCreateInfo &clazzInfo);
 

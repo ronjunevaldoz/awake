@@ -55,11 +55,6 @@ VkPipelineRasterizationStateCreateInfoAccessor::getfrontFace() {
     return (VkFrontFace) enum_utils::getEnumFromObject(env, frontFaceEnum);
 }
 
-bool
-VkPipelineRasterizationStateCreateInfoAccessor::getdepthClampEnable() {
-    return (bool) (jboolean) env->GetBooleanField(obj, depthClampEnableField); // primitive
-}
-
 VkStructureType
 VkPipelineRasterizationStateCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
@@ -75,8 +70,7 @@ VkPipelineRasterizationStateCreateInfoAccessor::getpNext(
 
 uint32_t
 VkPipelineRasterizationStateCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 float
@@ -84,38 +78,43 @@ VkPipelineRasterizationStateCreateInfoAccessor::getdepthBiasSlopeFactor() {
     return (float) (jfloat) env->GetFloatField(obj, depthBiasSlopeFactorField); // primitive
 }
 
-bool
+VkBool32
 VkPipelineRasterizationStateCreateInfoAccessor::getdepthBiasEnable() {
-    return (bool) (jboolean) env->GetBooleanField(obj, depthBiasEnableField); // primitive
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, depthBiasEnableField); // primitive
 }
 
-bool
-VkPipelineRasterizationStateCreateInfoAccessor::getrasterizerDiscardEnable() {
-    return (bool) (jboolean) env->GetBooleanField(obj, rasterizerDiscardEnableField); // primitive
+VkBool32
+VkPipelineRasterizationStateCreateInfoAccessor::getdepthClampEnable() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, depthClampEnableField); // primitive
 }
 
 void
 VkPipelineRasterizationStateCreateInfoAccessor::fromObject(
         VkPipelineRasterizationStateCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
-    clazzInfo.depthClampEnable = getdepthClampEnable(); // Object bool
-    clazzInfo.rasterizerDiscardEnable = getrasterizerDiscardEnable(); // Object bool
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
+    clazzInfo.depthClampEnable = getdepthClampEnable(); // Primitive VkBool32
+    clazzInfo.rasterizerDiscardEnable = getrasterizerDiscardEnable(); // Primitive VkBool32
     clazzInfo.polygonMode = getpolygonMode(); // Enum VkPolygonMode
-    clazzInfo.cullMode = getcullMode(); // Object uint32_t
+    clazzInfo.cullMode = getcullMode(); // Primitive uint32_t
     clazzInfo.frontFace = getfrontFace(); // Enum VkFrontFace
-    clazzInfo.depthBiasEnable = getdepthBiasEnable(); // Object bool
-    clazzInfo.depthBiasConstantFactor = getdepthBiasConstantFactor(); // Object float
-    clazzInfo.depthBiasClamp = getdepthBiasClamp(); // Object float
-    clazzInfo.depthBiasSlopeFactor = getdepthBiasSlopeFactor(); // Object float
-    clazzInfo.lineWidth = getlineWidth(); // Object float
+    clazzInfo.depthBiasEnable = getdepthBiasEnable(); // Primitive VkBool32
+    clazzInfo.depthBiasConstantFactor = getdepthBiasConstantFactor(); // Primitive float
+    clazzInfo.depthBiasClamp = getdepthBiasClamp(); // Primitive float
+    clazzInfo.depthBiasSlopeFactor = getdepthBiasSlopeFactor(); // Primitive float
+    clazzInfo.lineWidth = getlineWidth(); // Primitive float
+}
+
+VkBool32
+VkPipelineRasterizationStateCreateInfoAccessor::getrasterizerDiscardEnable() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      rasterizerDiscardEnableField); // primitive
 }
 
 uint32_t
 VkPipelineRasterizationStateCreateInfoAccessor::getcullMode() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, cullModeField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, cullModeField); // primitive
 }
 
 VkPipelineRasterizationStateCreateInfoAccessor::~VkPipelineRasterizationStateCreateInfoAccessor() {

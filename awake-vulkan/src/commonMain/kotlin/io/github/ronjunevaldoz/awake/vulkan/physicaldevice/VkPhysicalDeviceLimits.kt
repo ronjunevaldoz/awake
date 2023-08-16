@@ -20,10 +20,13 @@
 package io.github.ronjunevaldoz.awake.vulkan.physicaldevice
 
 import io.github.ronjunevaldoz.awake.vulkan.VkBool32
+import io.github.ronjunevaldoz.awake.vulkan.VkConstArray
 import io.github.ronjunevaldoz.awake.vulkan.VkDeviceSize
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSampleCountFlags
 
-data class VkPhysicalDeviceLimits(
+@VkMutator
+class VkPhysicalDeviceLimits(
     val maxImageDimension1D: UInt = 0u,
     val maxImageDimension2D: UInt = 0u,
     val maxImageDimension3D: UInt = 0u,
@@ -76,9 +79,11 @@ data class VkPhysicalDeviceLimits(
     val maxFragmentDualSrcAttachments: UInt = 0u,
     val maxFragmentCombinedOutputResources: UInt = 0u,
     val maxComputeSharedMemorySize: UInt = 0u,
-    val maxComputeWorkGroupCount: List<Int> = emptyList(), // max 3
+    @VkConstArray("3")
+    val maxComputeWorkGroupCount: IntArray = IntArray(3), // max 3
     val maxComputeWorkGroupInvocations: UInt = 0u,
-    val maxComputeWorkGroupSize: List<Int> = emptyList(), // max 3
+    @VkConstArray("3")
+    val maxComputeWorkGroupSize: IntArray = IntArray(3), // max 3
     val subPixelPrecisionBits: UInt = 0u,
     val subTexelPrecisionBits: UInt = 0u,
     val mipmapPrecisionBits: UInt = 0u,
@@ -87,8 +92,10 @@ data class VkPhysicalDeviceLimits(
     val maxSamplerLodBias: Float = 0f,
     val maxSamplerAnisotropy: Float = 0f,
     val maxViewports: UInt = 0u,
-    val maxViewportDimensions: List<Int> = emptyList(), // max 2
-    val viewportBoundsRange: List<Float> = emptyList(), // max 2
+    @VkConstArray("2")
+    val maxViewportDimensions: IntArray = IntArray(2), // max 2
+    @VkConstArray("2")
+    val viewportBoundsRange: FloatArray = FloatArray(2), // max 2
     val viewportSubPixelBits: UInt = 0u,
     val minMemoryMapAlignment: ULong = 0u,
     val minTexelBufferOffsetAlignment: VkDeviceSize = 0,
@@ -121,8 +128,10 @@ data class VkPhysicalDeviceLimits(
     val maxCullDistances: UInt = 0u,
     val maxCombinedClipAndCullDistances: UInt = 0u,
     val discreteQueuePriorities: UInt = 0u,
-    val pointSizeRange: List<Float> = emptyList(), // max size 2
-    val lineWidthRange: List<Float> = emptyList(), // max size 2
+    @VkConstArray("2")
+    val pointSizeRange: FloatArray = FloatArray(2), // max size 2
+    @VkConstArray("2")
+    val lineWidthRange: FloatArray = FloatArray(2), // max size 2
     val pointSizeGranularity: Float = 0f,
     val lineWidthGranularity: Float = 0f,
     val strictLines: VkBool32 = false,

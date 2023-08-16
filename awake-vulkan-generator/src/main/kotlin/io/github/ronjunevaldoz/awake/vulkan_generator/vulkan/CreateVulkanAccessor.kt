@@ -276,7 +276,7 @@ private fun CppClassBuilder.generateVulkanGetters(
                                 localVariable,
                                 "0",
                                 "size",
-                                "reinterpret_cast<${javaMember.toJavaType()} *>(${arrayName}.data())"
+                                "reinterpret_cast<${javaMember.getArrayElementJavaType()} *>(${arrayName}.data())"
                             )
                         }"
                     )
@@ -351,7 +351,7 @@ private fun CppClassBuilder.generateVulkanGetters(
 
             fun processObject() {
                 // object
-                if (type == "jstring" || type == JNIType.JString) {
+                if (type == JNIType.JString) {
                     child("auto $localVariable = ($type) $javaValue;")
                     child("auto str = ($returnType) env->GetStringUTFChars($localVariable, nullptr);")
                     child("auto result = strdup(str); // Allocate memory and copy the string")
@@ -463,6 +463,11 @@ private fun CppClassBuilder.generateVulkanFromObject(
                 child("$clazzInfo.${javaMember.name} = ${functionName}(); // $comment")
             }
 
+            fun generatePrimitive(comment: String) {
+                child("$clazzInfo.${javaMember.name} = ${functionName}(); // $comment")
+            }
+
+
             fun generateDefault(returnType: String, comment: String) {
                 if (returnType.contains("void", true)
                     || returnType.contains("char", true)
@@ -494,8 +499,10 @@ private fun CppClassBuilder.generateVulkanFromObject(
                 generateVkHandle("VkHandle")
             } else if (javaMember.type.isEnum) {
                 generateEnum("Enum $returnType")
+            } else if (javaMember.type.isPrimitive) {
+                generatePrimitive("Primitive $returnType")
             } else {
-                generateDefault(returnType, "Object $returnType")
+                generateDefault(returnType, "Other $returnType")
             }
         }
         if (!void) {

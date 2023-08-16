@@ -27,19 +27,18 @@ VkApplicationInfoAccessor::getsType() {
 
 uint32_t
 VkApplicationInfoAccessor::getapplicationVersion() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, applicationVersionField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, applicationVersionField); // primitive
 }
 
 void
 VkApplicationInfoAccessor::fromObject(VkApplicationInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    getpApplicationName(clazzInfo); // Object const char*
-    clazzInfo.applicationVersion = getapplicationVersion(); // Object uint32_t
-    getpEngineName(clazzInfo); // Object const char*
-    clazzInfo.engineVersion = getengineVersion(); // Object uint32_t
-    clazzInfo.apiVersion = getapiVersion(); // Object uint32_t
+    getpNext(clazzInfo); // Other void*
+    getpApplicationName(clazzInfo); // Other const char*
+    clazzInfo.applicationVersion = getapplicationVersion(); // Primitive uint32_t
+    getpEngineName(clazzInfo); // Other const char*
+    clazzInfo.engineVersion = getengineVersion(); // Primitive uint32_t
+    clazzInfo.apiVersion = getapiVersion(); // Primitive uint32_t
 }
 
 void
@@ -59,14 +58,12 @@ VkApplicationInfoAccessor::getpApplicationName(VkApplicationInfo &clazzInfo) {
 
 uint32_t
 VkApplicationInfoAccessor::getapiVersion() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, apiVersionField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, apiVersionField); // primitive
 }
 
 uint32_t
 VkApplicationInfoAccessor::getengineVersion() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, engineVersionField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, engineVersionField); // primitive
 }
 
 void

@@ -32,6 +32,11 @@ VkPipelineColorBlendAttachmentStateAccessor::getcolorBlendOp() {
     return (VkBlendOp) enum_utils::getEnumFromObject(env, colorBlendOpEnum);
 }
 
+VkBool32
+VkPipelineColorBlendAttachmentStateAccessor::getblendEnable() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, blendEnableField); // primitive
+}
+
 VkBlendFactor
 VkPipelineColorBlendAttachmentStateAccessor::getsrcColorBlendFactor() {
     auto srcColorBlendFactorEnum = (jobject) env->GetObjectField(obj, srcColorBlendFactorField);
@@ -41,20 +46,19 @@ VkPipelineColorBlendAttachmentStateAccessor::getsrcColorBlendFactor() {
 void
 VkPipelineColorBlendAttachmentStateAccessor::fromObject(
         VkPipelineColorBlendAttachmentState &clazzInfo) {
-    clazzInfo.blendEnable = getblendEnable(); // Object bool
+    clazzInfo.blendEnable = getblendEnable(); // Primitive VkBool32
     clazzInfo.srcColorBlendFactor = getsrcColorBlendFactor(); // Enum VkBlendFactor
     clazzInfo.dstColorBlendFactor = getdstColorBlendFactor(); // Enum VkBlendFactor
     clazzInfo.colorBlendOp = getcolorBlendOp(); // Enum VkBlendOp
     clazzInfo.srcAlphaBlendFactor = getsrcAlphaBlendFactor(); // Enum VkBlendFactor
     clazzInfo.dstAlphaBlendFactor = getdstAlphaBlendFactor(); // Enum VkBlendFactor
     clazzInfo.alphaBlendOp = getalphaBlendOp(); // Enum VkBlendOp
-    clazzInfo.colorWriteMask = getcolorWriteMask(); // Object uint32_t
+    clazzInfo.colorWriteMask = getcolorWriteMask(); // Primitive uint32_t
 }
 
 uint32_t
 VkPipelineColorBlendAttachmentStateAccessor::getcolorWriteMask() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, colorWriteMaskField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, colorWriteMaskField); // primitive
 }
 
 VkBlendFactor
@@ -79,11 +83,6 @@ VkBlendFactor
 VkPipelineColorBlendAttachmentStateAccessor::getdstAlphaBlendFactor() {
     auto dstAlphaBlendFactorEnum = (jobject) env->GetObjectField(obj, dstAlphaBlendFactorField);
     return (VkBlendFactor) enum_utils::getEnumFromObject(env, dstAlphaBlendFactorEnum);
-}
-
-bool
-VkPipelineColorBlendAttachmentStateAccessor::getblendEnable() {
-    return (bool) (jboolean) env->GetBooleanField(obj, blendEnableField); // primitive
 }
 
 VkPipelineColorBlendAttachmentStateAccessor::~VkPipelineColorBlendAttachmentStateAccessor() {

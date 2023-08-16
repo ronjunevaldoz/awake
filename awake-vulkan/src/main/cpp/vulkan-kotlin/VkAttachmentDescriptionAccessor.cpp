@@ -30,8 +30,7 @@ VkAttachmentDescriptionAccessor::VkAttachmentDescriptionAccessor(JNIEnv *env, jo
 
 uint32_t
 VkAttachmentDescriptionAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 VkSampleCountFlagBits
@@ -84,7 +83,7 @@ VkAttachmentDescriptionAccessor::getstencilLoadOp() {
 
 void
 VkAttachmentDescriptionAccessor::fromObject(VkAttachmentDescription &clazzInfo) {
-    clazzInfo.flags = getflags(); // Object uint32_t
+    clazzInfo.flags = getflags(); // Primitive uint32_t
     clazzInfo.format = getformat(); // Enum VkFormat
     clazzInfo.samples = getsamples(); // Enum VkSampleCountFlagBits
     clazzInfo.loadOp = getloadOp(); // Enum VkAttachmentLoadOp

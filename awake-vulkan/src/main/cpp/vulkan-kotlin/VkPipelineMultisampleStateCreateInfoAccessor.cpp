@@ -29,29 +29,28 @@ VkPipelineMultisampleStateCreateInfoAccessor::getsType() {
     return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
 }
 
-bool
-VkPipelineMultisampleStateCreateInfoAccessor::getalphaToOneEnable() {
-    return (bool) (jboolean) env->GetBooleanField(obj, alphaToOneEnableField); // primitive
-}
-
 uint32_t
 VkPipelineMultisampleStateCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
+}
+
+VkBool32
+VkPipelineMultisampleStateCreateInfoAccessor::getsampleShadingEnable() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, sampleShadingEnableField); // primitive
 }
 
 void
 VkPipelineMultisampleStateCreateInfoAccessor::fromObject(
         VkPipelineMultisampleStateCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
     clazzInfo.rasterizationSamples = getrasterizationSamples(); // Enum VkSampleCountFlagBits
-    clazzInfo.sampleShadingEnable = getsampleShadingEnable(); // Object bool
-    clazzInfo.minSampleShading = getminSampleShading(); // Object float
+    clazzInfo.sampleShadingEnable = getsampleShadingEnable(); // Primitive VkBool32
+    clazzInfo.minSampleShading = getminSampleShading(); // Primitive float
     getpSampleMask(clazzInfo); // Pointer
-    clazzInfo.alphaToCoverageEnable = getalphaToCoverageEnable(); // Object bool
-    clazzInfo.alphaToOneEnable = getalphaToOneEnable(); // Object bool
+    clazzInfo.alphaToCoverageEnable = getalphaToCoverageEnable(); // Primitive VkBool32
+    clazzInfo.alphaToOneEnable = getalphaToOneEnable(); // Primitive VkBool32
 }
 
 void
@@ -61,9 +60,9 @@ VkPipelineMultisampleStateCreateInfoAccessor::getpSampleMask(
     clazzInfo.pSampleMask = &ptr; // Primitive Pointer
 }
 
-bool
+VkBool32
 VkPipelineMultisampleStateCreateInfoAccessor::getalphaToCoverageEnable() {
-    return (bool) (jboolean) env->GetBooleanField(obj, alphaToCoverageEnableField); // primitive
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, alphaToCoverageEnableField); // primitive
 }
 
 float
@@ -77,9 +76,9 @@ VkPipelineMultisampleStateCreateInfoAccessor::getrasterizationSamples() {
     return (VkSampleCountFlagBits) enum_utils::getEnumFromObject(env, rasterizationSamplesEnum);
 }
 
-bool
-VkPipelineMultisampleStateCreateInfoAccessor::getsampleShadingEnable() {
-    return (bool) (jboolean) env->GetBooleanField(obj, sampleShadingEnableField); // primitive
+VkBool32
+VkPipelineMultisampleStateCreateInfoAccessor::getalphaToOneEnable() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, alphaToOneEnableField); // primitive
 }
 
 void

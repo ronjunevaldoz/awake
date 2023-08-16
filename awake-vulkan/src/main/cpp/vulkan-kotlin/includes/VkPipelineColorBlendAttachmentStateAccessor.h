@@ -29,6 +29,7 @@ public:
     VkPipelineColorBlendAttachmentStateAccessor(JNIEnv *env, jobject obj);
 
     VkBlendOp getcolorBlendOp();
+    VkBool32 getblendEnable();
 
     VkBlendFactor getsrcColorBlendFactor();
 
@@ -39,7 +40,6 @@ public:
     VkBlendFactor getsrcAlphaBlendFactor();
     VkBlendOp getalphaBlendOp();
     VkBlendFactor getdstAlphaBlendFactor();
-    bool getblendEnable();
     ~VkPipelineColorBlendAttachmentStateAccessor();
 };
 

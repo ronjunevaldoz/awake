@@ -73,7 +73,6 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineViewp
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputAttributeDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputBindingDescription
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDevice
-import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.eq
 import io.github.ronjunevaldoz.awake.vulkan.presentation.VkAndroidSurfaceCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceCapabilitiesKHR
 import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceFormatKHR
@@ -186,11 +185,11 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
                 val features = Vulkan.vkGetPhysicalDeviceFeatures(vkDevice.physicalDevice)
                 val hasGeometry = features.geometryShader
                 val isIntegratedGPU =
-                    properties.deviceType eq VkPhysicalDeviceType.VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU
+                    properties.deviceType == VkPhysicalDeviceType.VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU
                 val isDiscreteGPU =
-                    properties.deviceType eq VkPhysicalDeviceType.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
+                    properties.deviceType == VkPhysicalDeviceType.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
                 val isVirtualGPU =
-                    properties.deviceType eq VkPhysicalDeviceType.VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU
+                    properties.deviceType == VkPhysicalDeviceType.VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU
                 isIntegratedGPU || isDiscreteGPU || isVirtualGPU
             } ?: throw Exception("Cannot find suitable gpu!")
             physicalDevice = gpu.physicalDevice

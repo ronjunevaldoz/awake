@@ -27,23 +27,23 @@ VkPipelineInputAssemblyStateCreateInfoAccessor::getsType() {
 
 uint32_t
 VkPipelineInputAssemblyStateCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
-}
-
-bool
-VkPipelineInputAssemblyStateCreateInfoAccessor::getprimitiveRestartEnable() {
-    return (bool) (jboolean) env->GetBooleanField(obj, primitiveRestartEnableField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 void
 VkPipelineInputAssemblyStateCreateInfoAccessor::fromObject(
         VkPipelineInputAssemblyStateCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
     clazzInfo.topology = gettopology(); // Enum VkPrimitiveTopology
-    clazzInfo.primitiveRestartEnable = getprimitiveRestartEnable(); // Object bool
+    clazzInfo.primitiveRestartEnable = getprimitiveRestartEnable(); // Primitive VkBool32
+}
+
+VkBool32
+VkPipelineInputAssemblyStateCreateInfoAccessor::getprimitiveRestartEnable() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      primitiveRestartEnableField); // primitive
 }
 
 VkPrimitiveTopology

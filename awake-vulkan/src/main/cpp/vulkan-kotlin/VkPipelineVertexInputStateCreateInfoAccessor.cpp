@@ -35,8 +35,8 @@ void
 VkPipelineVertexInputStateCreateInfoAccessor::fromObject(
         VkPipelineVertexInputStateCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
     getpVertexBindingDescriptions(clazzInfo);  // VkVertexInputBindingDescription Object Array
     getpVertexAttributeDescriptions(clazzInfo);  // VkVertexInputAttributeDescription Object Array
 }
@@ -59,7 +59,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexAttributeDescriptions(
         return;
     }
     auto size = env->GetArrayLength(pVertexAttributeDescriptionsArray);
-    std::vector <VkVertexInputAttributeDescription> pVertexAttributeDescriptions;
+    std::vector<VkVertexInputAttributeDescription> pVertexAttributeDescriptions;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pVertexAttributeDescriptionsArray,
                                                             i); // actual type is VkVertexInputAttributeDescription[];
@@ -89,7 +89,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexBindingDescriptions(
         return;
     }
     auto size = env->GetArrayLength(pVertexBindingDescriptionsArray);
-    std::vector <VkVertexInputBindingDescription> pVertexBindingDescriptions;
+    std::vector<VkVertexInputBindingDescription> pVertexBindingDescriptions;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pVertexBindingDescriptionsArray,
                                                             i); // actual type is VkVertexInputBindingDescription[];

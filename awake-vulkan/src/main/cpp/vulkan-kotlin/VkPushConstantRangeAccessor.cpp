@@ -16,27 +16,24 @@ VkPushConstantRangeAccessor::VkPushConstantRangeAccessor(JNIEnv *env, jobject ob
 
 void
 VkPushConstantRangeAccessor::fromObject(VkPushConstantRange &clazzInfo) {
-    clazzInfo.stageFlags = getstageFlags(); // Object uint32_t
-    clazzInfo.offset = getoffset(); // Object uint32_t
-    clazzInfo.size = getsize(); // Object uint32_t
+    clazzInfo.stageFlags = getstageFlags(); // Primitive uint32_t
+    clazzInfo.offset = getoffset(); // Primitive uint32_t
+    clazzInfo.size = getsize(); // Primitive uint32_t
 }
 
 uint32_t
 VkPushConstantRangeAccessor::getstageFlags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, stageFlagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, stageFlagsField); // primitive
 }
 
 uint32_t
 VkPushConstantRangeAccessor::getsize() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, sizeField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, sizeField); // primitive
 }
 
 uint32_t
 VkPushConstantRangeAccessor::getoffset() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, offsetField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, offsetField); // primitive
 }
 
 VkPushConstantRangeAccessor::~VkPushConstantRangeAccessor() {

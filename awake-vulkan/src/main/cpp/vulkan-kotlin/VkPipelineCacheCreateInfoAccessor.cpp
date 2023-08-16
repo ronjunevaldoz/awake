@@ -24,15 +24,14 @@ VkPipelineCacheCreateInfoAccessor::getsType() {
 
 uint32_t
 VkPipelineCacheCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 void
 VkPipelineCacheCreateInfoAccessor::fromObject(VkPipelineCacheCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
     getpInitialData(clazzInfo);  // Object Object Array
 }
 

@@ -17,8 +17,8 @@ VkRect2DAccessor::VkRect2DAccessor(JNIEnv *env, jobject obj) {
 
 void
 VkRect2DAccessor::fromObject(VkRect2D &clazzInfo) {
-    getoffset(clazzInfo); // Object VkOffset2D
-    getextent(clazzInfo); // Object VkExtent2D
+    getoffset(clazzInfo); // Other VkOffset2D
+    getextent(clazzInfo); // Other VkExtent2D
 }
 
 void

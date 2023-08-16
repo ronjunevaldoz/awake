@@ -28,8 +28,7 @@ VkPipelineViewportStateCreateInfoAccessor::getsType() {
 
 uint32_t
 VkPipelineViewportStateCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 void
@@ -42,8 +41,8 @@ void
 VkPipelineViewportStateCreateInfoAccessor::fromObject(
         VkPipelineViewportStateCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
     getpViewports(clazzInfo);  // VkViewport Object Array
     getpScissors(clazzInfo);  // VkRect2D Object Array
 }
@@ -58,7 +57,7 @@ VkPipelineViewportStateCreateInfoAccessor::getpViewports(
         return;
     }
     auto size = env->GetArrayLength(pViewportsArray);
-    std::vector <VkViewport> pViewports;
+    std::vector<VkViewport> pViewports;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pViewportsArray,
                                                             i); // actual type is VkViewport[];
@@ -87,7 +86,7 @@ VkPipelineViewportStateCreateInfoAccessor::getpScissors(
         return;
     }
     auto size = env->GetArrayLength(pScissorsArray);
-    std::vector <VkRect2D> pScissors;
+    std::vector<VkRect2D> pScissors;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pScissorsArray,
                                                             i); // actual type is VkRect2D[];

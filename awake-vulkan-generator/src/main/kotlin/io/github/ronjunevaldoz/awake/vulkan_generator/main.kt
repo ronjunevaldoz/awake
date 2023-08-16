@@ -22,6 +22,7 @@ package io.github.ronjunevaldoz.awake.vulkan_generator
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentReference
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent2D
+import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent3D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkOffset2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkRect2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkStencilOpState
@@ -52,6 +53,10 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkSpecializatio
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputAttributeDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputBindingDescription
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
+import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceLimits
+import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceProperties
+import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceSparseProperties
+import io.github.ronjunevaldoz.awake.vulkan.queuefamily.VkQueueFamilyProperties
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cmakeListTemplate
 import io.github.ronjunevaldoz.awake.vulkan_generator.vulkan.generateJavaToVulkanCpp
@@ -61,9 +66,14 @@ fun main(args: Array<String>) {
         FileWriter.rootDir = args[0]
     }
     generateJavaToVulkanCpp<VkApplicationInfo>()
+    generateJavaToVulkanCpp<VkPhysicalDeviceSparseProperties>()
+    generateJavaToVulkanCpp<VkPhysicalDeviceProperties>()
+    generateJavaToVulkanCpp<VkPhysicalDeviceLimits>()
     generateJavaToVulkanCpp<VkPhysicalDeviceFeatures>()
+    generateJavaToVulkanCpp<VkQueueFamilyProperties>()
     generateJavaToVulkanCpp<VkDeviceQueueCreateInfo>()
     generateJavaToVulkanCpp<VkDeviceCreateInfo>()
+    generateJavaToVulkanCpp<VkExtent3D>()
     generateJavaToVulkanCpp<VkExtent2D>()
 
     // pipeline

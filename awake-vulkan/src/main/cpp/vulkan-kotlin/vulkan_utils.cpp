@@ -19,64 +19,11 @@
 #include "includes/VkDeviceCreateInfoAccessor.h"
 #include "includes/VkPipelineLayoutCreateInfoAccessor.h"
 #include "includes/VkRenderPassCreateInfoAccessor.h"
+#include "VkPhysicalDevicePropertiesAccessor.h"
+#include "VkPhysicalDevicePropertiesMutator.h"
+#include "VkQueueFamilyPropertiesMutator.h"
 
 namespace vulkan_utils {
-    bool VkPhysicalDeviceSparseProperties_fromObject(JNIEnv *env,
-                                                     jobject p_pdp_obj,
-                                                     jfieldID p_sp_fid,
-                                                     VkPhysicalDeviceSparseProperties sp
-    ) {
-        jobject spObj = env->GetObjectField(p_pdp_obj, p_sp_fid);
-        jclass spClass;
-        if (spObj == nullptr) {
-            // create new sparse properties instance
-            spClass = env->FindClass(
-                    "io/github/ronjunevaldoz/awake/vulkan/physicaldevice/VkPhysicalDeviceSparseProperties");
-            auto spConstructor = env->GetMethodID(spClass, "<init>", "()V");
-            spObj = env->NewObject(spClass, spConstructor);
-        }
-        spClass = env->GetObjectClass(spObj);
-
-        jfieldID residencyStandard2DBlockShapeFieldId = env->GetFieldID(spClass,
-                                                                        "residencyStandard2DBlockShape",
-                                                                        "Z");
-        jfieldID residencyStandard2DMultisampleBlockShapeFieldID = env->GetFieldID(spClass,
-                                                                                   "residencyStandard2DMultisampleBlockShape",
-                                                                                   "Z");
-        jfieldID residencyStandard3DBlockShapeFieldId = env->GetFieldID(spClass,
-                                                                        "residencyStandard3DBlockShape",
-                                                                        "Z");
-        jfieldID residencyAlignedMipSizeFieldID = env->GetFieldID(spClass,
-                                                                  "residencyAlignedMipSize", "Z");
-        jfieldID residencyNonResidentStrictFieldId = env->GetFieldID(spClass,
-                                                                     "residencyNonResidentStrict",
-                                                                     "Z");
-
-        env->SetBooleanField(spObj, residencyStandard2DBlockShapeFieldId,
-                             static_cast<jboolean>(sp.residencyStandard2DBlockShape));
-        env->SetBooleanField(spObj, residencyStandard2DMultisampleBlockShapeFieldID,
-                             static_cast<jboolean>(sp.residencyStandard2DMultisampleBlockShape));
-        env->SetBooleanField(spObj, residencyStandard3DBlockShapeFieldId,
-                             static_cast<jboolean>(sp.residencyStandard3DBlockShape));
-        env->SetBooleanField(spObj, residencyAlignedMipSizeFieldID,
-                             static_cast<jboolean>(sp.residencyAlignedMipSize));
-        env->SetBooleanField(spObj, residencyNonResidentStrictFieldId,
-                             static_cast<jboolean>(sp.residencyNonResidentStrict));
-
-        env->DeleteLocalRef(spClass);
-        env->DeleteLocalRef(spObj);
-
-        return true;
-    }
-
-    bool VkPhysicalDeviceLimits_fromObject(JNIEnv *env,
-                                           jclass p_pdpp_class,
-                                           jobject p_pdp_obj,
-                                           VkPhysicalDeviceLimits pdl
-    ) {
-        // TODO implement VkPhysicalDeviceLimits_fromObject
-        return true;
-    }
 
     jobject
     physicalDevicePropertiesObj_fromVkPhysicalDeviceProperties(JNIEnv *env, jlong pPhysicalDevice) {
@@ -85,53 +32,7 @@ namespace vulkan_utils {
         VkPhysicalDeviceProperties deviceProperties;
         vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
 
-        // Get the class and field IDs for VkPhysicalDeviceProperties
-        jclass pdpClass = env->FindClass(
-                "io/github/ronjunevaldoz/awake/vulkan/physicaldevice/VkPhysicalDeviceProperties");
-
-        // Create an instance of the VkPhysicalDeviceProperties class using its default constructor
-        jmethodID pdpConstructor = env->GetMethodID(pdpClass, "<init>", "()V");
-        jobject pdpObj = env->NewObject(pdpClass, pdpConstructor);
-
-        jfieldID apiVersionFieldID = env->GetFieldID(pdpClass, "apiVersion", "I");
-        jfieldID deviceIdFieldID = env->GetFieldID(pdpClass, "deviceID", "I");
-        jfieldID deviceNameFieldID = env->GetFieldID(pdpClass, "deviceName", "Ljava/lang/String;");
-        jfieldID deviceTypeFieldId = env->GetFieldID(pdpClass, "deviceType", "I");
-        jfieldID pipelineCacheUUIDFieldID = env->GetFieldID(pdpClass, "pipelineCacheUUID", "[B");
-        jfieldID sparsePropertiesFieldId = env->GetFieldID(pdpClass, "sparseProperties",
-                                                           "Lio/github/ronjunevaldoz/awake/vulkan/physicaldevice/VkPhysicalDeviceSparseProperties;");
-
-        vulkan_utils::VkPhysicalDeviceSparseProperties_fromObject(env, pdpObj,
-                                                                  sparsePropertiesFieldId,
-                                                                  deviceProperties.sparseProperties);
-
-        vulkan_utils::VkPhysicalDeviceLimits_fromObject(env, pdpClass, pdpObj,
-                                                        deviceProperties.limits);
-
-        jstring deviceNameStr = env->NewStringUTF(deviceProperties.deviceName);
-        env->SetIntField(pdpObj, apiVersionFieldID,
-                         static_cast<jint>(deviceProperties.apiVersion));
-        env->SetIntField(pdpObj, deviceIdFieldID,
-                         static_cast<jint>(deviceProperties.deviceID));
-        env->SetIntField(pdpObj, deviceTypeFieldId,
-                         static_cast<jint>(deviceProperties.deviceType));
-        env->SetObjectField(pdpObj, deviceNameFieldID, deviceNameStr);
-
-        // Copy pipelineCacheUUID data to pipelineCacheUUIDArray
-        jbyteArray pipelineCacheUUIDArray = env->NewByteArray(VK_UUID_SIZE);
-        // assign bytes to to reference
-        env->SetByteArrayRegion(pipelineCacheUUIDArray, 0, VK_UUID_SIZE,
-                                reinterpret_cast<const jbyte *>(deviceProperties.pipelineCacheUUID ));
-        // assign array to object
-        env->SetObjectField(pdpObj, pipelineCacheUUIDFieldID,
-                            pipelineCacheUUIDArray);
-
-        // Release
-        env->DeleteLocalRef(deviceNameStr);
-        env->DeleteLocalRef(pipelineCacheUUIDArray);
-        env->DeleteLocalRef(pdpClass);
-
-        return pdpObj;
+        return VkPhysicalDevicePropertiesMutator(env).toObject(deviceProperties);
     }
 
     jobject
@@ -153,39 +54,24 @@ namespace vulkan_utils {
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount,
                                                  queueFamilies.data());
 
+
         // init class and constructors
         auto qfpClass = env->FindClass(
                 "io/github/ronjunevaldoz/awake/vulkan/queuefamily/VkQueueFamilyProperties");
-        auto qfpConstructor = env->GetMethodID(qfpClass, "<init>",
-                                               "(IIILio/github/ronjunevaldoz/awake/vulkan/models/VkExtent3D;)V");
-        auto extent3DClass = env->FindClass(
-                "io/github/ronjunevaldoz/awake/vulkan/models/VkExtent3D");
-        auto extent3DConstructor = env->GetMethodID(extent3DClass, "<init>", "(III)V");
 
         auto queueFamilyList = env->NewObjectArray(static_cast<jint>(queueFamilyCount), qfpClass,
                                                    nullptr);
         for (int i = 0; i < queueFamilyCount; i++) {
             auto queueFamily = queueFamilies[i];
-            // create a new extend3D
-            auto extent3DObj = env->NewObject(extent3DClass, extent3DConstructor,
-                                              static_cast<jint>(queueFamily.minImageTransferGranularity.width),
-                                              static_cast<jint>(queueFamily.minImageTransferGranularity.height),
-                                              static_cast<jint>(queueFamily.minImageTransferGranularity.depth)
-            );
-            // Create a new VkQueueFamilyProperties object
-            auto qfpObj = env->NewObject(qfpClass, qfpConstructor,
-                                         static_cast<jint>(queueFamily.queueFlags),
-                                         static_cast<jint>(queueFamily.queueCount),
-                                         static_cast<jint>(queueFamily.timestampValidBits),
-                                         extent3DObj
-            );
+
+            auto queueFamilyObj = VkQueueFamilyPropertiesMutator(env).toObject(queueFamily);
 
             // Add the VkQueueFamilyProperties object to the ArrayList
-            env->SetObjectArrayElement(queueFamilyList, i, qfpObj);
+            env->SetObjectArrayElement(queueFamilyList, i, queueFamilyObj);
         }
 
         env->DeleteLocalRef(qfpClass);
-        env->DeleteLocalRef(extent3DClass);
+
         return queueFamilyList;
     }
 

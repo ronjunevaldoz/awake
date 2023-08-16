@@ -38,7 +38,6 @@ public:
     float getdepthBiasConstantFactor();
     float getdepthBiasClamp();
     VkFrontFace getfrontFace();
-    bool getdepthClampEnable();
 
     VkStructureType getsType();
 
@@ -46,12 +45,13 @@ public:
 
     uint32_t getflags();
     float getdepthBiasSlopeFactor();
-    bool getdepthBiasEnable();
+    VkBool32 getdepthBiasEnable();
 
-    bool getrasterizerDiscardEnable();
+    VkBool32 getdepthClampEnable();
 
     void fromObject(VkPipelineRasterizationStateCreateInfo &clazzInfo);
 
+    VkBool32 getrasterizerDiscardEnable();
     uint32_t getcullMode();
     ~VkPipelineRasterizationStateCreateInfoAccessor();
 };

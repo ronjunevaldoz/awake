@@ -15,20 +15,18 @@ VkOffset2DAccessor::VkOffset2DAccessor(JNIEnv *env, jobject obj) {
 
 uint32_t
 VkOffset2DAccessor::gety() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, yField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, yField); // primitive
 }
 
 uint32_t
 VkOffset2DAccessor::getx() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, xField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, xField); // primitive
 }
 
 void
 VkOffset2DAccessor::fromObject(VkOffset2D &clazzInfo) {
-    clazzInfo.x = getx(); // Object uint32_t
-    clazzInfo.y = gety(); // Object uint32_t
+    clazzInfo.x = getx(); // Primitive uint32_t
+    clazzInfo.y = gety(); // Primitive uint32_t
 }
 
 VkOffset2DAccessor::~VkOffset2DAccessor() {

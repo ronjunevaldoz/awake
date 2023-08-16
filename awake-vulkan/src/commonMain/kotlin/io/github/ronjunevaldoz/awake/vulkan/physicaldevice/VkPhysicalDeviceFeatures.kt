@@ -20,9 +20,9 @@
 package io.github.ronjunevaldoz.awake.vulkan.physicaldevice
 
 import io.github.ronjunevaldoz.awake.vulkan.VkBool32
-import io.github.ronjunevaldoz.awake.vulkan.VkDeserializer
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
 
-@VkDeserializer
+@VkMutator
 data class VkPhysicalDeviceFeatures(
     val robustBufferAccess: VkBool32 = false,
     val fullDrawIndexUint32: VkBool32 = false,

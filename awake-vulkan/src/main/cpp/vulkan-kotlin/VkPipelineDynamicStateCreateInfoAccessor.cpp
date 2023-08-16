@@ -26,8 +26,7 @@ VkPipelineDynamicStateCreateInfoAccessor::getsType() {
 
 uint32_t
 VkPipelineDynamicStateCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 void
@@ -46,7 +45,7 @@ VkPipelineDynamicStateCreateInfoAccessor::getpDynamicStates(
         return;
     }
     auto size = env->GetArrayLength(pDynamicStatesArray);
-    std::vector <VkDynamicState> pDynamicStates;
+    std::vector<VkDynamicState> pDynamicStates;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pDynamicStatesArray,
                                                             i); // actual type is VkDynamicState[];
@@ -65,8 +64,8 @@ VkPipelineDynamicStateCreateInfoAccessor::getpDynamicStates(
 void
 VkPipelineDynamicStateCreateInfoAccessor::fromObject(VkPipelineDynamicStateCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
     getpDynamicStates(clazzInfo);  // VkDynamicState Object Array
 }
 

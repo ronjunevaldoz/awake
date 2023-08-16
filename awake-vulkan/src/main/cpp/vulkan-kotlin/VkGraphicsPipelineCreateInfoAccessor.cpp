@@ -50,7 +50,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpStages(VkGraphicsPipelineCreateInfo &c
         return;
     }
     auto size = env->GetArrayLength(pStagesArray);
-    std::vector <VkPipelineShaderStageCreateInfo> pStages;
+    std::vector<VkPipelineShaderStageCreateInfo> pStages;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pStagesArray,
                                                             i); // actual type is VkPipelineShaderStageCreateInfo[];
@@ -85,7 +85,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpTessellationState(
         return;
     }
     auto size = env->GetArrayLength(pTessellationStateArray);
-    std::vector <VkPipelineTessellationStateCreateInfo> pTessellationState;
+    std::vector<VkPipelineTessellationStateCreateInfo> pTessellationState;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pTessellationStateArray,
                                                             i); // actual type is VkPipelineTessellationStateCreateInfo[];
@@ -112,7 +112,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpRasterizationState(
         return;
     }
     auto size = env->GetArrayLength(pRasterizationStateArray);
-    std::vector <VkPipelineRasterizationStateCreateInfo> pRasterizationState;
+    std::vector<VkPipelineRasterizationStateCreateInfo> pRasterizationState;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pRasterizationStateArray,
                                                             i); // actual type is VkPipelineRasterizationStateCreateInfo[];
@@ -138,7 +138,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpDepthStencilState(
         return;
     }
     auto size = env->GetArrayLength(pDepthStencilStateArray);
-    std::vector <VkPipelineDepthStencilStateCreateInfo> pDepthStencilState;
+    std::vector<VkPipelineDepthStencilStateCreateInfo> pDepthStencilState;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pDepthStencilStateArray,
                                                             i); // actual type is VkPipelineDepthStencilStateCreateInfo[];
@@ -157,8 +157,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpDepthStencilState(
 
 uint32_t
 VkGraphicsPipelineCreateInfoAccessor::getsubpass() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, subpassField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, subpassField); // primitive
 }
 
 VkRenderPass
@@ -172,8 +171,7 @@ VkGraphicsPipelineCreateInfoAccessor::getrenderPass() {
 
 uint32_t
 VkGraphicsPipelineCreateInfoAccessor::getstageCount() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, stageCountField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, stageCountField); // primitive
 }
 
 VkStructureType
@@ -184,14 +182,12 @@ VkGraphicsPipelineCreateInfoAccessor::getsType() {
 
 int32_t
 VkGraphicsPipelineCreateInfoAccessor::getbasePipelineIndex() {
-    return (int32_t)(jint)
-    env->GetIntField(obj, basePipelineIndexField); // primitive
+    return (int32_t) (jint) env->GetIntField(obj, basePipelineIndexField); // primitive
 }
 
 uint32_t
 VkGraphicsPipelineCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 void
@@ -202,7 +198,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpViewportState(VkGraphicsPipelineCreate
         return;
     }
     auto size = env->GetArrayLength(pViewportStateArray);
-    std::vector <VkPipelineViewportStateCreateInfo> pViewportState;
+    std::vector<VkPipelineViewportStateCreateInfo> pViewportState;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pViewportStateArray,
                                                             i); // actual type is VkPipelineViewportStateCreateInfo[];
@@ -229,7 +225,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpInputAssemblyState(
         return;
     }
     auto size = env->GetArrayLength(pInputAssemblyStateArray);
-    std::vector <VkPipelineInputAssemblyStateCreateInfo> pInputAssemblyState;
+    std::vector<VkPipelineInputAssemblyStateCreateInfo> pInputAssemblyState;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pInputAssemblyStateArray,
                                                             i); // actual type is VkPipelineInputAssemblyStateCreateInfo[];
@@ -254,7 +250,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpColorBlendState(VkGraphicsPipelineCrea
         return;
     }
     auto size = env->GetArrayLength(pColorBlendStateArray);
-    std::vector <VkPipelineColorBlendStateCreateInfo> pColorBlendState;
+    std::vector<VkPipelineColorBlendStateCreateInfo> pColorBlendState;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pColorBlendStateArray,
                                                             i); // actual type is VkPipelineColorBlendStateCreateInfo[];
@@ -289,8 +285,8 @@ VkGraphicsPipelineCreateInfoAccessor::getpNext(VkGraphicsPipelineCreateInfo &cla
 void
 VkGraphicsPipelineCreateInfoAccessor::fromObject(VkGraphicsPipelineCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
     getpStages(clazzInfo);  // VkPipelineShaderStageCreateInfo Object Array
     getpVertexInputState(clazzInfo);  // VkPipelineVertexInputStateCreateInfo Object Array
     getpInputAssemblyState(clazzInfo);  // VkPipelineInputAssemblyStateCreateInfo Object Array
@@ -303,10 +299,10 @@ VkGraphicsPipelineCreateInfoAccessor::fromObject(VkGraphicsPipelineCreateInfo &c
     getpDynamicState(clazzInfo);  // VkPipelineDynamicStateCreateInfo Object Array
     clazzInfo.layout = getlayout(); // VkHandle
     clazzInfo.renderPass = getrenderPass(); // VkHandle
-    clazzInfo.subpass = getsubpass(); // Object uint32_t
+    clazzInfo.subpass = getsubpass(); // Primitive uint32_t
     clazzInfo.basePipelineHandle = getbasePipelineHandle(); // VkHandle
-    clazzInfo.basePipelineIndex = getbasePipelineIndex(); // Object int32_t
-    clazzInfo.stageCount = getstageCount(); // Object uint32_t
+    clazzInfo.basePipelineIndex = getbasePipelineIndex(); // Primitive int32_t
+    clazzInfo.stageCount = getstageCount(); // Primitive uint32_t
 }
 
 void
@@ -318,7 +314,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpVertexInputState(
         return;
     }
     auto size = env->GetArrayLength(pVertexInputStateArray);
-    std::vector <VkPipelineVertexInputStateCreateInfo> pVertexInputState;
+    std::vector<VkPipelineVertexInputStateCreateInfo> pVertexInputState;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pVertexInputStateArray,
                                                             i); // actual type is VkPipelineVertexInputStateCreateInfo[];
@@ -343,7 +339,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpDynamicState(VkGraphicsPipelineCreateI
         return;
     }
     auto size = env->GetArrayLength(pDynamicStateArray);
-    std::vector <VkPipelineDynamicStateCreateInfo> pDynamicState;
+    std::vector<VkPipelineDynamicStateCreateInfo> pDynamicState;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pDynamicStateArray,
                                                             i); // actual type is VkPipelineDynamicStateCreateInfo[];
@@ -369,7 +365,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpMultisampleState(
         return;
     }
     auto size = env->GetArrayLength(pMultisampleStateArray);
-    std::vector <VkPipelineMultisampleStateCreateInfo> pMultisampleState;
+    std::vector<VkPipelineMultisampleStateCreateInfo> pMultisampleState;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pMultisampleStateArray,
                                                             i); // actual type is VkPipelineMultisampleStateCreateInfo[];

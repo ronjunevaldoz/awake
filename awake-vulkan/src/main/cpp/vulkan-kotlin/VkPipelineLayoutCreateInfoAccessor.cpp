@@ -28,14 +28,12 @@ VkPipelineLayoutCreateInfoAccessor::getsType() {
 
 uint32_t
 VkPipelineLayoutCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 uint32_t
 VkPipelineLayoutCreateInfoAccessor::getpushConstantRangeCount() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, pushConstantRangeCountField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, pushConstantRangeCountField); // primitive
 }
 
 void
@@ -47,7 +45,7 @@ VkPipelineLayoutCreateInfoAccessor::getpPushConstantRanges(VkPipelineLayoutCreat
         return;
     }
     auto size = env->GetArrayLength(pPushConstantRangesArray);
-    std::vector <VkPushConstantRange> pPushConstantRanges;
+    std::vector<VkPushConstantRange> pPushConstantRanges;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pPushConstantRangesArray,
                                                             i); // actual type is VkPushConstantRange[];
@@ -67,11 +65,11 @@ VkPipelineLayoutCreateInfoAccessor::getpPushConstantRanges(VkPipelineLayoutCreat
 void
 VkPipelineLayoutCreateInfoAccessor::fromObject(VkPipelineLayoutCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
-    clazzInfo.setLayoutCount = getsetLayoutCount(); // Object uint32_t
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
+    clazzInfo.setLayoutCount = getsetLayoutCount(); // Primitive uint32_t
     getpSetLayouts(clazzInfo);  // Long Object Array
-    clazzInfo.pushConstantRangeCount = getpushConstantRangeCount(); // Object uint32_t
+    clazzInfo.pushConstantRangeCount = getpushConstantRangeCount(); // Primitive uint32_t
     getpPushConstantRanges(clazzInfo);  // VkPushConstantRange Object Array
 }
 
@@ -83,8 +81,7 @@ VkPipelineLayoutCreateInfoAccessor::getpNext(VkPipelineLayoutCreateInfo &clazzIn
 
 uint32_t
 VkPipelineLayoutCreateInfoAccessor::getsetLayoutCount() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, setLayoutCountField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, setLayoutCountField); // primitive
 }
 
 void
@@ -96,7 +93,7 @@ VkPipelineLayoutCreateInfoAccessor::getpSetLayouts(VkPipelineLayoutCreateInfo &c
     }
     auto size = env->GetArrayLength(pSetLayoutsArray);
     // primitive array?
-    std::vector <VkDescriptorSetLayout> pSetLayouts(size);
+    std::vector<VkDescriptorSetLayout> pSetLayouts(size);
     env->GetLongArrayRegion(pSetLayoutsArray, 0, size,
                             reinterpret_cast<jlong *>(pSetLayouts.data()));
     // processing array data

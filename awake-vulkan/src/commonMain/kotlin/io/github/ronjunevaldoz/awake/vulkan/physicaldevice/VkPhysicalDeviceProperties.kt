@@ -19,25 +19,23 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.physicaldevice
 
+import io.github.ronjunevaldoz.awake.vulkan.VK_MAX_PHYSICAL_DEVICE_NAME_SIZE
 import io.github.ronjunevaldoz.awake.vulkan.VK_UUID_SIZE
+import io.github.ronjunevaldoz.awake.vulkan.VkConstArray
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPhysicalDeviceType
 
+@VkMutator
 class VkPhysicalDeviceProperties(
-    val apiVersion: UInt = 0u,
-    val driverVersion: UInt = 0u,
-    val vendorID: UInt = 0u,
-    val deviceID: UInt = 0u,
-    val deviceType: UInt = 0u,
-    val deviceName: String = "",
-    val pipelineCacheUUID: ByteArray = ByteArray(VK_UUID_SIZE.toInt()),
+    val apiVersion: Int = 0,
+    val driverVersion: Int = 0,
+    val vendorID: Int = 0,
+    val deviceID: Int = 0,
+    val deviceType: VkPhysicalDeviceType = VkPhysicalDeviceType.VK_PHYSICAL_DEVICE_TYPE_OTHER,
+    @VkConstArray("VK_MAX_PHYSICAL_DEVICE_NAME_SIZE")
+    val deviceName: CharArray = CharArray(VK_MAX_PHYSICAL_DEVICE_NAME_SIZE),
+    @VkConstArray("VK_UUID_SIZE")
+    val pipelineCacheUUID: ByteArray = ByteArray(VK_UUID_SIZE),
     val limits: VkPhysicalDeviceLimits = VkPhysicalDeviceLimits(),
     val sparseProperties: VkPhysicalDeviceSparseProperties = VkPhysicalDeviceSparseProperties()
 )
-
-fun VkPhysicalDeviceType.eq(deviceType: UInt): Boolean {
-    return this.value == deviceType.toInt()
-}
-
-infix fun UInt.eq(type: VkPhysicalDeviceType): Boolean {
-    return type.eq(this)
-}

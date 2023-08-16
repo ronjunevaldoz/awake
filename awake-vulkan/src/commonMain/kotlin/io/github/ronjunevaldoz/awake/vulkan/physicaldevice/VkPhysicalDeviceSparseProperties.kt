@@ -20,7 +20,9 @@
 package io.github.ronjunevaldoz.awake.vulkan.physicaldevice
 
 import io.github.ronjunevaldoz.awake.vulkan.VkBool32
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
 
+@VkMutator
 data class VkPhysicalDeviceSparseProperties(
     val residencyStandard2DBlockShape: VkBool32 = false,
     val residencyStandard2DMultisampleBlockShape: VkBool32 = false,

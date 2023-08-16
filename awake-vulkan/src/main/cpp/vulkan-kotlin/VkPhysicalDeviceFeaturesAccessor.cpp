@@ -84,349 +84,363 @@ VkPhysicalDeviceFeaturesAccessor::VkPhysicalDeviceFeaturesAccessor(JNIEnv *env, 
     inheritedQueriesField = env->GetFieldID(clazz, "inheritedQueries", "Z");
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::gettessellationShader() {
-    return (bool) (jboolean) env->GetBooleanField(obj, tessellationShaderField); // primitive
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getdepthBiasClamp() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, depthBiasClampField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getfullDrawIndexUint32() {
-    return (bool) (jboolean) env->GetBooleanField(obj, fullDrawIndexUint32Field); // primitive
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getmultiDrawIndirect() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, multiDrawIndirectField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getdepthBounds() {
-    return (bool) (jboolean) env->GetBooleanField(obj, depthBoundsField); // primitive
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getdrawIndirectFirstInstance() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      drawIndirectFirstInstanceField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getsparseResidency4Samples() {
-    return (bool) (jboolean) env->GetBooleanField(obj, sparseResidency4SamplesField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getpipelineStatisticsQuery() {
-    return (bool) (jboolean) env->GetBooleanField(obj, pipelineStatisticsQueryField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getsparseResidencyBuffer() {
-    return (bool) (jboolean) env->GetBooleanField(obj, sparseResidencyBufferField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderStorageImageReadWithoutFormat() {
-    return (bool) (jboolean) env->GetBooleanField(obj,
-                                                  shaderStorageImageReadWithoutFormatField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getsparseResidency8Samples() {
-    return (bool) (jboolean) env->GetBooleanField(obj, sparseResidency8SamplesField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getalphaToOne() {
-    return (bool) (jboolean) env->GetBooleanField(obj, alphaToOneField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderStorageImageMultisample() {
-    return (bool) (jboolean) env->GetBooleanField(obj,
-                                                  shaderStorageImageMultisampleField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderStorageImageArrayDynamicIndexing() {
-    return (bool) (jboolean) env->GetBooleanField(obj,
-                                                  shaderStorageImageArrayDynamicIndexingField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderInt64() {
-    return (bool) (jboolean) env->GetBooleanField(obj, shaderInt64Field); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getwideLines() {
-    return (bool) (jboolean) env->GetBooleanField(obj, wideLinesField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderClipDistance() {
-    return (bool) (jboolean) env->GetBooleanField(obj, shaderClipDistanceField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderInt16() {
-    return (bool) (jboolean) env->GetBooleanField(obj, shaderInt16Field); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderUniformBufferArrayDynamicIndexing() {
-    return (bool) (jboolean) env->GetBooleanField(obj,
-                                                  shaderUniformBufferArrayDynamicIndexingField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getfragmentStoresAndAtomics() {
-    return (bool) (jboolean) env->GetBooleanField(obj, fragmentStoresAndAtomicsField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderStorageImageExtendedFormats() {
-    return (bool) (jboolean) env->GetBooleanField(obj,
-                                                  shaderStorageImageExtendedFormatsField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getsparseResidency2Samples() {
-    return (bool) (jboolean) env->GetBooleanField(obj, sparseResidency2SamplesField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderSampledImageArrayDynamicIndexing() {
-    return (bool) (jboolean) env->GetBooleanField(obj,
-                                                  shaderSampledImageArrayDynamicIndexingField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getlogicOp() {
-    return (bool) (jboolean) env->GetBooleanField(obj, logicOpField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::gettextureCompressionASTC_LDR() {
-    return (bool) (jboolean) env->GetBooleanField(obj,
-                                                  textureCompressionASTC_LDRField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getfillModeNonSolid() {
-    return (bool) (jboolean) env->GetBooleanField(obj, fillModeNonSolidField); // primitive
-}
-
-bool
+VkBool32
 VkPhysicalDeviceFeaturesAccessor::getimageCubeArray() {
-    return (bool) (jboolean) env->GetBooleanField(obj, imageCubeArrayField); // primitive
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, imageCubeArrayField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getsparseResidencyImage2D() {
-    return (bool) (jboolean) env->GetBooleanField(obj, sparseResidencyImage2DField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getdualSrcBlend() {
-    return (bool) (jboolean) env->GetBooleanField(obj, dualSrcBlendField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderResourceResidency() {
-    return (bool) (jboolean) env->GetBooleanField(obj, shaderResourceResidencyField); // primitive
-}
-
-bool
+VkBool32
 VkPhysicalDeviceFeaturesAccessor::getmultiViewport() {
-    return (bool) (jboolean) env->GetBooleanField(obj, multiViewportField); // primitive
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, multiViewportField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderStorageBufferArrayDynamicIndexing() {
-    return (bool) (jboolean) env->GetBooleanField(obj,
-                                                  shaderStorageBufferArrayDynamicIndexingField); // primitive
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getsparseResidencyBuffer() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, sparseResidencyBufferField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getinheritedQueries() {
-    return (bool) (jboolean) env->GetBooleanField(obj, inheritedQueriesField); // primitive
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getsparseBinding() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, sparseBindingField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderTessellationAndGeometryPointSize() {
-    return (bool) (jboolean) env->GetBooleanField(obj,
-                                                  shaderTessellationAndGeometryPointSizeField); // primitive
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::gettextureCompressionETC2() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      textureCompressionETC2Field); // primitive
 }
 
-bool
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderStorageImageMultisample() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      shaderStorageImageMultisampleField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getfillModeNonSolid() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, fillModeNonSolidField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getalphaToOne() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, alphaToOneField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getindependentBlend() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, independentBlendField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderClipDistance() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, shaderClipDistanceField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderFloat64() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, shaderFloat64Field); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getsparseResidency16Samples() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      sparseResidency16SamplesField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getwideLines() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, wideLinesField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderInt64() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, shaderInt64Field); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getsparseResidency8Samples() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      sparseResidency8SamplesField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getdepthClamp() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, depthClampField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getsparseResidency2Samples() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      sparseResidency2SamplesField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getsampleRateShading() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, sampleRateShadingField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getsamplerAnisotropy() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, samplerAnisotropyField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderStorageImageWriteWithoutFormat() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      shaderStorageImageWriteWithoutFormatField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getsparseResidencyImage2D() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      sparseResidencyImage2DField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getvariableMultisampleRate() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      variableMultisampleRateField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getocclusionQueryPrecise() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, occlusionQueryPreciseField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getdualSrcBlend() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, dualSrcBlendField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getlargePoints() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, largePointsField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getdepthBounds() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, depthBoundsField); // primitive
+}
+
+VkBool32
 VkPhysicalDeviceFeaturesAccessor::getshaderImageGatherExtended() {
-    return (bool) (jboolean) env->GetBooleanField(obj, shaderImageGatherExtendedField); // primitive
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      shaderImageGatherExtendedField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderSampledImageArrayDynamicIndexing() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      shaderSampledImageArrayDynamicIndexingField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderTessellationAndGeometryPointSize() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      shaderTessellationAndGeometryPointSizeField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getpipelineStatisticsQuery() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      pipelineStatisticsQueryField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getfragmentStoresAndAtomics() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      fragmentStoresAndAtomicsField); // primitive
 }
 
 void
 VkPhysicalDeviceFeaturesAccessor::fromObject(VkPhysicalDeviceFeatures &clazzInfo) {
-    clazzInfo.robustBufferAccess = getrobustBufferAccess(); // Object bool
-    clazzInfo.fullDrawIndexUint32 = getfullDrawIndexUint32(); // Object bool
-    clazzInfo.imageCubeArray = getimageCubeArray(); // Object bool
-    clazzInfo.independentBlend = getindependentBlend(); // Object bool
-    clazzInfo.geometryShader = getgeometryShader(); // Object bool
-    clazzInfo.tessellationShader = gettessellationShader(); // Object bool
-    clazzInfo.sampleRateShading = getsampleRateShading(); // Object bool
-    clazzInfo.dualSrcBlend = getdualSrcBlend(); // Object bool
-    clazzInfo.logicOp = getlogicOp(); // Object bool
-    clazzInfo.multiDrawIndirect = getmultiDrawIndirect(); // Object bool
-    clazzInfo.drawIndirectFirstInstance = getdrawIndirectFirstInstance(); // Object bool
-    clazzInfo.depthClamp = getdepthClamp(); // Object bool
-    clazzInfo.depthBiasClamp = getdepthBiasClamp(); // Object bool
-    clazzInfo.fillModeNonSolid = getfillModeNonSolid(); // Object bool
-    clazzInfo.depthBounds = getdepthBounds(); // Object bool
-    clazzInfo.wideLines = getwideLines(); // Object bool
-    clazzInfo.largePoints = getlargePoints(); // Object bool
-    clazzInfo.alphaToOne = getalphaToOne(); // Object bool
-    clazzInfo.multiViewport = getmultiViewport(); // Object bool
-    clazzInfo.samplerAnisotropy = getsamplerAnisotropy(); // Object bool
-    clazzInfo.textureCompressionETC2 = gettextureCompressionETC2(); // Object bool
-    clazzInfo.textureCompressionASTC_LDR = gettextureCompressionASTC_LDR(); // Object bool
-    clazzInfo.textureCompressionBC = gettextureCompressionBC(); // Object bool
-    clazzInfo.occlusionQueryPrecise = getocclusionQueryPrecise(); // Object bool
-    clazzInfo.pipelineStatisticsQuery = getpipelineStatisticsQuery(); // Object bool
-    clazzInfo.vertexPipelineStoresAndAtomics = getvertexPipelineStoresAndAtomics(); // Object bool
-    clazzInfo.fragmentStoresAndAtomics = getfragmentStoresAndAtomics(); // Object bool
-    clazzInfo.shaderTessellationAndGeometryPointSize = getshaderTessellationAndGeometryPointSize(); // Object bool
-    clazzInfo.shaderImageGatherExtended = getshaderImageGatherExtended(); // Object bool
-    clazzInfo.shaderStorageImageExtendedFormats = getshaderStorageImageExtendedFormats(); // Object bool
-    clazzInfo.shaderStorageImageMultisample = getshaderStorageImageMultisample(); // Object bool
-    clazzInfo.shaderStorageImageReadWithoutFormat = getshaderStorageImageReadWithoutFormat(); // Object bool
-    clazzInfo.shaderStorageImageWriteWithoutFormat = getshaderStorageImageWriteWithoutFormat(); // Object bool
-    clazzInfo.shaderUniformBufferArrayDynamicIndexing = getshaderUniformBufferArrayDynamicIndexing(); // Object bool
-    clazzInfo.shaderSampledImageArrayDynamicIndexing = getshaderSampledImageArrayDynamicIndexing(); // Object bool
-    clazzInfo.shaderStorageBufferArrayDynamicIndexing = getshaderStorageBufferArrayDynamicIndexing(); // Object bool
-    clazzInfo.shaderStorageImageArrayDynamicIndexing = getshaderStorageImageArrayDynamicIndexing(); // Object bool
-    clazzInfo.shaderClipDistance = getshaderClipDistance(); // Object bool
-    clazzInfo.shaderCullDistance = getshaderCullDistance(); // Object bool
-    clazzInfo.shaderFloat64 = getshaderFloat64(); // Object bool
-    clazzInfo.shaderInt64 = getshaderInt64(); // Object bool
-    clazzInfo.shaderInt16 = getshaderInt16(); // Object bool
-    clazzInfo.shaderResourceResidency = getshaderResourceResidency(); // Object bool
-    clazzInfo.shaderResourceMinLod = getshaderResourceMinLod(); // Object bool
-    clazzInfo.sparseBinding = getsparseBinding(); // Object bool
-    clazzInfo.sparseResidencyBuffer = getsparseResidencyBuffer(); // Object bool
-    clazzInfo.sparseResidencyImage2D = getsparseResidencyImage2D(); // Object bool
-    clazzInfo.sparseResidencyImage3D = getsparseResidencyImage3D(); // Object bool
-    clazzInfo.sparseResidency2Samples = getsparseResidency2Samples(); // Object bool
-    clazzInfo.sparseResidency4Samples = getsparseResidency4Samples(); // Object bool
-    clazzInfo.sparseResidency8Samples = getsparseResidency8Samples(); // Object bool
-    clazzInfo.sparseResidency16Samples = getsparseResidency16Samples(); // Object bool
-    clazzInfo.sparseResidencyAliased = getsparseResidencyAliased(); // Object bool
-    clazzInfo.variableMultisampleRate = getvariableMultisampleRate(); // Object bool
-    clazzInfo.inheritedQueries = getinheritedQueries(); // Object bool
+    clazzInfo.robustBufferAccess = getrobustBufferAccess(); // Primitive VkBool32
+    clazzInfo.fullDrawIndexUint32 = getfullDrawIndexUint32(); // Primitive VkBool32
+    clazzInfo.imageCubeArray = getimageCubeArray(); // Primitive VkBool32
+    clazzInfo.independentBlend = getindependentBlend(); // Primitive VkBool32
+    clazzInfo.geometryShader = getgeometryShader(); // Primitive VkBool32
+    clazzInfo.tessellationShader = gettessellationShader(); // Primitive VkBool32
+    clazzInfo.sampleRateShading = getsampleRateShading(); // Primitive VkBool32
+    clazzInfo.dualSrcBlend = getdualSrcBlend(); // Primitive VkBool32
+    clazzInfo.logicOp = getlogicOp(); // Primitive VkBool32
+    clazzInfo.multiDrawIndirect = getmultiDrawIndirect(); // Primitive VkBool32
+    clazzInfo.drawIndirectFirstInstance = getdrawIndirectFirstInstance(); // Primitive VkBool32
+    clazzInfo.depthClamp = getdepthClamp(); // Primitive VkBool32
+    clazzInfo.depthBiasClamp = getdepthBiasClamp(); // Primitive VkBool32
+    clazzInfo.fillModeNonSolid = getfillModeNonSolid(); // Primitive VkBool32
+    clazzInfo.depthBounds = getdepthBounds(); // Primitive VkBool32
+    clazzInfo.wideLines = getwideLines(); // Primitive VkBool32
+    clazzInfo.largePoints = getlargePoints(); // Primitive VkBool32
+    clazzInfo.alphaToOne = getalphaToOne(); // Primitive VkBool32
+    clazzInfo.multiViewport = getmultiViewport(); // Primitive VkBool32
+    clazzInfo.samplerAnisotropy = getsamplerAnisotropy(); // Primitive VkBool32
+    clazzInfo.textureCompressionETC2 = gettextureCompressionETC2(); // Primitive VkBool32
+    clazzInfo.textureCompressionASTC_LDR = gettextureCompressionASTC_LDR(); // Primitive VkBool32
+    clazzInfo.textureCompressionBC = gettextureCompressionBC(); // Primitive VkBool32
+    clazzInfo.occlusionQueryPrecise = getocclusionQueryPrecise(); // Primitive VkBool32
+    clazzInfo.pipelineStatisticsQuery = getpipelineStatisticsQuery(); // Primitive VkBool32
+    clazzInfo.vertexPipelineStoresAndAtomics = getvertexPipelineStoresAndAtomics(); // Primitive VkBool32
+    clazzInfo.fragmentStoresAndAtomics = getfragmentStoresAndAtomics(); // Primitive VkBool32
+    clazzInfo.shaderTessellationAndGeometryPointSize = getshaderTessellationAndGeometryPointSize(); // Primitive VkBool32
+    clazzInfo.shaderImageGatherExtended = getshaderImageGatherExtended(); // Primitive VkBool32
+    clazzInfo.shaderStorageImageExtendedFormats = getshaderStorageImageExtendedFormats(); // Primitive VkBool32
+    clazzInfo.shaderStorageImageMultisample = getshaderStorageImageMultisample(); // Primitive VkBool32
+    clazzInfo.shaderStorageImageReadWithoutFormat = getshaderStorageImageReadWithoutFormat(); // Primitive VkBool32
+    clazzInfo.shaderStorageImageWriteWithoutFormat = getshaderStorageImageWriteWithoutFormat(); // Primitive VkBool32
+    clazzInfo.shaderUniformBufferArrayDynamicIndexing = getshaderUniformBufferArrayDynamicIndexing(); // Primitive VkBool32
+    clazzInfo.shaderSampledImageArrayDynamicIndexing = getshaderSampledImageArrayDynamicIndexing(); // Primitive VkBool32
+    clazzInfo.shaderStorageBufferArrayDynamicIndexing = getshaderStorageBufferArrayDynamicIndexing(); // Primitive VkBool32
+    clazzInfo.shaderStorageImageArrayDynamicIndexing = getshaderStorageImageArrayDynamicIndexing(); // Primitive VkBool32
+    clazzInfo.shaderClipDistance = getshaderClipDistance(); // Primitive VkBool32
+    clazzInfo.shaderCullDistance = getshaderCullDistance(); // Primitive VkBool32
+    clazzInfo.shaderFloat64 = getshaderFloat64(); // Primitive VkBool32
+    clazzInfo.shaderInt64 = getshaderInt64(); // Primitive VkBool32
+    clazzInfo.shaderInt16 = getshaderInt16(); // Primitive VkBool32
+    clazzInfo.shaderResourceResidency = getshaderResourceResidency(); // Primitive VkBool32
+    clazzInfo.shaderResourceMinLod = getshaderResourceMinLod(); // Primitive VkBool32
+    clazzInfo.sparseBinding = getsparseBinding(); // Primitive VkBool32
+    clazzInfo.sparseResidencyBuffer = getsparseResidencyBuffer(); // Primitive VkBool32
+    clazzInfo.sparseResidencyImage2D = getsparseResidencyImage2D(); // Primitive VkBool32
+    clazzInfo.sparseResidencyImage3D = getsparseResidencyImage3D(); // Primitive VkBool32
+    clazzInfo.sparseResidency2Samples = getsparseResidency2Samples(); // Primitive VkBool32
+    clazzInfo.sparseResidency4Samples = getsparseResidency4Samples(); // Primitive VkBool32
+    clazzInfo.sparseResidency8Samples = getsparseResidency8Samples(); // Primitive VkBool32
+    clazzInfo.sparseResidency16Samples = getsparseResidency16Samples(); // Primitive VkBool32
+    clazzInfo.sparseResidencyAliased = getsparseResidencyAliased(); // Primitive VkBool32
+    clazzInfo.variableMultisampleRate = getvariableMultisampleRate(); // Primitive VkBool32
+    clazzInfo.inheritedQueries = getinheritedQueries(); // Primitive VkBool32
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getrobustBufferAccess() {
-    return (bool) (jboolean) env->GetBooleanField(obj, robustBufferAccessField); // primitive
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderUniformBufferArrayDynamicIndexing() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      shaderUniformBufferArrayDynamicIndexingField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getsparseResidencyImage3D() {
-    return (bool) (jboolean) env->GetBooleanField(obj, sparseResidencyImage3DField); // primitive
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderStorageImageArrayDynamicIndexing() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      shaderStorageImageArrayDynamicIndexingField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getsparseResidencyAliased() {
-    return (bool) (jboolean) env->GetBooleanField(obj, sparseResidencyAliasedField); // primitive
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderStorageImageReadWithoutFormat() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      shaderStorageImageReadWithoutFormatField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getocclusionQueryPrecise() {
-    return (bool) (jboolean) env->GetBooleanField(obj, occlusionQueryPreciseField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderStorageImageWriteWithoutFormat() {
-    return (bool) (jboolean) env->GetBooleanField(obj,
-                                                  shaderStorageImageWriteWithoutFormatField); // primitive
-}
-
-bool
+VkBool32
 VkPhysicalDeviceFeaturesAccessor::getshaderResourceMinLod() {
-    return (bool) (jboolean) env->GetBooleanField(obj, shaderResourceMinLodField); // primitive
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, shaderResourceMinLodField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getvariableMultisampleRate() {
-    return (bool) (jboolean) env->GetBooleanField(obj, variableMultisampleRateField); // primitive
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::gettextureCompressionASTC_LDR() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      textureCompressionASTC_LDRField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::gettextureCompressionETC2() {
-    return (bool) (jboolean) env->GetBooleanField(obj, textureCompressionETC2Field); // primitive
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getfullDrawIndexUint32() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, fullDrawIndexUint32Field); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderFloat64() {
-    return (bool) (jboolean) env->GetBooleanField(obj, shaderFloat64Field); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getshaderCullDistance() {
-    return (bool) (jboolean) env->GetBooleanField(obj, shaderCullDistanceField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getgeometryShader() {
-    return (bool) (jboolean) env->GetBooleanField(obj, geometryShaderField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getindependentBlend() {
-    return (bool) (jboolean) env->GetBooleanField(obj, independentBlendField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getsampleRateShading() {
-    return (bool) (jboolean) env->GetBooleanField(obj, sampleRateShadingField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getmultiDrawIndirect() {
-    return (bool) (jboolean) env->GetBooleanField(obj, multiDrawIndirectField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::gettextureCompressionBC() {
-    return (bool) (jboolean) env->GetBooleanField(obj, textureCompressionBCField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getdepthClamp() {
-    return (bool) (jboolean) env->GetBooleanField(obj, depthClampField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getlargePoints() {
-    return (bool) (jboolean) env->GetBooleanField(obj, largePointsField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getsparseBinding() {
-    return (bool) (jboolean) env->GetBooleanField(obj, sparseBindingField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getsamplerAnisotropy() {
-    return (bool) (jboolean) env->GetBooleanField(obj, samplerAnisotropyField); // primitive
-}
-
-bool
-VkPhysicalDeviceFeaturesAccessor::getdrawIndirectFirstInstance() {
-    return (bool) (jboolean) env->GetBooleanField(obj, drawIndirectFirstInstanceField); // primitive
-}
-
-bool
+VkBool32
 VkPhysicalDeviceFeaturesAccessor::getvertexPipelineStoresAndAtomics() {
-    return (bool) (jboolean) env->GetBooleanField(obj,
-                                                  vertexPipelineStoresAndAtomicsField); // primitive
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      vertexPipelineStoresAndAtomicsField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getdepthBiasClamp() {
-    return (bool) (jboolean) env->GetBooleanField(obj, depthBiasClampField); // primitive
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderStorageBufferArrayDynamicIndexing() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      shaderStorageBufferArrayDynamicIndexingField); // primitive
 }
 
-bool
-VkPhysicalDeviceFeaturesAccessor::getsparseResidency16Samples() {
-    return (bool) (jboolean) env->GetBooleanField(obj, sparseResidency16SamplesField); // primitive
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderInt16() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, shaderInt16Field); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getsparseResidency4Samples() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      sparseResidency4SamplesField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::gettextureCompressionBC() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, textureCompressionBCField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderResourceResidency() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      shaderResourceResidencyField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getsparseResidencyImage3D() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      sparseResidencyImage3DField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderCullDistance() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, shaderCullDistanceField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getrobustBufferAccess() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, robustBufferAccessField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getlogicOp() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, logicOpField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getsparseResidencyAliased() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      sparseResidencyAliasedField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getshaderStorageImageExtendedFormats() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj,
+                                                      shaderStorageImageExtendedFormatsField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getgeometryShader() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, geometryShaderField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::gettessellationShader() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, tessellationShaderField); // primitive
+}
+
+VkBool32
+VkPhysicalDeviceFeaturesAccessor::getinheritedQueries() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, inheritedQueriesField); // primitive
 }
 
 VkPhysicalDeviceFeaturesAccessor::~VkPhysicalDeviceFeaturesAccessor() {

@@ -29,8 +29,7 @@ VkRenderPassCreateInfoAccessor::getsType() {
 
 uint32_t
 VkRenderPassCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 void
@@ -48,7 +47,7 @@ VkRenderPassCreateInfoAccessor::getpAttachments(VkRenderPassCreateInfo &clazzInf
         return;
     }
     auto size = env->GetArrayLength(pAttachmentsArray);
-    std::vector <VkAttachmentDescription> pAttachments;
+    std::vector<VkAttachmentDescription> pAttachments;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pAttachmentsArray,
                                                             i); // actual type is VkAttachmentDescription[];
@@ -76,7 +75,7 @@ VkRenderPassCreateInfoAccessor::getpDependencies(VkRenderPassCreateInfo &clazzIn
         return;
     }
     auto size = env->GetArrayLength(pDependenciesArray);
-    std::vector <VkSubpassDependency> pDependencies;
+    std::vector<VkSubpassDependency> pDependencies;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pDependenciesArray,
                                                             i); // actual type is VkSubpassDependency[];
@@ -98,8 +97,8 @@ VkRenderPassCreateInfoAccessor::getpDependencies(VkRenderPassCreateInfo &clazzIn
 void
 VkRenderPassCreateInfoAccessor::fromObject(VkRenderPassCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
     getpAttachments(clazzInfo);  // VkAttachmentDescription Object Array
     getpSubpasses(clazzInfo);  // VkSubpassDescription Object Array
     getpDependencies(clazzInfo);  // VkSubpassDependency Object Array
@@ -114,7 +113,7 @@ VkRenderPassCreateInfoAccessor::getpSubpasses(VkRenderPassCreateInfo &clazzInfo)
         return;
     }
     auto size = env->GetArrayLength(pSubpassesArray);
-    std::vector <VkSubpassDescription> pSubpasses;
+    std::vector<VkSubpassDescription> pSubpasses;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pSubpassesArray,
                                                             i); // actual type is VkSubpassDescription[];

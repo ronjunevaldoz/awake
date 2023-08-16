@@ -26,8 +26,7 @@ VkSubpassDescriptionAccessor::VkSubpassDescriptionAccessor(JNIEnv *env, jobject 
 
 uint32_t
 VkSubpassDescriptionAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 void
@@ -39,7 +38,7 @@ VkSubpassDescriptionAccessor::getpInputAttachments(VkSubpassDescription &clazzIn
         return;
     }
     auto size = env->GetArrayLength(pInputAttachmentsArray);
-    std::vector <VkAttachmentReference> pInputAttachments;
+    std::vector<VkAttachmentReference> pInputAttachments;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pInputAttachmentsArray,
                                                             i); // actual type is VkAttachmentReference[];
@@ -67,7 +66,7 @@ VkSubpassDescriptionAccessor::getpColorAttachments(VkSubpassDescription &clazzIn
         return;
     }
     auto size = env->GetArrayLength(pColorAttachmentsArray);
-    std::vector <VkAttachmentReference> pColorAttachments;
+    std::vector<VkAttachmentReference> pColorAttachments;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pColorAttachmentsArray,
                                                             i); // actual type is VkAttachmentReference[];
@@ -101,7 +100,7 @@ VkSubpassDescriptionAccessor::getpResolveAttachments(VkSubpassDescription &clazz
         return;
     }
     auto size = env->GetArrayLength(pResolveAttachmentsArray);
-    std::vector <VkAttachmentReference> pResolveAttachments;
+    std::vector<VkAttachmentReference> pResolveAttachments;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pResolveAttachmentsArray,
                                                             i); // actual type is VkAttachmentReference[];
@@ -120,7 +119,7 @@ VkSubpassDescriptionAccessor::getpResolveAttachments(VkSubpassDescription &clazz
 
 void
 VkSubpassDescriptionAccessor::fromObject(VkSubpassDescription &clazzInfo) {
-    clazzInfo.flags = getflags(); // Object uint32_t
+    clazzInfo.flags = getflags(); // Primitive uint32_t
     clazzInfo.pipelineBindPoint = getpipelineBindPoint(); // Enum VkPipelineBindPoint
     getpInputAttachments(clazzInfo);  // VkAttachmentReference Object Array
     getpColorAttachments(clazzInfo);  // VkAttachmentReference Object Array
@@ -140,7 +139,7 @@ VkSubpassDescriptionAccessor::getpPreserveAttachments(VkSubpassDescription &claz
     }
     auto size = env->GetArrayLength(pPreserveAttachmentsArray);
     // primitive array?
-    std::vector <uint32_t> pPreserveAttachments(size);
+    std::vector<uint32_t> pPreserveAttachments(size);
     env->GetIntArrayRegion(pPreserveAttachmentsArray, 0, size,
                            reinterpret_cast<jint *>(pPreserveAttachments.data()));
     // processing array data
@@ -161,7 +160,7 @@ VkSubpassDescriptionAccessor::getpDepthStencilAttachment(VkSubpassDescription &c
         return;
     }
     auto size = env->GetArrayLength(pDepthStencilAttachmentArray);
-    std::vector <VkAttachmentReference> pDepthStencilAttachment;
+    std::vector<VkAttachmentReference> pDepthStencilAttachment;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pDepthStencilAttachmentArray,
                                                             i); // actual type is VkAttachmentReference[];

@@ -25,8 +25,7 @@ VkPipelineTessellationStateCreateInfoAccessor::getsType() {
 
 uint32_t
 VkPipelineTessellationStateCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 void
@@ -40,15 +39,14 @@ void
 VkPipelineTessellationStateCreateInfoAccessor::fromObject(
         VkPipelineTessellationStateCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
-    clazzInfo.patchControlPoints = getpatchControlPoints(); // Object uint32_t
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
+    clazzInfo.patchControlPoints = getpatchControlPoints(); // Primitive uint32_t
 }
 
 uint32_t
 VkPipelineTessellationStateCreateInfoAccessor::getpatchControlPoints() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, patchControlPointsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, patchControlPointsField); // primitive
 }
 
 VkPipelineTessellationStateCreateInfoAccessor::~VkPipelineTessellationStateCreateInfoAccessor() {

@@ -39,4 +39,40 @@ namespace enum_utils {
 
         return value;
     }
+
+
+    jobject setEnumFromVulkan(JNIEnv *env, jint value, const std::string &sig) {
+        // Get the class reference for your Java enum class
+        jclass enumClass = env->FindClass(sig.data());
+        if (enumClass == nullptr) {
+            // Handle the error if the class retrieval fails
+            // For example, log an error message or throw an exception
+            return nullptr; // Return an appropriate value based on your error handling strategy
+        }
+
+        // Get the method ID of the enum's 'valueOf' method
+        std::string valuesSig = "()[L" + std::string(sig) + ";";
+        jmethodID valuesMethod = env->GetStaticMethodID(enumClass, "values", valuesSig.data());
+
+        if (valuesMethod == nullptr) {
+            // Handle the error if the method retrieval fails
+            // For example, log an error message or throw an exception
+            env->DeleteLocalRef(enumClass); // Release the local reference
+            return nullptr; // Return an appropriate value based on your error handling strategy
+        }
+        auto enumValues = (jobjectArray) env->CallStaticObjectMethod(enumClass, valuesMethod);
+
+        jsize numEnumValues = env->GetArrayLength(enumValues);
+        for (jsize i = 0; i < numEnumValues; ++i) {
+            jobject enumValue = env->GetObjectArrayElement(enumValues, i);
+            jmethodID valueMethod = env->GetMethodID(enumClass, "getValue", "()I");
+            jint enumValueInt = env->CallIntMethod(enumValue, valueMethod);
+            env->DeleteLocalRef(enumValue);
+
+            if (enumValueInt == value) {
+                return env->GetObjectArrayElement(enumValues, i);
+            }
+        }
+        return nullptr;
+    }
 } // enum_utils

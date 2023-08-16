@@ -30,14 +30,12 @@ VkStencilOpStateAccessor::getfailOp() {
 
 uint32_t
 VkStencilOpStateAccessor::getcompareMask() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, compareMaskField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, compareMaskField); // primitive
 }
 
 uint32_t
 VkStencilOpStateAccessor::getreference() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, referenceField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, referenceField); // primitive
 }
 
 VkCompareOp
@@ -48,8 +46,7 @@ VkStencilOpStateAccessor::getcompareOp() {
 
 uint32_t
 VkStencilOpStateAccessor::getwriteMask() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, writeMaskField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, writeMaskField); // primitive
 }
 
 void
@@ -58,9 +55,9 @@ VkStencilOpStateAccessor::fromObject(VkStencilOpState &clazzInfo) {
     clazzInfo.passOp = getpassOp(); // Enum VkStencilOp
     clazzInfo.depthFailOp = getdepthFailOp(); // Enum VkStencilOp
     clazzInfo.compareOp = getcompareOp(); // Enum VkCompareOp
-    clazzInfo.compareMask = getcompareMask(); // Object uint32_t
-    clazzInfo.writeMask = getwriteMask(); // Object uint32_t
-    clazzInfo.reference = getreference(); // Object uint32_t
+    clazzInfo.compareMask = getcompareMask(); // Primitive uint32_t
+    clazzInfo.writeMask = getwriteMask(); // Primitive uint32_t
+    clazzInfo.reference = getreference(); // Primitive uint32_t
 }
 
 VkStencilOp

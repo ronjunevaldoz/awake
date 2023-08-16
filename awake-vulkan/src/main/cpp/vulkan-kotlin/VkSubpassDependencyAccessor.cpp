@@ -20,55 +20,48 @@ VkSubpassDependencyAccessor::VkSubpassDependencyAccessor(JNIEnv *env, jobject ob
 
 uint32_t
 VkSubpassDependencyAccessor::getdstStageMask() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, dstStageMaskField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, dstStageMaskField); // primitive
 }
 
 uint32_t
 VkSubpassDependencyAccessor::getdstAccessMask() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, dstAccessMaskField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, dstAccessMaskField); // primitive
 }
 
 uint32_t
 VkSubpassDependencyAccessor::getsrcSubpass() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, srcSubpassField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, srcSubpassField); // primitive
 }
 
 uint32_t
 VkSubpassDependencyAccessor::getdstSubpass() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, dstSubpassField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, dstSubpassField); // primitive
 }
 
 uint32_t
 VkSubpassDependencyAccessor::getdependencyFlags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, dependencyFlagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, dependencyFlagsField); // primitive
 }
 
 uint32_t
 VkSubpassDependencyAccessor::getsrcAccessMask() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, srcAccessMaskField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, srcAccessMaskField); // primitive
 }
 
 uint32_t
 VkSubpassDependencyAccessor::getsrcStageMask() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, srcStageMaskField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, srcStageMaskField); // primitive
 }
 
 void
 VkSubpassDependencyAccessor::fromObject(VkSubpassDependency &clazzInfo) {
-    clazzInfo.srcSubpass = getsrcSubpass(); // Object uint32_t
-    clazzInfo.dstSubpass = getdstSubpass(); // Object uint32_t
-    clazzInfo.srcStageMask = getsrcStageMask(); // Object uint32_t
-    clazzInfo.dstStageMask = getdstStageMask(); // Object uint32_t
-    clazzInfo.srcAccessMask = getsrcAccessMask(); // Object uint32_t
-    clazzInfo.dstAccessMask = getdstAccessMask(); // Object uint32_t
-    clazzInfo.dependencyFlags = getdependencyFlags(); // Object uint32_t
+    clazzInfo.srcSubpass = getsrcSubpass(); // Primitive uint32_t
+    clazzInfo.dstSubpass = getdstSubpass(); // Primitive uint32_t
+    clazzInfo.srcStageMask = getsrcStageMask(); // Primitive uint32_t
+    clazzInfo.dstStageMask = getdstStageMask(); // Primitive uint32_t
+    clazzInfo.srcAccessMask = getsrcAccessMask(); // Primitive uint32_t
+    clazzInfo.dstAccessMask = getdstAccessMask(); // Primitive uint32_t
+    clazzInfo.dependencyFlags = getdependencyFlags(); // Primitive uint32_t
 }
 
 VkSubpassDependencyAccessor::~VkSubpassDependencyAccessor() {

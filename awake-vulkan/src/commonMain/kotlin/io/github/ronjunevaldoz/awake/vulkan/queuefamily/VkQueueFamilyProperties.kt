@@ -19,10 +19,11 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.queuefamily
 
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkQueueFlags
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent3D
 
-
+@VkMutator
 data class VkQueueFamilyProperties(
     val queueFlags: VkQueueFlags = 0,
     val queueCount: UInt = 0u,

@@ -33,14 +33,9 @@ VkPipelineDepthStencilStateCreateInfoAccessor::getmaxDepthBounds() {
     return (float) (jfloat) env->GetFloatField(obj, maxDepthBoundsField); // primitive
 }
 
-bool
+VkBool32
 VkPipelineDepthStencilStateCreateInfoAccessor::getdepthWriteEnable() {
-    return (bool) (jboolean) env->GetBooleanField(obj, depthWriteEnableField); // primitive
-}
-
-bool
-VkPipelineDepthStencilStateCreateInfoAccessor::getstencilTestEnable() {
-    return (bool) (jboolean) env->GetBooleanField(obj, stencilTestEnableField); // primitive
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, depthWriteEnableField); // primitive
 }
 
 void
@@ -69,32 +64,41 @@ VkPipelineDepthStencilStateCreateInfoAccessor::getsType() {
     return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
 }
 
-bool
-VkPipelineDepthStencilStateCreateInfoAccessor::getdepthBoundsTestEnable() {
-    return (bool) (jboolean) env->GetBooleanField(obj, depthBoundsTestEnableField); // primitive
-}
-
 uint32_t
 VkPipelineDepthStencilStateCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
+}
+
+VkBool32
+VkPipelineDepthStencilStateCreateInfoAccessor::getdepthTestEnable() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, depthTestEnableField); // primitive
+}
+
+VkBool32
+VkPipelineDepthStencilStateCreateInfoAccessor::getdepthBoundsTestEnable() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, depthBoundsTestEnableField); // primitive
 }
 
 void
 VkPipelineDepthStencilStateCreateInfoAccessor::fromObject(
         VkPipelineDepthStencilStateCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
-    clazzInfo.depthTestEnable = getdepthTestEnable(); // Object bool
-    clazzInfo.depthWriteEnable = getdepthWriteEnable(); // Object bool
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
+    clazzInfo.depthTestEnable = getdepthTestEnable(); // Primitive VkBool32
+    clazzInfo.depthWriteEnable = getdepthWriteEnable(); // Primitive VkBool32
     clazzInfo.depthCompareOp = getdepthCompareOp(); // Enum VkCompareOp
-    clazzInfo.depthBoundsTestEnable = getdepthBoundsTestEnable(); // Object bool
-    clazzInfo.stencilTestEnable = getstencilTestEnable(); // Object bool
-    getfront(clazzInfo); // Object VkStencilOpState
-    getback(clazzInfo); // Object VkStencilOpState
-    clazzInfo.minDepthBounds = getminDepthBounds(); // Object float
-    clazzInfo.maxDepthBounds = getmaxDepthBounds(); // Object float
+    clazzInfo.depthBoundsTestEnable = getdepthBoundsTestEnable(); // Primitive VkBool32
+    clazzInfo.stencilTestEnable = getstencilTestEnable(); // Primitive VkBool32
+    getfront(clazzInfo); // Other VkStencilOpState
+    getback(clazzInfo); // Other VkStencilOpState
+    clazzInfo.minDepthBounds = getminDepthBounds(); // Primitive float
+    clazzInfo.maxDepthBounds = getmaxDepthBounds(); // Primitive float
+}
+
+VkBool32
+VkPipelineDepthStencilStateCreateInfoAccessor::getstencilTestEnable() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, stencilTestEnableField); // primitive
 }
 
 float
@@ -113,11 +117,6 @@ VkPipelineDepthStencilStateCreateInfoAccessor::getback(
     VkStencilOpState ref{};
     accessor.fromObject(ref);
     clazzInfo.back = ref;
-}
-
-bool
-VkPipelineDepthStencilStateCreateInfoAccessor::getdepthTestEnable() {
-    return (bool) (jboolean) env->GetBooleanField(obj, depthTestEnableField); // primitive
 }
 
 VkCompareOp

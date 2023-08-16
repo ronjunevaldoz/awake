@@ -16,7 +16,7 @@ VkAttachmentReferenceAccessor::VkAttachmentReferenceAccessor(JNIEnv *env, jobjec
 
 void
 VkAttachmentReferenceAccessor::fromObject(VkAttachmentReference &clazzInfo) {
-    clazzInfo.attachment = getattachment(); // Object uint32_t
+    clazzInfo.attachment = getattachment(); // Primitive uint32_t
     clazzInfo.layout = getlayout(); // Enum VkImageLayout
 }
 
@@ -28,8 +28,7 @@ VkAttachmentReferenceAccessor::getlayout() {
 
 uint32_t
 VkAttachmentReferenceAccessor::getattachment() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, attachmentField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, attachmentField); // primitive
 }
 
 VkAttachmentReferenceAccessor::~VkAttachmentReferenceAccessor() {

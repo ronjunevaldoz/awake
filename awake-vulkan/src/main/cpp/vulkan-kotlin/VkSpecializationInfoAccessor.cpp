@@ -18,22 +18,20 @@ VkSpecializationInfoAccessor::VkSpecializationInfoAccessor(JNIEnv *env, jobject 
 
 uint32_t
 VkSpecializationInfoAccessor::getmapEntryCount() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, mapEntryCountField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, mapEntryCountField); // primitive
 }
 
 void
 VkSpecializationInfoAccessor::fromObject(VkSpecializationInfo &clazzInfo) {
-    clazzInfo.mapEntryCount = getmapEntryCount(); // Object uint32_t
+    clazzInfo.mapEntryCount = getmapEntryCount(); // Primitive uint32_t
     getpMapEntries(clazzInfo);  // VkSpecializationMapEntry Object Array
-    clazzInfo.dataSize = getdataSize(); // Object uint64_t
+    clazzInfo.dataSize = getdataSize(); // Primitive uint64_t
     getpData(clazzInfo);  // Object Object Array
 }
 
 uint64_t
 VkSpecializationInfoAccessor::getdataSize() {
-    return (uint64_t)(jlong)
-    env->GetLongField(obj, dataSizeField); // primitive
+    return (uint64_t) (jlong) env->GetLongField(obj, dataSizeField); // primitive
 }
 
 void
@@ -44,7 +42,7 @@ VkSpecializationInfoAccessor::getpMapEntries(VkSpecializationInfo &clazzInfo) {
         return;
     }
     auto size = env->GetArrayLength(pMapEntriesArray);
-    std::vector <VkSpecializationMapEntry> pMapEntries;
+    std::vector<VkSpecializationMapEntry> pMapEntries;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pMapEntriesArray,
                                                             i); // actual type is VkSpecializationMapEntry[];

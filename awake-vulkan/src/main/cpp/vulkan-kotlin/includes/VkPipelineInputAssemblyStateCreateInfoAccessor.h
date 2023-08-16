@@ -26,11 +26,12 @@ public:
     VkPipelineInputAssemblyStateCreateInfoAccessor(JNIEnv *env, jobject obj);
 
     VkStructureType getsType();
+
     uint32_t getflags();
 
-    bool getprimitiveRestartEnable();
-
     void fromObject(VkPipelineInputAssemblyStateCreateInfo &clazzInfo);
+
+    VkBool32 getprimitiveRestartEnable();
 
     VkPrimitiveTopology gettopology();
 

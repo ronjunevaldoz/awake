@@ -31,21 +31,21 @@ public:
 
     VkStructureType getsType();
 
-    bool getalphaToOneEnable();
-
     uint32_t getflags();
+
+    VkBool32 getsampleShadingEnable();
 
     void fromObject(VkPipelineMultisampleStateCreateInfo &clazzInfo);
 
     void getpSampleMask(VkPipelineMultisampleStateCreateInfo &clazzInfo);
 
-    bool getalphaToCoverageEnable();
+    VkBool32 getalphaToCoverageEnable();
 
     float getminSampleShading();
 
     VkSampleCountFlagBits getrasterizationSamples();
 
-    bool getsampleShadingEnable();
+    VkBool32 getalphaToOneEnable();
 
     void getpNext(VkPipelineMultisampleStateCreateInfo &clazzInfo);
 

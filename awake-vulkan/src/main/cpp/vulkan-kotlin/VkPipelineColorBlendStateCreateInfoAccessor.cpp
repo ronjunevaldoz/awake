@@ -28,10 +28,14 @@ VkPipelineColorBlendStateCreateInfoAccessor::getsType() {
     return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
 }
 
+VkBool32
+VkPipelineColorBlendStateCreateInfoAccessor::getlogicOpEnable() {
+    return (VkBool32) (jboolean) env->GetBooleanField(obj, logicOpEnableField); // primitive
+}
+
 uint32_t
 VkPipelineColorBlendStateCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 void
@@ -44,7 +48,7 @@ VkPipelineColorBlendStateCreateInfoAccessor::getpAttachments(
         return;
     }
     auto size = env->GetArrayLength(pAttachmentsArray);
-    std::vector <VkPipelineColorBlendAttachmentState> pAttachments;
+    std::vector<VkPipelineColorBlendAttachmentState> pAttachments;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pAttachmentsArray,
                                                             i); // actual type is VkPipelineColorBlendAttachmentState[];
@@ -63,18 +67,13 @@ VkPipelineColorBlendStateCreateInfoAccessor::getpAttachments(
     clazzInfo.pAttachments = copy;
 }
 
-bool
-VkPipelineColorBlendStateCreateInfoAccessor::getlogicOpEnable() {
-    return (bool) (jboolean) env->GetBooleanField(obj, logicOpEnableField); // primitive
-}
-
 void
 VkPipelineColorBlendStateCreateInfoAccessor::fromObject(
         VkPipelineColorBlendStateCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
-    clazzInfo.logicOpEnable = getlogicOpEnable(); // Object bool
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
+    clazzInfo.logicOpEnable = getlogicOpEnable(); // Primitive VkBool32
     clazzInfo.logicOp = getlogicOp(); // Enum VkLogicOp
     getpAttachments(clazzInfo);  // VkPipelineColorBlendAttachmentState Object Array
     getblendConstants(clazzInfo);  // float Object Array

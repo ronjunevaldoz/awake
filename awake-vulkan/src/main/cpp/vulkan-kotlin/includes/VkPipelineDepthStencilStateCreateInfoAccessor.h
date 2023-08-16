@@ -35,9 +35,7 @@ public:
 
     float getmaxDepthBounds();
 
-    bool getdepthWriteEnable();
-
-    bool getstencilTestEnable();
+    VkBool32 getdepthWriteEnable();
 
     void getfront(VkPipelineDepthStencilStateCreateInfo &clazzInfo);
 
@@ -45,17 +43,19 @@ public:
 
     VkStructureType getsType();
 
-    bool getdepthBoundsTestEnable();
-
     uint32_t getflags();
 
+    VkBool32 getdepthTestEnable();
+
+    VkBool32 getdepthBoundsTestEnable();
+
     void fromObject(VkPipelineDepthStencilStateCreateInfo &clazzInfo);
+
+    VkBool32 getstencilTestEnable();
 
     float getminDepthBounds();
 
     void getback(VkPipelineDepthStencilStateCreateInfo &clazzInfo);
-
-    bool getdepthTestEnable();
 
     VkCompareOp getdepthCompareOp();
 

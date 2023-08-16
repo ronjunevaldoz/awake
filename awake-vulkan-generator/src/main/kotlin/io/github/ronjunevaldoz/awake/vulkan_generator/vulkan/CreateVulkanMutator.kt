@@ -19,15 +19,21 @@
 
 package io.github.ronjunevaldoz.awake.vulkan_generator.vulkan
 
-import io.github.ronjunevaldoz.awake.vulkan.VkDeserializer
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.JNIType
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cast
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cppClass
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getArrayElementJavaType
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getVkConstArray
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.setArrayRegion
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.setJavaValue
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toJavaSignature
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toJavaType
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toJavaTypeArray
 
 fun createVulkanMutator(clazz: Class<*>) {
-    if (!clazz.isAnnotationPresent(VkDeserializer::class.java)) {
+    if (!clazz.isAnnotationPresent(VkMutator::class.java)) {
         return
     }
     val declareMembers = clazz.declaredFields
@@ -87,7 +93,54 @@ fun createVulkanMutator(clazz: Class<*>) {
                     declareMembers.forEach { javaMember ->
                         val field = javaMember.name + "Field"
                         val functionName = javaMember.cast("source." + javaMember.name)
-                        child("${javaMember.setJavaValue("env", "newObj", field, functionName)};")
+
+                        if (javaMember.type.isArray && javaMember.type.componentType.isPrimitive) {
+
+                            val arraySize =
+                                javaMember.getVkConstArray()?.arraySize ?: "<NO ARRAY SIZE>"
+                            val buffer =
+                                "reinterpret_cast<${javaMember.getArrayElementJavaType()} *>(source.${javaMember.name} )"
+                            child("${javaMember.toJavaTypeArray()}  ${javaMember.name} = env->New${javaMember.type.componentType.simpleName.capitalize()}Array($arraySize);")
+                            child(
+                                "env->" + javaMember.setArrayRegion(
+                                    javaMember.name,
+                                    "0",
+                                    arraySize,
+                                    buffer
+                                )
+                            )
+                            child("env->SetObjectField(newObj, $field, ${javaMember.name});")
+
+                        } else if (javaMember.toJavaType() == JNIType.JObject) {
+                            if (javaMember.type.isEnum) {
+                                // process enum
+                                child(
+                                    "${
+                                        javaMember.setJavaValue(
+                                            "env",
+                                            "newObj",
+                                            field,
+                                            functionName
+                                        )
+                                    };"
+                                )
+                            } else {
+                                child("${javaMember.type.simpleName}Mutator ${javaMember.name}Mutator(env);")
+                                import("<${javaMember.type.simpleName}Mutator.h>")
+                                child("env->SetObjectField(newObj, $field, ${javaMember.name}Mutator.toObject(source.${javaMember.name}));")
+                            }
+                        } else {
+                            child(
+                                "${
+                                    javaMember.setJavaValue(
+                                        "env",
+                                        "newObj",
+                                        field,
+                                        functionName
+                                    )
+                                };"
+                            )
+                        }
                     }
                     child("return newObj;")
                 }

@@ -19,23 +19,21 @@ VkVertexInputAttributeDescriptionAccessor::VkVertexInputAttributeDescriptionAcce
 
 uint32_t
 VkVertexInputAttributeDescriptionAccessor::getlocation() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, locationField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, locationField); // primitive
 }
 
 uint32_t
 VkVertexInputAttributeDescriptionAccessor::getbinding() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, bindingField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, bindingField); // primitive
 }
 
 void
 VkVertexInputAttributeDescriptionAccessor::fromObject(
         VkVertexInputAttributeDescription &clazzInfo) {
-    clazzInfo.location = getlocation(); // Object uint32_t
-    clazzInfo.binding = getbinding(); // Object uint32_t
+    clazzInfo.location = getlocation(); // Primitive uint32_t
+    clazzInfo.binding = getbinding(); // Primitive uint32_t
     clazzInfo.format = getformat(); // Enum VkFormat
-    clazzInfo.offset = getoffset(); // Object uint32_t
+    clazzInfo.offset = getoffset(); // Primitive uint32_t
 }
 
 VkFormat
@@ -46,8 +44,7 @@ VkVertexInputAttributeDescriptionAccessor::getformat() {
 
 uint32_t
 VkVertexInputAttributeDescriptionAccessor::getoffset() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, offsetField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, offsetField); // primitive
 }
 
 VkVertexInputAttributeDescriptionAccessor::~VkVertexInputAttributeDescriptionAccessor() {

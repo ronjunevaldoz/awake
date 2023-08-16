@@ -34,12 +34,12 @@ VkViewportAccessor::getx() {
 
 void
 VkViewportAccessor::fromObject(VkViewport &clazzInfo) {
-    clazzInfo.x = getx(); // Object float
-    clazzInfo.y = gety(); // Object float
-    clazzInfo.width = getwidth(); // Object float
-    clazzInfo.height = getheight(); // Object float
-    clazzInfo.minDepth = getminDepth(); // Object float
-    clazzInfo.maxDepth = getmaxDepth(); // Object float
+    clazzInfo.x = getx(); // Primitive float
+    clazzInfo.y = gety(); // Primitive float
+    clazzInfo.width = getwidth(); // Primitive float
+    clazzInfo.height = getheight(); // Primitive float
+    clazzInfo.minDepth = getminDepth(); // Primitive float
+    clazzInfo.maxDepth = getmaxDepth(); // Primitive float
 }
 
 float

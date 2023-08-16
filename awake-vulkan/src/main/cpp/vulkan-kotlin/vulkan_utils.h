@@ -10,19 +10,6 @@
 #include <jni.h>
 
 namespace vulkan_utils {
-    // fill device properties to destination
-    bool VkPhysicalDeviceLimits_fromObject(JNIEnv *env,
-                                           jclass p_pdpp_class,
-                                           jobject p_pdp_obj,
-                                           VkPhysicalDeviceLimits pdl
-    );
-
-    bool VkPhysicalDeviceSparseProperties_fromObject(JNIEnv *env,
-                                                     jobject p_pdp_obj,
-                                                     jfieldID p_sp_fid,
-                                                     VkPhysicalDeviceSparseProperties sp
-    );
-
     jobject
     physicalDevicePropertiesObj_fromVkPhysicalDeviceProperties(JNIEnv *env, jlong pPhysicalDevice);
 

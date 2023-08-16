@@ -30,15 +30,14 @@ VkDeviceCreateInfoAccessor::getsType() {
 
 uint32_t
 VkDeviceCreateInfoAccessor::getflags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, flagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 void
 VkDeviceCreateInfoAccessor::fromObject(VkDeviceCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
-    getpNext(clazzInfo); // Object void*
-    clazzInfo.flags = getflags(); // Object uint32_t
+    getpNext(clazzInfo); // Other void*
+    clazzInfo.flags = getflags(); // Primitive uint32_t
     getpQueueCreateInfos(clazzInfo);  // VkDeviceQueueCreateInfo Object Array
     getppEnabledLayerNames(clazzInfo);  // String Object Array
     getppEnabledExtensionNames(clazzInfo);  // String Object Array
@@ -115,7 +114,7 @@ VkDeviceCreateInfoAccessor::getpEnabledFeatures(VkDeviceCreateInfo &clazzInfo) {
         return;
     }
     auto size = env->GetArrayLength(pEnabledFeaturesArray);
-    std::vector <VkPhysicalDeviceFeatures> pEnabledFeatures;
+    std::vector<VkPhysicalDeviceFeatures> pEnabledFeatures;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pEnabledFeaturesArray,
                                                             i); // actual type is VkPhysicalDeviceFeatures[];
@@ -142,7 +141,7 @@ VkDeviceCreateInfoAccessor::getpQueueCreateInfos(VkDeviceCreateInfo &clazzInfo) 
         return;
     }
     auto size = env->GetArrayLength(pQueueCreateInfosArray);
-    std::vector <VkDeviceQueueCreateInfo> pQueueCreateInfos;
+    std::vector<VkDeviceQueueCreateInfo> pQueueCreateInfos;
     for (int i = 0; i < size; ++i) {
         auto element = (jobject) env->GetObjectArrayElement(pQueueCreateInfosArray,
                                                             i); // actual type is VkDeviceQueueCreateInfo[];

@@ -19,8 +19,11 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.models
 
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
+
+@VkMutator
 data class VkExtent3D(
-    val width: UInt = 0u,
-    val height: UInt = 0u,
-    val depth: UInt = 0u
+    val width: Int = 0,
+    val height: Int = 0,
+    val depth: Int = 0
 )
