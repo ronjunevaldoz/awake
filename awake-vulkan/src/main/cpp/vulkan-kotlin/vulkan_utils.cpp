@@ -22,6 +22,7 @@
 #include "VkPhysicalDevicePropertiesAccessor.h"
 #include "VkPhysicalDevicePropertiesMutator.h"
 #include "VkQueueFamilyPropertiesMutator.h"
+#include "VkSurfaceCapabilitiesKHRMutator.h"
 
 namespace vulkan_utils {
 
@@ -569,42 +570,7 @@ namespace vulkan_utils {
         if (result != VK_SUCCESS) {
             throw std::runtime_error("Unable to check vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
         }
-
-        jclass scKHRclass = env->FindClass(
-                "io/github/ronjunevaldoz/awake/vulkan/presentation/swapchain/VkSurfaceCapabilitiesKHR");
-        jmethodID constructor = env->GetMethodID(scKHRclass, "<init>", "()V");
-        jobject scKHRobj = env->NewObject(scKHRclass, constructor);
-
-        env->SetIntField(scKHRobj, env->GetFieldID(scKHRclass, "minImageCount", "I"),
-                         static_cast<jint>(capabilities.minImageCount));
-        env->SetIntField(scKHRobj, env->GetFieldID(scKHRclass, "maxImageCount", "I"),
-                         static_cast<jint>(capabilities.maxImageCount));
-        env->SetObjectField(scKHRobj, env->GetFieldID(scKHRclass, "currentExtent",
-                                                      "Lio/github/ronjunevaldoz/awake/vulkan/models/VkExtent2D;"),
-                            vulkan_utils::extent2DObj_fromExtend2D(env,
-                                                                   capabilities.currentExtent));
-        env->SetObjectField(scKHRobj, env->GetFieldID(scKHRclass, "minImageExtent",
-                                                      "Lio/github/ronjunevaldoz/awake/vulkan/models/VkExtent2D;"),
-                            vulkan_utils::extent2DObj_fromExtend2D(env,
-                                                                   capabilities.minImageExtent));
-        env->SetObjectField(scKHRobj, env->GetFieldID(scKHRclass, "maxImageExtent",
-                                                      "Lio/github/ronjunevaldoz/awake/vulkan/models/VkExtent2D;"),
-                            vulkan_utils::extent2DObj_fromExtend2D(env,
-                                                                   capabilities.maxImageExtent));
-        env->SetIntField(scKHRobj, env->GetFieldID(scKHRclass, "maxImageArrayLayers", "I"),
-                         static_cast<jint>(capabilities.maxImageArrayLayers));
-        env->SetIntField(scKHRobj, env->GetFieldID(scKHRclass, "supportedTransforms", "I"),
-                         static_cast<jint>(capabilities.supportedTransforms));
-        env->SetIntField(scKHRobj, env->GetFieldID(scKHRclass, "supportedCompositeAlpha", "I"),
-                         static_cast<jint>(capabilities.supportedCompositeAlpha));
-        env->SetIntField(scKHRobj, env->GetFieldID(scKHRclass, "supportedUsageFlags", "I"),
-                         static_cast<jint>(capabilities.supportedUsageFlags));
-        env->SetObjectField(scKHRobj, env->GetFieldID(scKHRclass, "currentTransform",
-                                                      "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkSurfaceTransformFlagBitsKHR;"),
-                            vulkan_utils::surfaceTransformFlagBitsKHRObj_fromVkSurfaceTransformFlagBitsKHR(
-                                    env,
-                                    capabilities.currentTransform));
-        return scKHRobj;
+        return VkSurfaceCapabilitiesKHRMutator(env).toObject(capabilities);
     }
 
     // TODO check for possible leak??

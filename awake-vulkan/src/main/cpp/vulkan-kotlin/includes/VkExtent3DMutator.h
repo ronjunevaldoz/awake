@@ -23,7 +23,6 @@ public:
     VkExtent3DMutator(JNIEnv *env);
 
     jobject toObject(VkExtent3D source);
-
     ~VkExtent3DMutator();
 };
 

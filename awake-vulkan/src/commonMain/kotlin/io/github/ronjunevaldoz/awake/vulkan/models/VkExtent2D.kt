@@ -19,6 +19,9 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.models
 
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
+
+@VkMutator
 data class VkExtent2D(
     val width: Int = 0,
     val height: Int = 0

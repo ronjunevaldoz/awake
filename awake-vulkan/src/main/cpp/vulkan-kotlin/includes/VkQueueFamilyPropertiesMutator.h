@@ -25,7 +25,6 @@ public:
     VkQueueFamilyPropertiesMutator(JNIEnv *env);
 
     jobject toObject(VkQueueFamilyProperties source);
-
     ~VkQueueFamilyPropertiesMutator();
 };
 

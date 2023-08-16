@@ -2,6 +2,7 @@
 
 set(VULKAN_KOTLIN_SOURCES
         VkAttachmentDescriptionAccessor.cpp
+        VkExtent2DMutator.cpp
         VkDeviceQueueCreateInfoAccessor.cpp
         vulkan_utils.cpp
         VkShaderModuleCreateInfoConverter.cpp
@@ -42,6 +43,8 @@ set(VULKAN_KOTLIN_SOURCES
         VkExtent2DAccessor.cpp
         VkPipelineVertexInputStateCreateInfoAccessor.cpp
         VkQueueFamilyPropertiesAccessor.cpp
+        VkSurfaceCapabilitiesKHRAccessor.cpp
+        VkSurfaceCapabilitiesKHRMutator.cpp
         VkQueueFamilyPropertiesMutator.cpp
         VkExtent2DConverter.cpp
         VkViewportAccessor.cpp

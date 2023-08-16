@@ -56,6 +56,7 @@ import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatu
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceLimits
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceProperties
 import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceSparseProperties
+import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceCapabilitiesKHR
 import io.github.ronjunevaldoz.awake.vulkan.queuefamily.VkQueueFamilyProperties
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cmakeListTemplate
@@ -75,6 +76,8 @@ fun main(args: Array<String>) {
     generateJavaToVulkanCpp<VkDeviceCreateInfo>()
     generateJavaToVulkanCpp<VkExtent3D>()
     generateJavaToVulkanCpp<VkExtent2D>()
+    // presentation
+    generateJavaToVulkanCpp<VkSurfaceCapabilitiesKHR>()
 
     // pipeline
     generateJavaToVulkanCpp<VkSpecializationMapEntry>()

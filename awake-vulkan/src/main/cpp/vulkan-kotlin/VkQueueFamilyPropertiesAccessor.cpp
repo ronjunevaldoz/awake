@@ -18,8 +18,7 @@ VkQueueFamilyPropertiesAccessor::VkQueueFamilyPropertiesAccessor(JNIEnv *env, jo
 
 uint32_t
 VkQueueFamilyPropertiesAccessor::getqueueCount() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, queueCountField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, queueCountField); // primitive
 }
 
 void
@@ -32,8 +31,7 @@ VkQueueFamilyPropertiesAccessor::fromObject(VkQueueFamilyProperties &clazzInfo) 
 
 uint32_t
 VkQueueFamilyPropertiesAccessor::getqueueFlags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, queueFlagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, queueFlagsField); // primitive
 }
 
 void
@@ -52,8 +50,7 @@ VkQueueFamilyPropertiesAccessor::getminImageTransferGranularity(
 
 uint32_t
 VkQueueFamilyPropertiesAccessor::gettimestampValidBits() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, timestampValidBitsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, timestampValidBitsField); // primitive
 }
 
 VkQueueFamilyPropertiesAccessor::~VkQueueFamilyPropertiesAccessor() {

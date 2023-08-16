@@ -34,7 +34,6 @@ public:
     void getminImageTransferGranularity(VkQueueFamilyProperties &clazzInfo);
 
     uint32_t gettimestampValidBits();
-
     ~VkQueueFamilyPropertiesAccessor();
 };
 

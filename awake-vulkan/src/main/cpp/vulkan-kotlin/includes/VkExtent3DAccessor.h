@@ -28,9 +28,7 @@ public:
     void fromObject(VkExtent3D &clazzInfo);
 
     uint32_t getdepth();
-
     uint32_t getheight();
-
     ~VkExtent3DAccessor();
 };
 

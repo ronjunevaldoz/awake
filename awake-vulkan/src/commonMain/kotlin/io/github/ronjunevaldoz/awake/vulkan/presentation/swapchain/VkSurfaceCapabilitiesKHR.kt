@@ -20,11 +20,13 @@
 package io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain
 
 import io.github.ronjunevaldoz.awake.vulkan.VkFlags
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkCompositeAlphaFlagsKHR
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkImageUsageFlags
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSurfaceTransformFlagBitsKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent2D
 
+@VkMutator
 data class VkSurfaceCapabilitiesKHR(
     val minImageCount: Int = 0,
     val maxImageCount: Int = 0,
