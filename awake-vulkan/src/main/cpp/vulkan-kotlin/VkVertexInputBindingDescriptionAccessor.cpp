@@ -24,7 +24,9 @@ VkVertexInputBindingDescriptionAccessor::getbinding() {
 VkVertexInputRate
 VkVertexInputBindingDescriptionAccessor::getinputRate() {
     auto inputRateEnum = (jobject) env->GetObjectField(obj, inputRateField);
-    return (VkVertexInputRate) enum_utils::getEnumFromObject(env, inputRateEnum);
+    auto enumValue = (VkVertexInputRate) enum_utils::getEnumFromObject(env, inputRateEnum);
+    env->DeleteLocalRef(inputRateEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t

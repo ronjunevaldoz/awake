@@ -31,7 +31,6 @@ public:
     VkSurfaceCapabilitiesKHRMutator(JNIEnv *env);
 
     jobject toObject(VkSurfaceCapabilitiesKHR source);
-
     ~VkSurfaceCapabilitiesKHRMutator();
 };
 

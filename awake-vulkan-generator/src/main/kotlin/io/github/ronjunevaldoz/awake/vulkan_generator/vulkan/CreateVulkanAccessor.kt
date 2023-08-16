@@ -182,7 +182,7 @@ private fun CppClassBuilder.generateVulkanGetters(
             val localVariable = javaMember.name + suffix
             val arrayName = javaMember.name
             fun processArray() {
-                fun processDefaultArrayData(clazzInfo: String) {
+                fun processDefaultArrayData(clazzInfo: String, arrayVariable: String) {
                     // generate array size assignee
                     val vkArray = javaMember.getVkArray()
                     if (vkArray != null) {
@@ -197,6 +197,7 @@ private fun CppClassBuilder.generateVulkanGetters(
                     } else {
                         child("    clazzInfo.$arrayName = nullptr;")
                     }
+                    child("    env->DeleteLocalRef($arrayVariable); // release null reference")
                 }
 
                 fun processStringArray(javaType: JNIType) {
@@ -250,19 +251,20 @@ private fun CppClassBuilder.generateVulkanGetters(
                         // possible std::vector<void*> or void*
                         if (returnType !in listOf("void*", "std::vector<void*>")) {
                             import("<$accessor.cpp>") // TODO move to .h
-                            child("     // experimental optimize accessor")
-                            child("     $accessor accessor(env, element);") // TODO fix hardcoded
+                            child("    // experimental optimize accessor")
+                            child("    $accessor accessor(env, element);") // TODO fix hardcoded
                             if (void) {
-                                child("     ${javaMember.type.componentType.simpleName} ref{};")
-                                child("     accessor.fromObject(ref);")
-                                child("     $arrayName.push_back(ref);")
+                                child("    ${javaMember.type.componentType.simpleName} ref{};")
+                                child("    accessor.fromObject(ref);")
+                                child("    $arrayName.push_back(ref);")
                             } else {
-                                child("     $arrayName.push_back(accessor.fromObject());")
+                                child("    $arrayName.push_back(accessor.fromObject());")
                             }
                         } else {
                             // possible type is Any or Null??
-                            child("     $arrayName.push_back(element); // type is Any??")
+                            child("    $arrayName.push_back(element); // type is Any??")
                         }
+                        child("    env->DeleteLocalRef(element); // release element reference")
                         child("}")
                     }
                 }
@@ -282,7 +284,7 @@ private fun CppClassBuilder.generateVulkanGetters(
                     )
                 }
 
-                fun processArrayData(clazzInfo: String) {
+                fun processArrayData(clazzInfo: String, arrayVariable: String) {
                     val elementType = javaMember.type.componentType
                     // generate array size assignee
                     val vkArray = javaMember.getVkArray()
@@ -327,12 +329,13 @@ private fun CppClassBuilder.generateVulkanGetters(
                         child("std::copy(${arrayName}.begin(), ${arrayName}.end(), copy);")
                         child("clazzInfo.$arrayName = copy;")
                     }
+                    child("env->DeleteLocalRef($arrayVariable); // release reference")
                 }
 
 
                 child("auto $localVariable = ($type) $javaValue;")
                 child("if($localVariable == nullptr) {")
-                processDefaultArrayData("clazzInfo")
+                processDefaultArrayData("clazzInfo", localVariable)
                 if (void) {
                     child("    return;")
                 } else {
@@ -346,7 +349,7 @@ private fun CppClassBuilder.generateVulkanGetters(
                     else -> processPrimitiveArray()
                 }
                 child("// processing array data")
-                processArrayData("clazzInfo")
+                processArrayData("clazzInfo", localVariable)
             }
 
             fun processObject() {
@@ -370,9 +373,10 @@ private fun CppClassBuilder.generateVulkanGetters(
                         child("auto $localVariable = ($type) $javaValue;")
                         child("if($localVariable == nullptr) {")
                         if (hasArrayField) {
-                            child("     return;")
+                            child("    env->DeleteLocalRef($localVariable); // Delete null object reference")
+                            child("    return;")
                         } else {
-                            child("     return {};")
+                            child("    return {};")
                         }
                         child("}")
                         child("$accessor accessor(env, $localVariable);") // TODO fix hardcoded
@@ -385,6 +389,7 @@ private fun CppClassBuilder.generateVulkanGetters(
                             } else {
                                 child("clazzInfo.${javaMember.name} = ref;")
                             }
+                            child("env->DeleteLocalRef($localVariable); // Delete object reference")
                         } else {
                             child("return (${returnType}) (accessor.fromObject()); // Object is null, should be accessed by an accessor")
                         }
@@ -401,7 +406,9 @@ private fun CppClassBuilder.generateVulkanGetters(
 
             fun processEnum() {
                 child("auto $localVariable = ($type) $javaValue;")
-                child("return (${returnType}) enum_utils::getEnumFromObject(env, $localVariable);")
+                child("auto enumValue = (${returnType}) enum_utils::getEnumFromObject(env, $localVariable);")
+                child("env->DeleteLocalRef($localVariable); // release enum reference")
+                child("return enumValue;")
             }
 
             fun processPrimitive() {

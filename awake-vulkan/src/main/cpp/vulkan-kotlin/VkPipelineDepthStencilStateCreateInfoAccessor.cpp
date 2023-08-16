@@ -61,7 +61,9 @@ VkPipelineDepthStencilStateCreateInfoAccessor::getpNext(
 VkStructureType
 VkPipelineDepthStencilStateCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t
@@ -122,7 +124,9 @@ VkPipelineDepthStencilStateCreateInfoAccessor::getback(
 VkCompareOp
 VkPipelineDepthStencilStateCreateInfoAccessor::getdepthCompareOp() {
     auto depthCompareOpEnum = (jobject) env->GetObjectField(obj, depthCompareOpField);
-    return (VkCompareOp) enum_utils::getEnumFromObject(env, depthCompareOpEnum);
+    auto enumValue = (VkCompareOp) enum_utils::getEnumFromObject(env, depthCompareOpEnum);
+    env->DeleteLocalRef(depthCompareOpEnum); // release enum reference
+    return enumValue;
 }
 
 VkPipelineDepthStencilStateCreateInfoAccessor::~VkPipelineDepthStencilStateCreateInfoAccessor() {

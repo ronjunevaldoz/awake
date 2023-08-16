@@ -26,7 +26,9 @@ VkPipelineMultisampleStateCreateInfoAccessor::VkPipelineMultisampleStateCreateIn
 VkStructureType
 VkPipelineMultisampleStateCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t
@@ -73,7 +75,10 @@ VkPipelineMultisampleStateCreateInfoAccessor::getminSampleShading() {
 VkSampleCountFlagBits
 VkPipelineMultisampleStateCreateInfoAccessor::getrasterizationSamples() {
     auto rasterizationSamplesEnum = (jobject) env->GetObjectField(obj, rasterizationSamplesField);
-    return (VkSampleCountFlagBits) enum_utils::getEnumFromObject(env, rasterizationSamplesEnum);
+    auto enumValue = (VkSampleCountFlagBits) enum_utils::getEnumFromObject(env,
+                                                                           rasterizationSamplesEnum);
+    env->DeleteLocalRef(rasterizationSamplesEnum); // release enum reference
+    return enumValue;
 }
 
 VkBool32

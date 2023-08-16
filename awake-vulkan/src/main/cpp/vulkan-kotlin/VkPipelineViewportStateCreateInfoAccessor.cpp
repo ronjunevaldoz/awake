@@ -23,7 +23,9 @@ VkPipelineViewportStateCreateInfoAccessor::VkPipelineViewportStateCreateInfoAcce
 VkStructureType
 VkPipelineViewportStateCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t
@@ -54,6 +56,7 @@ VkPipelineViewportStateCreateInfoAccessor::getpViewports(
     if (pViewportsArray == nullptr) {
         clazzInfo.viewportCount = 0;
         clazzInfo.pViewports = nullptr;
+        env->DeleteLocalRef(pViewportsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pViewportsArray);
@@ -66,6 +69,7 @@ VkPipelineViewportStateCreateInfoAccessor::getpViewports(
         VkViewport ref{};
         accessor.fromObject(ref);
         pViewports.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     auto viewportCount = static_cast<uint32_t>(pViewports.size());
@@ -74,6 +78,7 @@ VkPipelineViewportStateCreateInfoAccessor::getpViewports(
     auto copy = new VkViewport[size];
     std::copy(pViewports.begin(), pViewports.end(), copy);
     clazzInfo.pViewports = copy;
+    env->DeleteLocalRef(pViewportsArray); // release reference
 }
 
 void
@@ -83,6 +88,7 @@ VkPipelineViewportStateCreateInfoAccessor::getpScissors(
     if (pScissorsArray == nullptr) {
         clazzInfo.scissorCount = 0;
         clazzInfo.pScissors = nullptr;
+        env->DeleteLocalRef(pScissorsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pScissorsArray);
@@ -95,6 +101,7 @@ VkPipelineViewportStateCreateInfoAccessor::getpScissors(
         VkRect2D ref{};
         accessor.fromObject(ref);
         pScissors.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     auto scissorCount = static_cast<uint32_t>(pScissors.size());
@@ -103,6 +110,7 @@ VkPipelineViewportStateCreateInfoAccessor::getpScissors(
     auto copy = new VkRect2D[size];
     std::copy(pScissors.begin(), pScissors.end(), copy);
     clazzInfo.pScissors = copy;
+    env->DeleteLocalRef(pScissorsArray); // release reference
 }
 
 VkPipelineViewportStateCreateInfoAccessor::~VkPipelineViewportStateCreateInfoAccessor() {

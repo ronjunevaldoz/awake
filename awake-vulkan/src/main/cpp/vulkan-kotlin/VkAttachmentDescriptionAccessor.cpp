@@ -36,49 +36,65 @@ VkAttachmentDescriptionAccessor::getflags() {
 VkSampleCountFlagBits
 VkAttachmentDescriptionAccessor::getsamples() {
     auto samplesEnum = (jobject) env->GetObjectField(obj, samplesField);
-    return (VkSampleCountFlagBits) enum_utils::getEnumFromObject(env, samplesEnum);
+    auto enumValue = (VkSampleCountFlagBits) enum_utils::getEnumFromObject(env, samplesEnum);
+    env->DeleteLocalRef(samplesEnum); // release enum reference
+    return enumValue;
 }
 
 VkAttachmentStoreOp
 VkAttachmentDescriptionAccessor::getstencilStoreOp() {
     auto stencilStoreOpEnum = (jobject) env->GetObjectField(obj, stencilStoreOpField);
-    return (VkAttachmentStoreOp) enum_utils::getEnumFromObject(env, stencilStoreOpEnum);
+    auto enumValue = (VkAttachmentStoreOp) enum_utils::getEnumFromObject(env, stencilStoreOpEnum);
+    env->DeleteLocalRef(stencilStoreOpEnum); // release enum reference
+    return enumValue;
 }
 
 VkAttachmentLoadOp
 VkAttachmentDescriptionAccessor::getloadOp() {
     auto loadOpEnum = (jobject) env->GetObjectField(obj, loadOpField);
-    return (VkAttachmentLoadOp) enum_utils::getEnumFromObject(env, loadOpEnum);
+    auto enumValue = (VkAttachmentLoadOp) enum_utils::getEnumFromObject(env, loadOpEnum);
+    env->DeleteLocalRef(loadOpEnum); // release enum reference
+    return enumValue;
 }
 
 VkImageLayout
 VkAttachmentDescriptionAccessor::getfinalLayout() {
     auto finalLayoutEnum = (jobject) env->GetObjectField(obj, finalLayoutField);
-    return (VkImageLayout) enum_utils::getEnumFromObject(env, finalLayoutEnum);
+    auto enumValue = (VkImageLayout) enum_utils::getEnumFromObject(env, finalLayoutEnum);
+    env->DeleteLocalRef(finalLayoutEnum); // release enum reference
+    return enumValue;
 }
 
 VkAttachmentStoreOp
 VkAttachmentDescriptionAccessor::getstoreOp() {
     auto storeOpEnum = (jobject) env->GetObjectField(obj, storeOpField);
-    return (VkAttachmentStoreOp) enum_utils::getEnumFromObject(env, storeOpEnum);
+    auto enumValue = (VkAttachmentStoreOp) enum_utils::getEnumFromObject(env, storeOpEnum);
+    env->DeleteLocalRef(storeOpEnum); // release enum reference
+    return enumValue;
 }
 
 VkImageLayout
 VkAttachmentDescriptionAccessor::getinitialLayout() {
     auto initialLayoutEnum = (jobject) env->GetObjectField(obj, initialLayoutField);
-    return (VkImageLayout) enum_utils::getEnumFromObject(env, initialLayoutEnum);
+    auto enumValue = (VkImageLayout) enum_utils::getEnumFromObject(env, initialLayoutEnum);
+    env->DeleteLocalRef(initialLayoutEnum); // release enum reference
+    return enumValue;
 }
 
 VkFormat
 VkAttachmentDescriptionAccessor::getformat() {
     auto formatEnum = (jobject) env->GetObjectField(obj, formatField);
-    return (VkFormat) enum_utils::getEnumFromObject(env, formatEnum);
+    auto enumValue = (VkFormat) enum_utils::getEnumFromObject(env, formatEnum);
+    env->DeleteLocalRef(formatEnum); // release enum reference
+    return enumValue;
 }
 
 VkAttachmentLoadOp
 VkAttachmentDescriptionAccessor::getstencilLoadOp() {
     auto stencilLoadOpEnum = (jobject) env->GetObjectField(obj, stencilLoadOpField);
-    return (VkAttachmentLoadOp) enum_utils::getEnumFromObject(env, stencilLoadOpEnum);
+    auto enumValue = (VkAttachmentLoadOp) enum_utils::getEnumFromObject(env, stencilLoadOpEnum);
+    env->DeleteLocalRef(stencilLoadOpEnum); // release enum reference
+    return enumValue;
 }
 
 void

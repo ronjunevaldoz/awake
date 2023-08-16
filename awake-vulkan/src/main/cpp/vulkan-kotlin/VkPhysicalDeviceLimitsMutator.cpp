@@ -286,12 +286,14 @@ VkPhysicalDeviceLimitsMutator::toObject(VkPhysicalDeviceLimits source) {
     env->SetIntArrayRegion(maxComputeWorkGroupCount, 0, 3,
                            reinterpret_cast<jint *>(source.maxComputeWorkGroupCount ));
     env->SetObjectField(newObj, maxComputeWorkGroupCountField, maxComputeWorkGroupCount);
+    env->DeleteLocalRef(maxComputeWorkGroupCount);
     env->SetIntField(newObj, maxComputeWorkGroupInvocationsField,
                      static_cast<jint>(source.maxComputeWorkGroupInvocations));
     jintArray maxComputeWorkGroupSize = env->NewIntArray(3);
     env->SetIntArrayRegion(maxComputeWorkGroupSize, 0, 3,
                            reinterpret_cast<jint *>(source.maxComputeWorkGroupSize ));
     env->SetObjectField(newObj, maxComputeWorkGroupSizeField, maxComputeWorkGroupSize);
+    env->DeleteLocalRef(maxComputeWorkGroupSize);
     env->SetIntField(newObj, subPixelPrecisionBitsField,
                      static_cast<jint>(source.subPixelPrecisionBits));
     env->SetIntField(newObj, subTexelPrecisionBitsField,
@@ -311,10 +313,12 @@ VkPhysicalDeviceLimitsMutator::toObject(VkPhysicalDeviceLimits source) {
     env->SetIntArrayRegion(maxViewportDimensions, 0, 2,
                            reinterpret_cast<jint *>(source.maxViewportDimensions ));
     env->SetObjectField(newObj, maxViewportDimensionsField, maxViewportDimensions);
+    env->DeleteLocalRef(maxViewportDimensions);
     jfloatArray viewportBoundsRange = env->NewFloatArray(2);
     env->SetFloatArrayRegion(viewportBoundsRange, 0, 2,
                              reinterpret_cast<jfloat *>(source.viewportBoundsRange ));
     env->SetObjectField(newObj, viewportBoundsRangeField, viewportBoundsRange);
+    env->DeleteLocalRef(viewportBoundsRange);
     env->SetIntField(newObj, viewportSubPixelBitsField,
                      static_cast<jint>(source.viewportSubPixelBits));
     env->SetLongField(newObj, minMemoryMapAlignmentField,
@@ -377,10 +381,12 @@ VkPhysicalDeviceLimitsMutator::toObject(VkPhysicalDeviceLimits source) {
     env->SetFloatArrayRegion(pointSizeRange, 0, 2,
                              reinterpret_cast<jfloat *>(source.pointSizeRange ));
     env->SetObjectField(newObj, pointSizeRangeField, pointSizeRange);
+    env->DeleteLocalRef(pointSizeRange);
     jfloatArray lineWidthRange = env->NewFloatArray(2);
     env->SetFloatArrayRegion(lineWidthRange, 0, 2,
                              reinterpret_cast<jfloat *>(source.lineWidthRange ));
     env->SetObjectField(newObj, lineWidthRangeField, lineWidthRange);
+    env->DeleteLocalRef(lineWidthRange);
     env->SetFloatField(newObj, pointSizeGranularityField,
                        static_cast<jfloat>(source.pointSizeGranularity));
     env->SetFloatField(newObj, lineWidthGranularityField,

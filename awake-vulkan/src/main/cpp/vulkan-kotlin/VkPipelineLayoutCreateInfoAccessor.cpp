@@ -23,7 +23,9 @@ VkPipelineLayoutCreateInfoAccessor::VkPipelineLayoutCreateInfoAccessor(JNIEnv *e
 VkStructureType
 VkPipelineLayoutCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t
@@ -42,6 +44,7 @@ VkPipelineLayoutCreateInfoAccessor::getpPushConstantRanges(VkPipelineLayoutCreat
                                                                        pPushConstantRangesField);
     if (pPushConstantRangesArray == nullptr) {
         clazzInfo.pPushConstantRanges = nullptr;
+        env->DeleteLocalRef(pPushConstantRangesArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pPushConstantRangesArray);
@@ -54,12 +57,14 @@ VkPipelineLayoutCreateInfoAccessor::getpPushConstantRanges(VkPipelineLayoutCreat
         VkPushConstantRange ref{};
         accessor.fromObject(ref);
         pPushConstantRanges.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkPushConstantRange[size];
     std::copy(pPushConstantRanges.begin(), pPushConstantRanges.end(), copy);
     clazzInfo.pPushConstantRanges = copy;
+    env->DeleteLocalRef(pPushConstantRangesArray); // release reference
 }
 
 void
@@ -89,6 +94,7 @@ VkPipelineLayoutCreateInfoAccessor::getpSetLayouts(VkPipelineLayoutCreateInfo &c
     auto pSetLayoutsArray = (jlongArray) env->GetObjectField(obj, pSetLayoutsField);
     if (pSetLayoutsArray == nullptr) {
         clazzInfo.pSetLayouts = nullptr;
+        env->DeleteLocalRef(pSetLayoutsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pSetLayoutsArray);
@@ -101,6 +107,7 @@ VkPipelineLayoutCreateInfoAccessor::getpSetLayouts(VkPipelineLayoutCreateInfo &c
     auto copy = new VkDescriptorSetLayout[size];
     std::copy(pSetLayouts.begin(), pSetLayouts.end(), copy);
     clazzInfo.pSetLayouts = copy;
+    env->DeleteLocalRef(pSetLayoutsArray); // release reference
 }
 
 VkPipelineLayoutCreateInfoAccessor::~VkPipelineLayoutCreateInfoAccessor() {

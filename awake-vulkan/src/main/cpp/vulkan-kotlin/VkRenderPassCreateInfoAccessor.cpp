@@ -24,7 +24,9 @@ VkRenderPassCreateInfoAccessor::VkRenderPassCreateInfoAccessor(JNIEnv *env, jobj
 VkStructureType
 VkRenderPassCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t
@@ -44,6 +46,7 @@ VkRenderPassCreateInfoAccessor::getpAttachments(VkRenderPassCreateInfo &clazzInf
     if (pAttachmentsArray == nullptr) {
         clazzInfo.attachmentCount = 0;
         clazzInfo.pAttachments = nullptr;
+        env->DeleteLocalRef(pAttachmentsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pAttachmentsArray);
@@ -56,6 +59,7 @@ VkRenderPassCreateInfoAccessor::getpAttachments(VkRenderPassCreateInfo &clazzInf
         VkAttachmentDescription ref{};
         accessor.fromObject(ref);
         pAttachments.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     auto attachmentCount = static_cast<uint32_t>(pAttachments.size());
@@ -64,6 +68,7 @@ VkRenderPassCreateInfoAccessor::getpAttachments(VkRenderPassCreateInfo &clazzInf
     auto copy = new VkAttachmentDescription[size];
     std::copy(pAttachments.begin(), pAttachments.end(), copy);
     clazzInfo.pAttachments = copy;
+    env->DeleteLocalRef(pAttachmentsArray); // release reference
 }
 
 void
@@ -72,6 +77,7 @@ VkRenderPassCreateInfoAccessor::getpDependencies(VkRenderPassCreateInfo &clazzIn
     if (pDependenciesArray == nullptr) {
         clazzInfo.dependencyCount = 0;
         clazzInfo.pDependencies = nullptr;
+        env->DeleteLocalRef(pDependenciesArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pDependenciesArray);
@@ -84,6 +90,7 @@ VkRenderPassCreateInfoAccessor::getpDependencies(VkRenderPassCreateInfo &clazzIn
         VkSubpassDependency ref{};
         accessor.fromObject(ref);
         pDependencies.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     auto dependencyCount = static_cast<uint32_t>(pDependencies.size());
@@ -92,6 +99,7 @@ VkRenderPassCreateInfoAccessor::getpDependencies(VkRenderPassCreateInfo &clazzIn
     auto copy = new VkSubpassDependency[size];
     std::copy(pDependencies.begin(), pDependencies.end(), copy);
     clazzInfo.pDependencies = copy;
+    env->DeleteLocalRef(pDependenciesArray); // release reference
 }
 
 void
@@ -110,6 +118,7 @@ VkRenderPassCreateInfoAccessor::getpSubpasses(VkRenderPassCreateInfo &clazzInfo)
     if (pSubpassesArray == nullptr) {
         clazzInfo.subpassCount = 0;
         clazzInfo.pSubpasses = nullptr;
+        env->DeleteLocalRef(pSubpassesArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pSubpassesArray);
@@ -122,6 +131,7 @@ VkRenderPassCreateInfoAccessor::getpSubpasses(VkRenderPassCreateInfo &clazzInfo)
         VkSubpassDescription ref{};
         accessor.fromObject(ref);
         pSubpasses.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     auto subpassCount = static_cast<uint32_t>(pSubpasses.size());
@@ -130,6 +140,7 @@ VkRenderPassCreateInfoAccessor::getpSubpasses(VkRenderPassCreateInfo &clazzInfo)
     auto copy = new VkSubpassDescription[size];
     std::copy(pSubpasses.begin(), pSubpasses.end(), copy);
     clazzInfo.pSubpasses = copy;
+    env->DeleteLocalRef(pSubpassesArray); // release reference
 }
 
 VkRenderPassCreateInfoAccessor::~VkRenderPassCreateInfoAccessor() {

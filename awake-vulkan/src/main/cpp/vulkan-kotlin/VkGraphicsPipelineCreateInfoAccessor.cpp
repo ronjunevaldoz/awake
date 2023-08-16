@@ -47,6 +47,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpStages(VkGraphicsPipelineCreateInfo &c
     auto pStagesArray = (jobjectArray) env->GetObjectField(obj, pStagesField);
     if (pStagesArray == nullptr) {
         clazzInfo.pStages = nullptr;
+        env->DeleteLocalRef(pStagesArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pStagesArray);
@@ -59,12 +60,14 @@ VkGraphicsPipelineCreateInfoAccessor::getpStages(VkGraphicsPipelineCreateInfo &c
         VkPipelineShaderStageCreateInfo ref{};
         accessor.fromObject(ref);
         pStages.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkPipelineShaderStageCreateInfo[size];
     std::copy(pStages.begin(), pStages.end(), copy);
     clazzInfo.pStages = copy;
+    env->DeleteLocalRef(pStagesArray); // release reference
 }
 
 VkPipeline
@@ -82,6 +85,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpTessellationState(
     auto pTessellationStateArray = (jobjectArray) env->GetObjectField(obj, pTessellationStateField);
     if (pTessellationStateArray == nullptr) {
         clazzInfo.pTessellationState = nullptr;
+        env->DeleteLocalRef(pTessellationStateArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pTessellationStateArray);
@@ -94,12 +98,14 @@ VkGraphicsPipelineCreateInfoAccessor::getpTessellationState(
         VkPipelineTessellationStateCreateInfo ref{};
         accessor.fromObject(ref);
         pTessellationState.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkPipelineTessellationStateCreateInfo[size];
     std::copy(pTessellationState.begin(), pTessellationState.end(), copy);
     clazzInfo.pTessellationState = copy;
+    env->DeleteLocalRef(pTessellationStateArray); // release reference
 }
 
 void
@@ -109,6 +115,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpRasterizationState(
                                                                        pRasterizationStateField);
     if (pRasterizationStateArray == nullptr) {
         clazzInfo.pRasterizationState = nullptr;
+        env->DeleteLocalRef(pRasterizationStateArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pRasterizationStateArray);
@@ -121,12 +128,14 @@ VkGraphicsPipelineCreateInfoAccessor::getpRasterizationState(
         VkPipelineRasterizationStateCreateInfo ref{};
         accessor.fromObject(ref);
         pRasterizationState.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkPipelineRasterizationStateCreateInfo[size];
     std::copy(pRasterizationState.begin(), pRasterizationState.end(), copy);
     clazzInfo.pRasterizationState = copy;
+    env->DeleteLocalRef(pRasterizationStateArray); // release reference
 }
 
 void
@@ -135,6 +144,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpDepthStencilState(
     auto pDepthStencilStateArray = (jobjectArray) env->GetObjectField(obj, pDepthStencilStateField);
     if (pDepthStencilStateArray == nullptr) {
         clazzInfo.pDepthStencilState = nullptr;
+        env->DeleteLocalRef(pDepthStencilStateArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pDepthStencilStateArray);
@@ -147,12 +157,14 @@ VkGraphicsPipelineCreateInfoAccessor::getpDepthStencilState(
         VkPipelineDepthStencilStateCreateInfo ref{};
         accessor.fromObject(ref);
         pDepthStencilState.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkPipelineDepthStencilStateCreateInfo[size];
     std::copy(pDepthStencilState.begin(), pDepthStencilState.end(), copy);
     clazzInfo.pDepthStencilState = copy;
+    env->DeleteLocalRef(pDepthStencilStateArray); // release reference
 }
 
 uint32_t
@@ -177,7 +189,9 @@ VkGraphicsPipelineCreateInfoAccessor::getstageCount() {
 VkStructureType
 VkGraphicsPipelineCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 int32_t
@@ -195,6 +209,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpViewportState(VkGraphicsPipelineCreate
     auto pViewportStateArray = (jobjectArray) env->GetObjectField(obj, pViewportStateField);
     if (pViewportStateArray == nullptr) {
         clazzInfo.pViewportState = nullptr;
+        env->DeleteLocalRef(pViewportStateArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pViewportStateArray);
@@ -207,12 +222,14 @@ VkGraphicsPipelineCreateInfoAccessor::getpViewportState(VkGraphicsPipelineCreate
         VkPipelineViewportStateCreateInfo ref{};
         accessor.fromObject(ref);
         pViewportState.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkPipelineViewportStateCreateInfo[size];
     std::copy(pViewportState.begin(), pViewportState.end(), copy);
     clazzInfo.pViewportState = copy;
+    env->DeleteLocalRef(pViewportStateArray); // release reference
 }
 
 void
@@ -222,6 +239,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpInputAssemblyState(
                                                                        pInputAssemblyStateField);
     if (pInputAssemblyStateArray == nullptr) {
         clazzInfo.pInputAssemblyState = nullptr;
+        env->DeleteLocalRef(pInputAssemblyStateArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pInputAssemblyStateArray);
@@ -234,12 +252,14 @@ VkGraphicsPipelineCreateInfoAccessor::getpInputAssemblyState(
         VkPipelineInputAssemblyStateCreateInfo ref{};
         accessor.fromObject(ref);
         pInputAssemblyState.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkPipelineInputAssemblyStateCreateInfo[size];
     std::copy(pInputAssemblyState.begin(), pInputAssemblyState.end(), copy);
     clazzInfo.pInputAssemblyState = copy;
+    env->DeleteLocalRef(pInputAssemblyStateArray); // release reference
 }
 
 void
@@ -247,6 +267,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpColorBlendState(VkGraphicsPipelineCrea
     auto pColorBlendStateArray = (jobjectArray) env->GetObjectField(obj, pColorBlendStateField);
     if (pColorBlendStateArray == nullptr) {
         clazzInfo.pColorBlendState = nullptr;
+        env->DeleteLocalRef(pColorBlendStateArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pColorBlendStateArray);
@@ -259,12 +280,14 @@ VkGraphicsPipelineCreateInfoAccessor::getpColorBlendState(VkGraphicsPipelineCrea
         VkPipelineColorBlendStateCreateInfo ref{};
         accessor.fromObject(ref);
         pColorBlendState.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkPipelineColorBlendStateCreateInfo[size];
     std::copy(pColorBlendState.begin(), pColorBlendState.end(), copy);
     clazzInfo.pColorBlendState = copy;
+    env->DeleteLocalRef(pColorBlendStateArray); // release reference
 }
 
 VkPipelineLayout
@@ -311,6 +334,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpVertexInputState(
     auto pVertexInputStateArray = (jobjectArray) env->GetObjectField(obj, pVertexInputStateField);
     if (pVertexInputStateArray == nullptr) {
         clazzInfo.pVertexInputState = nullptr;
+        env->DeleteLocalRef(pVertexInputStateArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pVertexInputStateArray);
@@ -323,12 +347,14 @@ VkGraphicsPipelineCreateInfoAccessor::getpVertexInputState(
         VkPipelineVertexInputStateCreateInfo ref{};
         accessor.fromObject(ref);
         pVertexInputState.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkPipelineVertexInputStateCreateInfo[size];
     std::copy(pVertexInputState.begin(), pVertexInputState.end(), copy);
     clazzInfo.pVertexInputState = copy;
+    env->DeleteLocalRef(pVertexInputStateArray); // release reference
 }
 
 void
@@ -336,6 +362,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpDynamicState(VkGraphicsPipelineCreateI
     auto pDynamicStateArray = (jobjectArray) env->GetObjectField(obj, pDynamicStateField);
     if (pDynamicStateArray == nullptr) {
         clazzInfo.pDynamicState = nullptr;
+        env->DeleteLocalRef(pDynamicStateArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pDynamicStateArray);
@@ -348,12 +375,14 @@ VkGraphicsPipelineCreateInfoAccessor::getpDynamicState(VkGraphicsPipelineCreateI
         VkPipelineDynamicStateCreateInfo ref{};
         accessor.fromObject(ref);
         pDynamicState.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkPipelineDynamicStateCreateInfo[size];
     std::copy(pDynamicState.begin(), pDynamicState.end(), copy);
     clazzInfo.pDynamicState = copy;
+    env->DeleteLocalRef(pDynamicStateArray); // release reference
 }
 
 void
@@ -362,6 +391,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpMultisampleState(
     auto pMultisampleStateArray = (jobjectArray) env->GetObjectField(obj, pMultisampleStateField);
     if (pMultisampleStateArray == nullptr) {
         clazzInfo.pMultisampleState = nullptr;
+        env->DeleteLocalRef(pMultisampleStateArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pMultisampleStateArray);
@@ -374,12 +404,14 @@ VkGraphicsPipelineCreateInfoAccessor::getpMultisampleState(
         VkPipelineMultisampleStateCreateInfo ref{};
         accessor.fromObject(ref);
         pMultisampleState.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkPipelineMultisampleStateCreateInfo[size];
     std::copy(pMultisampleState.begin(), pMultisampleState.end(), copy);
     clazzInfo.pMultisampleState = copy;
+    env->DeleteLocalRef(pMultisampleStateArray); // release reference
 }
 
 VkGraphicsPipelineCreateInfoAccessor::~VkGraphicsPipelineCreateInfoAccessor() {

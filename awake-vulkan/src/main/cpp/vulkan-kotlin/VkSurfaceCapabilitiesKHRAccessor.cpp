@@ -39,8 +39,7 @@ VkSurfaceCapabilitiesKHRAccessor::getcurrentExtent(VkSurfaceCapabilitiesKHR &cla
 
 uint32_t
 VkSurfaceCapabilitiesKHRAccessor::getmaxImageCount() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, maxImageCountField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, maxImageCountField); // primitive
 }
 
 void
@@ -57,26 +56,26 @@ VkSurfaceCapabilitiesKHRAccessor::getminImageExtent(VkSurfaceCapabilitiesKHR &cl
 
 uint32_t
 VkSurfaceCapabilitiesKHRAccessor::getsupportedCompositeAlpha() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, supportedCompositeAlphaField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, supportedCompositeAlphaField); // primitive
 }
 
 uint32_t
 VkSurfaceCapabilitiesKHRAccessor::getsupportedTransforms() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, supportedTransformsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, supportedTransformsField); // primitive
 }
 
 uint32_t
 VkSurfaceCapabilitiesKHRAccessor::getmaxImageArrayLayers() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, maxImageArrayLayersField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, maxImageArrayLayersField); // primitive
 }
 
 VkSurfaceTransformFlagBitsKHR
 VkSurfaceCapabilitiesKHRAccessor::getcurrentTransform() {
     auto currentTransformEnum = (jobject) env->GetObjectField(obj, currentTransformField);
-    return (VkSurfaceTransformFlagBitsKHR) enum_utils::getEnumFromObject(env, currentTransformEnum);
+    auto enumValue = (VkSurfaceTransformFlagBitsKHR) enum_utils::getEnumFromObject(env,
+                                                                                   currentTransformEnum);
+    env->DeleteLocalRef(currentTransformEnum); // release enum reference
+    return enumValue;
 }
 
 void
@@ -93,14 +92,12 @@ VkSurfaceCapabilitiesKHRAccessor::getmaxImageExtent(VkSurfaceCapabilitiesKHR &cl
 
 uint32_t
 VkSurfaceCapabilitiesKHRAccessor::getminImageCount() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, minImageCountField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, minImageCountField); // primitive
 }
 
 uint32_t
 VkSurfaceCapabilitiesKHRAccessor::getsupportedUsageFlags() {
-    return (uint32_t)(jint)
-    env->GetIntField(obj, supportedUsageFlagsField); // primitive
+    return (uint32_t) (jint) env->GetIntField(obj, supportedUsageFlagsField); // primitive
 }
 
 void

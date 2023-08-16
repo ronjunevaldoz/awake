@@ -36,7 +36,9 @@ VkPipelineRasterizationStateCreateInfoAccessor::getlineWidth() {
 VkPolygonMode
 VkPipelineRasterizationStateCreateInfoAccessor::getpolygonMode() {
     auto polygonModeEnum = (jobject) env->GetObjectField(obj, polygonModeField);
-    return (VkPolygonMode) enum_utils::getEnumFromObject(env, polygonModeEnum);
+    auto enumValue = (VkPolygonMode) enum_utils::getEnumFromObject(env, polygonModeEnum);
+    env->DeleteLocalRef(polygonModeEnum); // release enum reference
+    return enumValue;
 }
 
 float
@@ -52,13 +54,17 @@ VkPipelineRasterizationStateCreateInfoAccessor::getdepthBiasClamp() {
 VkFrontFace
 VkPipelineRasterizationStateCreateInfoAccessor::getfrontFace() {
     auto frontFaceEnum = (jobject) env->GetObjectField(obj, frontFaceField);
-    return (VkFrontFace) enum_utils::getEnumFromObject(env, frontFaceEnum);
+    auto enumValue = (VkFrontFace) enum_utils::getEnumFromObject(env, frontFaceEnum);
+    env->DeleteLocalRef(frontFaceEnum); // release enum reference
+    return enumValue;
 }
 
 VkStructureType
 VkPipelineRasterizationStateCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 void

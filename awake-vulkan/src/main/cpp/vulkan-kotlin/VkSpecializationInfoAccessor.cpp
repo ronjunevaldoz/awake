@@ -39,6 +39,7 @@ VkSpecializationInfoAccessor::getpMapEntries(VkSpecializationInfo &clazzInfo) {
     auto pMapEntriesArray = (jobjectArray) env->GetObjectField(obj, pMapEntriesField);
     if (pMapEntriesArray == nullptr) {
         clazzInfo.pMapEntries = nullptr;
+        env->DeleteLocalRef(pMapEntriesArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pMapEntriesArray);
@@ -51,12 +52,14 @@ VkSpecializationInfoAccessor::getpMapEntries(VkSpecializationInfo &clazzInfo) {
         VkSpecializationMapEntry ref{};
         accessor.fromObject(ref);
         pMapEntries.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkSpecializationMapEntry[size];
     std::copy(pMapEntries.begin(), pMapEntries.end(), copy);
     clazzInfo.pMapEntries = copy;
+    env->DeleteLocalRef(pMapEntriesArray); // release reference
 }
 
 void
@@ -64,6 +67,7 @@ VkSpecializationInfoAccessor::getpData(VkSpecializationInfo &clazzInfo) {
     auto pDataArray = (jobjectArray) env->GetObjectField(obj, pDataField);
     if (pDataArray == nullptr) {
         clazzInfo.pData = nullptr;
+        env->DeleteLocalRef(pDataArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pDataArray);
@@ -72,12 +76,14 @@ VkSpecializationInfoAccessor::getpData(VkSpecializationInfo &clazzInfo) {
         auto element = (jobject) env->GetObjectArrayElement(pDataArray,
                                                             i); // actual type is Object[];
         pData.push_back(element); // type is Any??
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new const void *[size];
     std::copy(pData.begin(), pData.end(), copy);
     clazzInfo.pData = copy;
+    env->DeleteLocalRef(pDataArray); // release reference
 }
 
 VkSpecializationInfoAccessor::~VkSpecializationInfoAccessor() {

@@ -19,7 +19,9 @@ VkPipelineCacheCreateInfoAccessor::VkPipelineCacheCreateInfoAccessor(JNIEnv *env
 VkStructureType
 VkPipelineCacheCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t
@@ -41,6 +43,7 @@ VkPipelineCacheCreateInfoAccessor::getpInitialData(VkPipelineCacheCreateInfo &cl
     if (pInitialDataArray == nullptr) {
         clazzInfo.initialDataSize = 0;
         clazzInfo.pInitialData = nullptr;
+        env->DeleteLocalRef(pInitialDataArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pInitialDataArray);
@@ -49,6 +52,7 @@ VkPipelineCacheCreateInfoAccessor::getpInitialData(VkPipelineCacheCreateInfo &cl
         auto element = (jobject) env->GetObjectArrayElement(pInitialDataArray,
                                                             i); // actual type is Object[];
         pInitialData.push_back(element); // type is Any??
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     auto initialDataSize = static_cast<uint32_t>(pInitialData.size());
@@ -57,6 +61,7 @@ VkPipelineCacheCreateInfoAccessor::getpInitialData(VkPipelineCacheCreateInfo &cl
     auto copy = new const void *[size];
     std::copy(pInitialData.begin(), pInitialData.end(), copy);
     clazzInfo.pInitialData = copy;
+    env->DeleteLocalRef(pInitialDataArray); // release reference
 }
 
 void

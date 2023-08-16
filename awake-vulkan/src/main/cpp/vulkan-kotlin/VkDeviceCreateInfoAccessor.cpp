@@ -25,7 +25,9 @@ VkDeviceCreateInfoAccessor::VkDeviceCreateInfoAccessor(JNIEnv *env, jobject obj)
 VkStructureType
 VkDeviceCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t
@@ -57,6 +59,7 @@ VkDeviceCreateInfoAccessor::getppEnabledLayerNames(VkDeviceCreateInfo &clazzInfo
     if (ppEnabledLayerNamesArray == nullptr) {
         clazzInfo.enabledLayerCount = 0;
         clazzInfo.ppEnabledLayerNames = nullptr;
+        env->DeleteLocalRef(ppEnabledLayerNamesArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(ppEnabledLayerNamesArray);
@@ -76,6 +79,7 @@ VkDeviceCreateInfoAccessor::getppEnabledLayerNames(VkDeviceCreateInfo &clazzInfo
     auto copy = new const char *[size];
     std::copy(ppEnabledLayerNames.begin(), ppEnabledLayerNames.end(), copy);
     clazzInfo.ppEnabledLayerNames = copy;
+    env->DeleteLocalRef(ppEnabledLayerNamesArray); // release reference
 }
 
 void
@@ -85,6 +89,7 @@ VkDeviceCreateInfoAccessor::getppEnabledExtensionNames(VkDeviceCreateInfo &clazz
     if (ppEnabledExtensionNamesArray == nullptr) {
         clazzInfo.enabledExtensionCount = 0;
         clazzInfo.ppEnabledExtensionNames = nullptr;
+        env->DeleteLocalRef(ppEnabledExtensionNamesArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(ppEnabledExtensionNamesArray);
@@ -104,6 +109,7 @@ VkDeviceCreateInfoAccessor::getppEnabledExtensionNames(VkDeviceCreateInfo &clazz
     auto copy = new const char *[size];
     std::copy(ppEnabledExtensionNames.begin(), ppEnabledExtensionNames.end(), copy);
     clazzInfo.ppEnabledExtensionNames = copy;
+    env->DeleteLocalRef(ppEnabledExtensionNamesArray); // release reference
 }
 
 void
@@ -111,6 +117,7 @@ VkDeviceCreateInfoAccessor::getpEnabledFeatures(VkDeviceCreateInfo &clazzInfo) {
     auto pEnabledFeaturesArray = (jobjectArray) env->GetObjectField(obj, pEnabledFeaturesField);
     if (pEnabledFeaturesArray == nullptr) {
         clazzInfo.pEnabledFeatures = nullptr;
+        env->DeleteLocalRef(pEnabledFeaturesArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pEnabledFeaturesArray);
@@ -123,6 +130,7 @@ VkDeviceCreateInfoAccessor::getpEnabledFeatures(VkDeviceCreateInfo &clazzInfo) {
         VkPhysicalDeviceFeatures ref{};
         accessor.fromObject(ref);
         pEnabledFeatures.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // no array size generated
@@ -130,6 +138,7 @@ VkDeviceCreateInfoAccessor::getpEnabledFeatures(VkDeviceCreateInfo &clazzInfo) {
     auto copy = new VkPhysicalDeviceFeatures[size];
     std::copy(pEnabledFeatures.begin(), pEnabledFeatures.end(), copy);
     clazzInfo.pEnabledFeatures = copy;
+    env->DeleteLocalRef(pEnabledFeaturesArray); // release reference
 }
 
 void
@@ -138,6 +147,7 @@ VkDeviceCreateInfoAccessor::getpQueueCreateInfos(VkDeviceCreateInfo &clazzInfo) 
     if (pQueueCreateInfosArray == nullptr) {
         clazzInfo.queueCreateInfoCount = 0;
         clazzInfo.pQueueCreateInfos = nullptr;
+        env->DeleteLocalRef(pQueueCreateInfosArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pQueueCreateInfosArray);
@@ -150,6 +160,7 @@ VkDeviceCreateInfoAccessor::getpQueueCreateInfos(VkDeviceCreateInfo &clazzInfo) 
         VkDeviceQueueCreateInfo ref{};
         accessor.fromObject(ref);
         pQueueCreateInfos.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     auto queueCreateInfoCount = static_cast<uint32_t>(pQueueCreateInfos.size());
@@ -158,6 +169,7 @@ VkDeviceCreateInfoAccessor::getpQueueCreateInfos(VkDeviceCreateInfo &clazzInfo) 
     auto copy = new VkDeviceQueueCreateInfo[size];
     std::copy(pQueueCreateInfos.begin(), pQueueCreateInfos.end(), copy);
     clazzInfo.pQueueCreateInfos = copy;
+    env->DeleteLocalRef(pQueueCreateInfosArray); // release reference
 }
 
 VkDeviceCreateInfoAccessor::~VkDeviceCreateInfoAccessor() {

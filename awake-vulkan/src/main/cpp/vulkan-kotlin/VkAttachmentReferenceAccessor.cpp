@@ -23,7 +23,9 @@ VkAttachmentReferenceAccessor::fromObject(VkAttachmentReference &clazzInfo) {
 VkImageLayout
 VkAttachmentReferenceAccessor::getlayout() {
     auto layoutEnum = (jobject) env->GetObjectField(obj, layoutField);
-    return (VkImageLayout) enum_utils::getEnumFromObject(env, layoutEnum);
+    auto enumValue = (VkImageLayout) enum_utils::getEnumFromObject(env, layoutEnum);
+    env->DeleteLocalRef(layoutEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t

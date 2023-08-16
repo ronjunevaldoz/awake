@@ -25,7 +25,9 @@ VkPipelineShaderStageCreateInfoAccessor::VkPipelineShaderStageCreateInfoAccessor
 VkStructureType
 VkPipelineShaderStageCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t
@@ -40,6 +42,7 @@ VkPipelineShaderStageCreateInfoAccessor::getpSpecializationInfo(
                                                                        pSpecializationInfoField);
     if (pSpecializationInfoArray == nullptr) {
         clazzInfo.pSpecializationInfo = nullptr;
+        env->DeleteLocalRef(pSpecializationInfoArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pSpecializationInfoArray);
@@ -52,12 +55,14 @@ VkPipelineShaderStageCreateInfoAccessor::getpSpecializationInfo(
         VkSpecializationInfo ref{};
         accessor.fromObject(ref);
         pSpecializationInfo.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkSpecializationInfo[size];
     std::copy(pSpecializationInfo.begin(), pSpecializationInfo.end(), copy);
     clazzInfo.pSpecializationInfo = copy;
+    env->DeleteLocalRef(pSpecializationInfoArray); // release reference
 }
 
 void
@@ -98,7 +103,9 @@ VkPipelineShaderStageCreateInfoAccessor::getpNext(VkPipelineShaderStageCreateInf
 VkShaderStageFlagBits
 VkPipelineShaderStageCreateInfoAccessor::getstage() {
     auto stageEnum = (jobject) env->GetObjectField(obj, stageField);
-    return (VkShaderStageFlagBits) enum_utils::getEnumFromObject(env, stageEnum);
+    auto enumValue = (VkShaderStageFlagBits) enum_utils::getEnumFromObject(env, stageEnum);
+    env->DeleteLocalRef(stageEnum); // release enum reference
+    return enumValue;
 }
 
 VkPipelineShaderStageCreateInfoAccessor::~VkPipelineShaderStageCreateInfoAccessor() {

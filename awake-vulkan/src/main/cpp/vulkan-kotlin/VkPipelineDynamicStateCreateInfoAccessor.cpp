@@ -21,7 +21,9 @@ VkPipelineDynamicStateCreateInfoAccessor::VkPipelineDynamicStateCreateInfoAccess
 VkStructureType
 VkPipelineDynamicStateCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t
@@ -42,6 +44,7 @@ VkPipelineDynamicStateCreateInfoAccessor::getpDynamicStates(
     if (pDynamicStatesArray == nullptr) {
         clazzInfo.dynamicStateCount = 0;
         clazzInfo.pDynamicStates = nullptr;
+        env->DeleteLocalRef(pDynamicStatesArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pDynamicStatesArray);
@@ -59,6 +62,7 @@ VkPipelineDynamicStateCreateInfoAccessor::getpDynamicStates(
     auto copy = new VkDynamicState[size];
     std::copy(pDynamicStates.begin(), pDynamicStates.end(), copy);
     clazzInfo.pDynamicStates = copy;
+    env->DeleteLocalRef(pDynamicStatesArray); // release reference
 }
 
 void

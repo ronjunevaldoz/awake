@@ -192,6 +192,7 @@ VkPhysicalDeviceLimitsAccessor::getmaxComputeWorkGroupCount(VkPhysicalDeviceLimi
     if (maxComputeWorkGroupCountArray == nullptr) {
         // const array
         // clazzInfo.maxComputeWorkGroupCount = nullptr;
+        env->DeleteLocalRef(maxComputeWorkGroupCountArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(maxComputeWorkGroupCountArray);
@@ -202,6 +203,7 @@ VkPhysicalDeviceLimitsAccessor::getmaxComputeWorkGroupCount(VkPhysicalDeviceLimi
     // processing array data
     std::copy(maxComputeWorkGroupCount.begin(), maxComputeWorkGroupCount.end(),
               clazzInfo.maxComputeWorkGroupCount); // fixed array size
+    env->DeleteLocalRef(maxComputeWorkGroupCountArray); // release reference
 }
 
 uint32_t
@@ -264,6 +266,7 @@ VkPhysicalDeviceLimitsAccessor::getviewportBoundsRange(VkPhysicalDeviceLimits &c
     if (viewportBoundsRangeArray == nullptr) {
         // const array
         // clazzInfo.viewportBoundsRange = nullptr;
+        env->DeleteLocalRef(viewportBoundsRangeArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(viewportBoundsRangeArray);
@@ -274,6 +277,7 @@ VkPhysicalDeviceLimitsAccessor::getviewportBoundsRange(VkPhysicalDeviceLimits &c
     // processing array data
     std::copy(viewportBoundsRange.begin(), viewportBoundsRange.end(),
               clazzInfo.viewportBoundsRange); // fixed array size
+    env->DeleteLocalRef(viewportBoundsRangeArray); // release reference
 }
 
 uint64_t
@@ -467,6 +471,7 @@ VkPhysicalDeviceLimitsAccessor::getlineWidthRange(VkPhysicalDeviceLimits &clazzI
     if (lineWidthRangeArray == nullptr) {
         // const array
         // clazzInfo.lineWidthRange = nullptr;
+        env->DeleteLocalRef(lineWidthRangeArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(lineWidthRangeArray);
@@ -477,6 +482,7 @@ VkPhysicalDeviceLimitsAccessor::getlineWidthRange(VkPhysicalDeviceLimits &clazzI
     // processing array data
     std::copy(lineWidthRange.begin(), lineWidthRange.end(),
               clazzInfo.lineWidthRange); // fixed array size
+    env->DeleteLocalRef(lineWidthRangeArray); // release reference
 }
 
 uint32_t
@@ -635,6 +641,7 @@ VkPhysicalDeviceLimitsAccessor::getmaxComputeWorkGroupSize(VkPhysicalDeviceLimit
     if (maxComputeWorkGroupSizeArray == nullptr) {
         // const array
         // clazzInfo.maxComputeWorkGroupSize = nullptr;
+        env->DeleteLocalRef(maxComputeWorkGroupSizeArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(maxComputeWorkGroupSizeArray);
@@ -645,6 +652,7 @@ VkPhysicalDeviceLimitsAccessor::getmaxComputeWorkGroupSize(VkPhysicalDeviceLimit
     // processing array data
     std::copy(maxComputeWorkGroupSize.begin(), maxComputeWorkGroupSize.end(),
               clazzInfo.maxComputeWorkGroupSize); // fixed array size
+    env->DeleteLocalRef(maxComputeWorkGroupSizeArray); // release reference
 }
 
 uint32_t
@@ -835,6 +843,7 @@ VkPhysicalDeviceLimitsAccessor::getpointSizeRange(VkPhysicalDeviceLimits &clazzI
     if (pointSizeRangeArray == nullptr) {
         // const array
         // clazzInfo.pointSizeRange = nullptr;
+        env->DeleteLocalRef(pointSizeRangeArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pointSizeRangeArray);
@@ -845,6 +854,7 @@ VkPhysicalDeviceLimitsAccessor::getpointSizeRange(VkPhysicalDeviceLimits &clazzI
     // processing array data
     std::copy(pointSizeRange.begin(), pointSizeRange.end(),
               clazzInfo.pointSizeRange); // fixed array size
+    env->DeleteLocalRef(pointSizeRangeArray); // release reference
 }
 
 uint32_t
@@ -891,6 +901,7 @@ VkPhysicalDeviceLimitsAccessor::getmaxViewportDimensions(VkPhysicalDeviceLimits 
     if (maxViewportDimensionsArray == nullptr) {
         // const array
         // clazzInfo.maxViewportDimensions = nullptr;
+        env->DeleteLocalRef(maxViewportDimensionsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(maxViewportDimensionsArray);
@@ -901,6 +912,7 @@ VkPhysicalDeviceLimitsAccessor::getmaxViewportDimensions(VkPhysicalDeviceLimits 
     // processing array data
     std::copy(maxViewportDimensions.begin(), maxViewportDimensions.end(),
               clazzInfo.maxViewportDimensions); // fixed array size
+    env->DeleteLocalRef(maxViewportDimensionsArray); // release reference
 }
 
 float

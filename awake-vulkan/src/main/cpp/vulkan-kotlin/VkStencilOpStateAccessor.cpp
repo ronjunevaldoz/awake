@@ -25,7 +25,9 @@ VkStencilOpStateAccessor::VkStencilOpStateAccessor(JNIEnv *env, jobject obj) {
 VkStencilOp
 VkStencilOpStateAccessor::getfailOp() {
     auto failOpEnum = (jobject) env->GetObjectField(obj, failOpField);
-    return (VkStencilOp) enum_utils::getEnumFromObject(env, failOpEnum);
+    auto enumValue = (VkStencilOp) enum_utils::getEnumFromObject(env, failOpEnum);
+    env->DeleteLocalRef(failOpEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t
@@ -41,7 +43,9 @@ VkStencilOpStateAccessor::getreference() {
 VkCompareOp
 VkStencilOpStateAccessor::getcompareOp() {
     auto compareOpEnum = (jobject) env->GetObjectField(obj, compareOpField);
-    return (VkCompareOp) enum_utils::getEnumFromObject(env, compareOpEnum);
+    auto enumValue = (VkCompareOp) enum_utils::getEnumFromObject(env, compareOpEnum);
+    env->DeleteLocalRef(compareOpEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t
@@ -63,13 +67,17 @@ VkStencilOpStateAccessor::fromObject(VkStencilOpState &clazzInfo) {
 VkStencilOp
 VkStencilOpStateAccessor::getpassOp() {
     auto passOpEnum = (jobject) env->GetObjectField(obj, passOpField);
-    return (VkStencilOp) enum_utils::getEnumFromObject(env, passOpEnum);
+    auto enumValue = (VkStencilOp) enum_utils::getEnumFromObject(env, passOpEnum);
+    env->DeleteLocalRef(passOpEnum); // release enum reference
+    return enumValue;
 }
 
 VkStencilOp
 VkStencilOpStateAccessor::getdepthFailOp() {
     auto depthFailOpEnum = (jobject) env->GetObjectField(obj, depthFailOpField);
-    return (VkStencilOp) enum_utils::getEnumFromObject(env, depthFailOpEnum);
+    auto enumValue = (VkStencilOp) enum_utils::getEnumFromObject(env, depthFailOpEnum);
+    env->DeleteLocalRef(depthFailOpEnum); // release enum reference
+    return enumValue;
 }
 
 VkStencilOpStateAccessor::~VkStencilOpStateAccessor() {

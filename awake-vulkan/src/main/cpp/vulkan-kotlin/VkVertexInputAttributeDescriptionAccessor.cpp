@@ -39,7 +39,9 @@ VkVertexInputAttributeDescriptionAccessor::fromObject(
 VkFormat
 VkVertexInputAttributeDescriptionAccessor::getformat() {
     auto formatEnum = (jobject) env->GetObjectField(obj, formatField);
-    return (VkFormat) enum_utils::getEnumFromObject(env, formatEnum);
+    auto enumValue = (VkFormat) enum_utils::getEnumFromObject(env, formatEnum);
+    env->DeleteLocalRef(formatEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t

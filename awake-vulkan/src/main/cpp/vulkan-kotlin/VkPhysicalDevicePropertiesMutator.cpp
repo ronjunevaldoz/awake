@@ -38,10 +38,12 @@ VkPhysicalDevicePropertiesMutator::toObject(VkPhysicalDeviceProperties source) {
     env->SetCharArrayRegion(deviceName, 0, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE,
                             reinterpret_cast<jchar *>(source.deviceName ));
     env->SetObjectField(newObj, deviceNameField, deviceName);
+    env->DeleteLocalRef(deviceName);
     jbyteArray pipelineCacheUUID = env->NewByteArray(VK_UUID_SIZE);
     env->SetByteArrayRegion(pipelineCacheUUID, 0, VK_UUID_SIZE,
                             reinterpret_cast<jbyte *>(source.pipelineCacheUUID ));
     env->SetObjectField(newObj, pipelineCacheUUIDField, pipelineCacheUUID);
+    env->DeleteLocalRef(pipelineCacheUUID);
     VkPhysicalDeviceLimitsMutator limitsMutator(env);
     env->SetObjectField(newObj, limitsField, limitsMutator.toObject(source.limits));
     VkPhysicalDeviceSparsePropertiesMutator sparsePropertiesMutator(env);

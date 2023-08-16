@@ -110,6 +110,7 @@ fun createVulkanMutator(clazz: Class<*>) {
                                 )
                             )
                             child("env->SetObjectField(newObj, $field, ${javaMember.name});")
+                            child("env->DeleteLocalRef(${javaMember.name});")
 
                         } else if (javaMember.toJavaType() == JNIType.JObject) {
                             if (javaMember.type.isEnum) {

@@ -29,11 +29,16 @@ import io.github.ronjunevaldoz.awake.vulkan.models.VkStencilOpState
 import io.github.ronjunevaldoz.awake.vulkan.models.VkSubpassDependency
 import io.github.ronjunevaldoz.awake.vulkan.models.VkViewport
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkComponentMapping
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageSubresourceRange
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSubpassDescription
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendAttachmentState
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendStateCreateInfo
@@ -76,6 +81,13 @@ fun main(args: Array<String>) {
     generateJavaToVulkanCpp<VkDeviceCreateInfo>()
     generateJavaToVulkanCpp<VkExtent3D>()
     generateJavaToVulkanCpp<VkExtent2D>()
+
+    // swapchain
+    generateJavaToVulkanCpp<VkShaderModuleCreateInfo>()
+    generateJavaToVulkanCpp<VkImageSubresourceRange>()
+    generateJavaToVulkanCpp<VkComponentMapping>()
+    generateJavaToVulkanCpp<VkImageViewCreateInfo>()
+    generateJavaToVulkanCpp<VkSwapchainCreateInfoKHR>()
     // presentation
     generateJavaToVulkanCpp<VkSurfaceCapabilitiesKHR>()
 

@@ -29,6 +29,7 @@ VkPhysicalDevicePropertiesAccessor::getdeviceName(VkPhysicalDeviceProperties &cl
     if (deviceNameArray == nullptr) {
         // const array
         // clazzInfo.deviceName = nullptr;
+        env->DeleteLocalRef(deviceNameArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(deviceNameArray);
@@ -37,6 +38,7 @@ VkPhysicalDevicePropertiesAccessor::getdeviceName(VkPhysicalDeviceProperties &cl
     env->GetCharArrayRegion(deviceNameArray, 0, size, reinterpret_cast<jchar *>(deviceName.data()));
     // processing array data
     std::copy(deviceName.begin(), deviceName.end(), clazzInfo.deviceName); // fixed array size
+    env->DeleteLocalRef(deviceNameArray); // release reference
 }
 
 void
@@ -71,7 +73,9 @@ VkPhysicalDevicePropertiesAccessor::getdeviceID() {
 VkPhysicalDeviceType
 VkPhysicalDevicePropertiesAccessor::getdeviceType() {
     auto deviceTypeEnum = (jobject) env->GetObjectField(obj, deviceTypeField);
-    return (VkPhysicalDeviceType) enum_utils::getEnumFromObject(env, deviceTypeEnum);
+    auto enumValue = (VkPhysicalDeviceType) enum_utils::getEnumFromObject(env, deviceTypeEnum);
+    env->DeleteLocalRef(deviceTypeEnum); // release enum reference
+    return enumValue;
 }
 
 void
@@ -93,6 +97,7 @@ VkPhysicalDevicePropertiesAccessor::getpipelineCacheUUID(VkPhysicalDevicePropert
     if (pipelineCacheUUIDArray == nullptr) {
         // const array
         // clazzInfo.pipelineCacheUUID = nullptr;
+        env->DeleteLocalRef(pipelineCacheUUIDArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pipelineCacheUUIDArray);
@@ -103,6 +108,7 @@ VkPhysicalDevicePropertiesAccessor::getpipelineCacheUUID(VkPhysicalDevicePropert
     // processing array data
     std::copy(pipelineCacheUUID.begin(), pipelineCacheUUID.end(),
               clazzInfo.pipelineCacheUUID); // fixed array size
+    env->DeleteLocalRef(pipelineCacheUUIDArray); // release reference
 }
 
 uint32_t

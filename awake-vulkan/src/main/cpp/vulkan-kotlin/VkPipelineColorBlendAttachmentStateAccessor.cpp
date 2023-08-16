@@ -29,7 +29,9 @@ VkPipelineColorBlendAttachmentStateAccessor::VkPipelineColorBlendAttachmentState
 VkBlendOp
 VkPipelineColorBlendAttachmentStateAccessor::getcolorBlendOp() {
     auto colorBlendOpEnum = (jobject) env->GetObjectField(obj, colorBlendOpField);
-    return (VkBlendOp) enum_utils::getEnumFromObject(env, colorBlendOpEnum);
+    auto enumValue = (VkBlendOp) enum_utils::getEnumFromObject(env, colorBlendOpEnum);
+    env->DeleteLocalRef(colorBlendOpEnum); // release enum reference
+    return enumValue;
 }
 
 VkBool32
@@ -40,7 +42,9 @@ VkPipelineColorBlendAttachmentStateAccessor::getblendEnable() {
 VkBlendFactor
 VkPipelineColorBlendAttachmentStateAccessor::getsrcColorBlendFactor() {
     auto srcColorBlendFactorEnum = (jobject) env->GetObjectField(obj, srcColorBlendFactorField);
-    return (VkBlendFactor) enum_utils::getEnumFromObject(env, srcColorBlendFactorEnum);
+    auto enumValue = (VkBlendFactor) enum_utils::getEnumFromObject(env, srcColorBlendFactorEnum);
+    env->DeleteLocalRef(srcColorBlendFactorEnum); // release enum reference
+    return enumValue;
 }
 
 void
@@ -64,25 +68,33 @@ VkPipelineColorBlendAttachmentStateAccessor::getcolorWriteMask() {
 VkBlendFactor
 VkPipelineColorBlendAttachmentStateAccessor::getdstColorBlendFactor() {
     auto dstColorBlendFactorEnum = (jobject) env->GetObjectField(obj, dstColorBlendFactorField);
-    return (VkBlendFactor) enum_utils::getEnumFromObject(env, dstColorBlendFactorEnum);
+    auto enumValue = (VkBlendFactor) enum_utils::getEnumFromObject(env, dstColorBlendFactorEnum);
+    env->DeleteLocalRef(dstColorBlendFactorEnum); // release enum reference
+    return enumValue;
 }
 
 VkBlendFactor
 VkPipelineColorBlendAttachmentStateAccessor::getsrcAlphaBlendFactor() {
     auto srcAlphaBlendFactorEnum = (jobject) env->GetObjectField(obj, srcAlphaBlendFactorField);
-    return (VkBlendFactor) enum_utils::getEnumFromObject(env, srcAlphaBlendFactorEnum);
+    auto enumValue = (VkBlendFactor) enum_utils::getEnumFromObject(env, srcAlphaBlendFactorEnum);
+    env->DeleteLocalRef(srcAlphaBlendFactorEnum); // release enum reference
+    return enumValue;
 }
 
 VkBlendOp
 VkPipelineColorBlendAttachmentStateAccessor::getalphaBlendOp() {
     auto alphaBlendOpEnum = (jobject) env->GetObjectField(obj, alphaBlendOpField);
-    return (VkBlendOp) enum_utils::getEnumFromObject(env, alphaBlendOpEnum);
+    auto enumValue = (VkBlendOp) enum_utils::getEnumFromObject(env, alphaBlendOpEnum);
+    env->DeleteLocalRef(alphaBlendOpEnum); // release enum reference
+    return enumValue;
 }
 
 VkBlendFactor
 VkPipelineColorBlendAttachmentStateAccessor::getdstAlphaBlendFactor() {
     auto dstAlphaBlendFactorEnum = (jobject) env->GetObjectField(obj, dstAlphaBlendFactorField);
-    return (VkBlendFactor) enum_utils::getEnumFromObject(env, dstAlphaBlendFactorEnum);
+    auto enumValue = (VkBlendFactor) enum_utils::getEnumFromObject(env, dstAlphaBlendFactorEnum);
+    env->DeleteLocalRef(dstAlphaBlendFactorEnum); // release enum reference
+    return enumValue;
 }
 
 VkPipelineColorBlendAttachmentStateAccessor::~VkPipelineColorBlendAttachmentStateAccessor() {

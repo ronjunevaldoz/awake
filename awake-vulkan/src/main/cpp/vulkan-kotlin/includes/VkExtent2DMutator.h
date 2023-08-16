@@ -22,7 +22,6 @@ public:
     VkExtent2DMutator(JNIEnv *env);
 
     jobject toObject(VkExtent2D source);
-
     ~VkExtent2DMutator();
 };
 

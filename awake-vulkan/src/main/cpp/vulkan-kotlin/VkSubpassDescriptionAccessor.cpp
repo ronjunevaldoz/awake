@@ -35,6 +35,7 @@ VkSubpassDescriptionAccessor::getpInputAttachments(VkSubpassDescription &clazzIn
     if (pInputAttachmentsArray == nullptr) {
         clazzInfo.inputAttachmentCount = 0;
         clazzInfo.pInputAttachments = nullptr;
+        env->DeleteLocalRef(pInputAttachmentsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pInputAttachmentsArray);
@@ -47,6 +48,7 @@ VkSubpassDescriptionAccessor::getpInputAttachments(VkSubpassDescription &clazzIn
         VkAttachmentReference ref{};
         accessor.fromObject(ref);
         pInputAttachments.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     auto inputAttachmentCount = static_cast<uint32_t>(pInputAttachments.size());
@@ -55,6 +57,7 @@ VkSubpassDescriptionAccessor::getpInputAttachments(VkSubpassDescription &clazzIn
     auto copy = new VkAttachmentReference[size];
     std::copy(pInputAttachments.begin(), pInputAttachments.end(), copy);
     clazzInfo.pInputAttachments = copy;
+    env->DeleteLocalRef(pInputAttachmentsArray); // release reference
 }
 
 void
@@ -63,6 +66,7 @@ VkSubpassDescriptionAccessor::getpColorAttachments(VkSubpassDescription &clazzIn
     if (pColorAttachmentsArray == nullptr) {
         clazzInfo.colorAttachmentCount = 0;
         clazzInfo.pColorAttachments = nullptr;
+        env->DeleteLocalRef(pColorAttachmentsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pColorAttachmentsArray);
@@ -75,6 +79,7 @@ VkSubpassDescriptionAccessor::getpColorAttachments(VkSubpassDescription &clazzIn
         VkAttachmentReference ref{};
         accessor.fromObject(ref);
         pColorAttachments.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     auto colorAttachmentCount = static_cast<uint32_t>(pColorAttachments.size());
@@ -83,12 +88,16 @@ VkSubpassDescriptionAccessor::getpColorAttachments(VkSubpassDescription &clazzIn
     auto copy = new VkAttachmentReference[size];
     std::copy(pColorAttachments.begin(), pColorAttachments.end(), copy);
     clazzInfo.pColorAttachments = copy;
+    env->DeleteLocalRef(pColorAttachmentsArray); // release reference
 }
 
 VkPipelineBindPoint
 VkSubpassDescriptionAccessor::getpipelineBindPoint() {
     auto pipelineBindPointEnum = (jobject) env->GetObjectField(obj, pipelineBindPointField);
-    return (VkPipelineBindPoint) enum_utils::getEnumFromObject(env, pipelineBindPointEnum);
+    auto enumValue = (VkPipelineBindPoint) enum_utils::getEnumFromObject(env,
+                                                                         pipelineBindPointEnum);
+    env->DeleteLocalRef(pipelineBindPointEnum); // release enum reference
+    return enumValue;
 }
 
 void
@@ -97,6 +106,7 @@ VkSubpassDescriptionAccessor::getpResolveAttachments(VkSubpassDescription &clazz
                                                                        pResolveAttachmentsField);
     if (pResolveAttachmentsArray == nullptr) {
         clazzInfo.pResolveAttachments = nullptr;
+        env->DeleteLocalRef(pResolveAttachmentsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pResolveAttachmentsArray);
@@ -109,12 +119,14 @@ VkSubpassDescriptionAccessor::getpResolveAttachments(VkSubpassDescription &clazz
         VkAttachmentReference ref{};
         accessor.fromObject(ref);
         pResolveAttachments.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkAttachmentReference[size];
     std::copy(pResolveAttachments.begin(), pResolveAttachments.end(), copy);
     clazzInfo.pResolveAttachments = copy;
+    env->DeleteLocalRef(pResolveAttachmentsArray); // release reference
 }
 
 void
@@ -135,6 +147,7 @@ VkSubpassDescriptionAccessor::getpPreserveAttachments(VkSubpassDescription &claz
     if (pPreserveAttachmentsArray == nullptr) {
         clazzInfo.preserveAttachmentCount = 0;
         clazzInfo.pPreserveAttachments = nullptr;
+        env->DeleteLocalRef(pPreserveAttachmentsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pPreserveAttachmentsArray);
@@ -149,6 +162,7 @@ VkSubpassDescriptionAccessor::getpPreserveAttachments(VkSubpassDescription &claz
     auto copy = new uint32_t[size];
     std::copy(pPreserveAttachments.begin(), pPreserveAttachments.end(), copy);
     clazzInfo.pPreserveAttachments = copy;
+    env->DeleteLocalRef(pPreserveAttachmentsArray); // release reference
 }
 
 void
@@ -157,6 +171,7 @@ VkSubpassDescriptionAccessor::getpDepthStencilAttachment(VkSubpassDescription &c
                                                                            pDepthStencilAttachmentField);
     if (pDepthStencilAttachmentArray == nullptr) {
         clazzInfo.pDepthStencilAttachment = nullptr;
+        env->DeleteLocalRef(pDepthStencilAttachmentArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pDepthStencilAttachmentArray);
@@ -169,12 +184,14 @@ VkSubpassDescriptionAccessor::getpDepthStencilAttachment(VkSubpassDescription &c
         VkAttachmentReference ref{};
         accessor.fromObject(ref);
         pDepthStencilAttachment.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkAttachmentReference[size];
     std::copy(pDepthStencilAttachment.begin(), pDepthStencilAttachment.end(), copy);
     clazzInfo.pDepthStencilAttachment = copy;
+    env->DeleteLocalRef(pDepthStencilAttachmentArray); // release reference
 }
 
 VkSubpassDescriptionAccessor::~VkSubpassDescriptionAccessor() {

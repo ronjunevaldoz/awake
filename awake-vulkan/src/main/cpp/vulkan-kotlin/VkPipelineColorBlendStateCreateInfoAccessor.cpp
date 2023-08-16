@@ -25,7 +25,9 @@ VkPipelineColorBlendStateCreateInfoAccessor::VkPipelineColorBlendStateCreateInfo
 VkStructureType
 VkPipelineColorBlendStateCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 VkBool32
@@ -45,6 +47,7 @@ VkPipelineColorBlendStateCreateInfoAccessor::getpAttachments(
     if (pAttachmentsArray == nullptr) {
         clazzInfo.attachmentCount = 0;
         clazzInfo.pAttachments = nullptr;
+        env->DeleteLocalRef(pAttachmentsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pAttachmentsArray);
@@ -57,6 +60,7 @@ VkPipelineColorBlendStateCreateInfoAccessor::getpAttachments(
         VkPipelineColorBlendAttachmentState ref{};
         accessor.fromObject(ref);
         pAttachments.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     auto attachmentCount = static_cast<uint32_t>(pAttachments.size());
@@ -65,6 +69,7 @@ VkPipelineColorBlendStateCreateInfoAccessor::getpAttachments(
     auto copy = new VkPipelineColorBlendAttachmentState[size];
     std::copy(pAttachments.begin(), pAttachments.end(), copy);
     clazzInfo.pAttachments = copy;
+    env->DeleteLocalRef(pAttachmentsArray); // release reference
 }
 
 void
@@ -86,6 +91,7 @@ VkPipelineColorBlendStateCreateInfoAccessor::getblendConstants(
     if (blendConstantsArray == nullptr) {
         // const array
         // clazzInfo.blendConstants = nullptr;
+        env->DeleteLocalRef(blendConstantsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(blendConstantsArray);
@@ -96,6 +102,7 @@ VkPipelineColorBlendStateCreateInfoAccessor::getblendConstants(
     // processing array data
     std::copy(blendConstants.begin(), blendConstants.end(),
               clazzInfo.blendConstants); // fixed array size
+    env->DeleteLocalRef(blendConstantsArray); // release reference
 }
 
 void
@@ -108,7 +115,9 @@ VkPipelineColorBlendStateCreateInfoAccessor::getpNext(
 VkLogicOp
 VkPipelineColorBlendStateCreateInfoAccessor::getlogicOp() {
     auto logicOpEnum = (jobject) env->GetObjectField(obj, logicOpField);
-    return (VkLogicOp) enum_utils::getEnumFromObject(env, logicOpEnum);
+    auto enumValue = (VkLogicOp) enum_utils::getEnumFromObject(env, logicOpEnum);
+    env->DeleteLocalRef(logicOpEnum); // release enum reference
+    return enumValue;
 }
 
 VkPipelineColorBlendStateCreateInfoAccessor::~VkPipelineColorBlendStateCreateInfoAccessor() {

@@ -23,7 +23,9 @@ VkPipelineVertexInputStateCreateInfoAccessor::VkPipelineVertexInputStateCreateIn
 VkStructureType
 VkPipelineVertexInputStateCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t
@@ -56,6 +58,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexAttributeDescriptions(
     if (pVertexAttributeDescriptionsArray == nullptr) {
         clazzInfo.vertexAttributeDescriptionCount = 0;
         clazzInfo.pVertexAttributeDescriptions = nullptr;
+        env->DeleteLocalRef(pVertexAttributeDescriptionsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pVertexAttributeDescriptionsArray);
@@ -68,6 +71,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexAttributeDescriptions(
         VkVertexInputAttributeDescription ref{};
         accessor.fromObject(ref);
         pVertexAttributeDescriptions.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     auto vertexAttributeDescriptionCount = static_cast<uint32_t>(pVertexAttributeDescriptions.size());
@@ -76,6 +80,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexAttributeDescriptions(
     auto copy = new VkVertexInputAttributeDescription[size];
     std::copy(pVertexAttributeDescriptions.begin(), pVertexAttributeDescriptions.end(), copy);
     clazzInfo.pVertexAttributeDescriptions = copy;
+    env->DeleteLocalRef(pVertexAttributeDescriptionsArray); // release reference
 }
 
 void
@@ -86,6 +91,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexBindingDescriptions(
     if (pVertexBindingDescriptionsArray == nullptr) {
         clazzInfo.vertexBindingDescriptionCount = 0;
         clazzInfo.pVertexBindingDescriptions = nullptr;
+        env->DeleteLocalRef(pVertexBindingDescriptionsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pVertexBindingDescriptionsArray);
@@ -98,6 +104,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexBindingDescriptions(
         VkVertexInputBindingDescription ref{};
         accessor.fromObject(ref);
         pVertexBindingDescriptions.push_back(ref);
+        env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
     auto vertexBindingDescriptionCount = static_cast<uint32_t>(pVertexBindingDescriptions.size());
@@ -106,6 +113,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexBindingDescriptions(
     auto copy = new VkVertexInputBindingDescription[size];
     std::copy(pVertexBindingDescriptions.begin(), pVertexBindingDescriptions.end(), copy);
     clazzInfo.pVertexBindingDescriptions = copy;
+    env->DeleteLocalRef(pVertexBindingDescriptionsArray); // release reference
 }
 
 VkPipelineVertexInputStateCreateInfoAccessor::~VkPipelineVertexInputStateCreateInfoAccessor() {

@@ -21,7 +21,9 @@ VkDeviceQueueCreateInfoAccessor::VkDeviceQueueCreateInfoAccessor(JNIEnv *env, jo
 VkStructureType
 VkDeviceQueueCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
-    return (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
+    env->DeleteLocalRef(sTypeEnum); // release enum reference
+    return enumValue;
 }
 
 uint32_t
@@ -39,6 +41,7 @@ VkDeviceQueueCreateInfoAccessor::getpQueuePriorities(VkDeviceQueueCreateInfo &cl
     auto pQueuePrioritiesArray = (jfloatArray) env->GetObjectField(obj, pQueuePrioritiesField);
     if (pQueuePrioritiesArray == nullptr) {
         clazzInfo.pQueuePriorities = nullptr;
+        env->DeleteLocalRef(pQueuePrioritiesArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pQueuePrioritiesArray);
@@ -52,6 +55,7 @@ VkDeviceQueueCreateInfoAccessor::getpQueuePriorities(VkDeviceQueueCreateInfo &cl
     auto copy = new float[size];
     std::copy(pQueuePriorities.begin(), pQueuePriorities.end(), copy);
     clazzInfo.pQueuePriorities = copy;
+    env->DeleteLocalRef(pQueuePrioritiesArray); // release reference
 }
 
 uint32_t
