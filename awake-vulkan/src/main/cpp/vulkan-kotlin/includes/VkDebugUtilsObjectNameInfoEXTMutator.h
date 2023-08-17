@@ -25,7 +25,6 @@ public:
     VkDebugUtilsObjectNameInfoEXTMutator(JNIEnv *env);
 
     jobject toObject(VkDebugUtilsObjectNameInfoEXT source);
-
     ~VkDebugUtilsObjectNameInfoEXTMutator();
 };
 

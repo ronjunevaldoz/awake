@@ -8,6 +8,7 @@ set(VULKAN_KOTLIN_SOURCES
         VkDebugUtilsLabelEXTMutator.cpp
         VkPhysicalDeviceSparsePropertiesMutator.cpp
         VkOffset2DAccessor.cpp
+        VkSurfaceFormatKHRMutator.cpp
         VkPhysicalDeviceFeaturesMutator.cpp
         VkImageSubresourceRangeAccessor.cpp
         VkDebugUtilsObjectNameInfoEXTMutator.cpp
@@ -16,6 +17,7 @@ set(VULKAN_KOTLIN_SOURCES
         VkDeviceCreateInfoAccessor.cpp
         VkPhysicalDeviceSparsePropertiesAccessor.cpp
         VkDebugUtilsMessengerCallbackDataEXTMutator.cpp
+        VkSurfaceFormatKHRAccessor.cpp
         VkSpecializationMapEntryAccessor.cpp
         VkPipelineColorBlendAttachmentStateAccessor.cpp
         VkDebugUtilsObjectNameInfoEXTAccessor.cpp

@@ -24,7 +24,6 @@ public:
     VkDebugUtilsLabelEXTMutator(JNIEnv *env);
 
     jobject toObject(VkDebugUtilsLabelEXT source);
-
     ~VkDebugUtilsLabelEXTMutator();
 };
 

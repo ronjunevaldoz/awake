@@ -24,6 +24,7 @@
 #include "VkImageViewCreateInfoAccessor.h"
 #include "VkShaderModuleCreateInfoAccessor.h"
 #include "VkDebugUtilsMessengerCreateInfoEXTAccessor.h"
+#include "VkSurfaceFormatKHRMutator.h"
 
 namespace vulkan_utils {
 
@@ -75,119 +76,6 @@ namespace vulkan_utils {
         env->DeleteLocalRef(qfpClass);
 
         return queueFamilyList;
-    }
-
-    // TODO check better to delete local ref
-    _jobject *extent2DObj_fromExtend2D(JNIEnv *env, VkExtent2D &extent2D) {
-        jclass extent2DClass = env->FindClass(
-                "io/github/ronjunevaldoz/awake/vulkan/models/VkExtent2D");
-        jmethodID extent2DConstructor = env->GetMethodID(extent2DClass, "<init>", "(II)V");
-        jobject extent2DObj = env->NewObject(extent2DClass, extent2DConstructor,
-                                             static_cast<jint>(extent2D.width),
-                                             static_cast<jint>(extent2D.height));
-        env->DeleteLocalRef(extent2DClass);
-        return extent2DObj;
-    }
-
-    // TODO check better to delete local ref
-    _jobject *surfaceTransformFlagBitsKHRObj_fromVkSurfaceTransformFlagBitsKHR(JNIEnv *env,
-                                                                               VkSurfaceTransformFlagBitsKHR &flagBitsKhr) {
-        jclass enumClass = env->FindClass(
-                "io/github/ronjunevaldoz/awake/vulkan/enums/VkSurfaceTransformFlagBitsKHR");
-        auto enumValues = (jobjectArray) (env->CallStaticObjectMethod(enumClass,
-                                                                      env->GetStaticMethodID(
-                                                                              enumClass,
-                                                                              "values",
-                                                                              "()[Lio/github/ronjunevaldoz/awake/vulkan/enums/VkSurfaceTransformFlagBitsKHR;")));
-
-        jsize numEnumValues = env->GetArrayLength(enumValues);
-        jint index = std::min(static_cast<jint>(flagBitsKhr), numEnumValues - 1);
-        jobject enumObj = env->GetObjectArrayElement(enumValues, index);
-
-        env->DeleteLocalRef(enumClass);
-        env->DeleteLocalRef(enumValues);
-
-        return enumObj;
-    }
-
-    // TODO check better to delete local ref
-    _jobject *formatObj_fromVkSurfaceFormatKHR(JNIEnv *env, VkFormat &format) {
-        jclass enumClass = env->FindClass("io/github/ronjunevaldoz/awake/vulkan/enums/VkFormat");
-        auto enumValues = (jobjectArray) (env->CallStaticObjectMethod(enumClass,
-                                                                      env->GetStaticMethodID(
-                                                                              enumClass,
-                                                                              "values",
-                                                                              "()[Lio/github/ronjunevaldoz/awake/vulkan/enums/VkFormat;")));
-        jsize numEnumValues = env->GetArrayLength(enumValues);
-        jint index = std::min(static_cast<jint>(format), numEnumValues - 1);
-        jobject enumObj = env->GetObjectArrayElement(enumValues, index);
-
-        env->DeleteLocalRef(enumClass);
-        env->DeleteLocalRef(enumValues);
-
-        return enumObj;
-    }
-
-
-    // TODO check better to delete local ref
-    _jobject *colorSpaceObj_fromVkColorSpaceKHR(JNIEnv *env, VkColorSpaceKHR &colorSpace) {
-        jclass enumClass = env->FindClass(
-                "io/github/ronjunevaldoz/awake/vulkan/enums/VkColorSpaceKHR");
-        auto enumValues = (jobjectArray) (env->CallStaticObjectMethod(enumClass,
-                                                                      env->GetStaticMethodID(
-                                                                              enumClass,
-                                                                              "values",
-                                                                              "()[Lio/github/ronjunevaldoz/awake/vulkan/enums/VkColorSpaceKHR;")));
-        jsize numEnumValues = env->GetArrayLength(enumValues);
-        jint index = std::min(static_cast<jint>(colorSpace), numEnumValues - 1);
-        jobject enumObj = env->GetObjectArrayElement(enumValues, index);
-
-        env->DeleteLocalRef(enumClass);
-        env->DeleteLocalRef(enumValues);
-
-        return enumObj;
-    }
-
-    // TODO check better to delete local ref
-    _jobject *surfaceFormatKHRObj_fromVkSurfaceFormatKHR(JNIEnv *env, VkSurfaceFormatKHR &format) {
-        jclass clazz = env->FindClass(
-                "io/github/ronjunevaldoz/awake/vulkan/presentation/swapchain/VkSurfaceFormatKHR");
-        jmethodID constructor = env->GetMethodID(clazz, "<init>",
-                                                 "(Lio/github/ronjunevaldoz/awake/vulkan/enums/VkFormat;Lio/github/ronjunevaldoz/awake/vulkan/enums/VkColorSpaceKHR;)V");
-        auto formatEnumObj = formatObj_fromVkSurfaceFormatKHR(env, format.format);
-        auto colorSpaceEnumObj = colorSpaceObj_fromVkColorSpaceKHR(env, format.colorSpace);
-        jobject obj = env->NewObject(clazz, constructor, formatEnumObj, colorSpaceEnumObj);
-        // Cleanup: Delete local references (optional)
-        env->DeleteLocalRef(clazz);
-        env->DeleteLocalRef(formatEnumObj);
-        env->DeleteLocalRef(colorSpaceEnumObj);
-        return obj;
-    }
-
-    // TODO check better to delete local ref
-    _jobject *presentModeKHRObj_fromVkPresentModeKHR(JNIEnv *env, VkPresentModeKHR &presentMode) {
-        jclass enumClass = env->FindClass(
-                "io/github/ronjunevaldoz/awake/vulkan/enums/VkPresentModeKHR");
-        auto enumValues = (jobjectArray) (env->CallStaticObjectMethod(enumClass,
-                                                                      env->GetStaticMethodID(
-                                                                              enumClass,
-                                                                              "values",
-                                                                              "()[Lio/github/ronjunevaldoz/awake/vulkan/enums/VkPresentModeKHR;")));
-        jsize numEnumValues = env->GetArrayLength(enumValues);
-        jint index = std::min(static_cast<jint>(presentMode), numEnumValues - 1);
-        jobject enumObj = env->GetObjectArrayElement(enumValues, index);
-
-        env->DeleteLocalRef(enumClass);
-        env->DeleteLocalRef(enumValues);
-
-        return enumObj;
-    }
-
-    VkSwapchainCreateInfoKHR
-    VkSwapchainCreateInfoKHR_fromObject(JNIEnv *env, jobject pSwapchainObj) {
-        VkSwapchainCreateInfoKHR createInfo{};
-        VkSwapchainCreateInfoKHRAccessor(env, pSwapchainObj).fromObject(createInfo);
-        return createInfo;
     }
 
     bool
@@ -544,8 +432,7 @@ namespace vulkan_utils {
 
             for (uint32_t i = 0; i < formatCount; i++) {
                 // Create a Java VkSurfaceFormatKHR object for each VkSurfaceFormatKHR
-                jobject formatObj = vulkan_utils::surfaceFormatKHRObj_fromVkSurfaceFormatKHR(env,
-                                                                                             formats[i]);
+                jobject formatObj = VkSurfaceFormatKHRMutator(env).toObject(formats[i]);
                 env->SetObjectArrayElement(formatArray, static_cast<jint>(i), formatObj);
                 // Cleanup: Delete local reference to formatObj (optional)
                 env->DeleteLocalRef(formatObj);
@@ -583,8 +470,8 @@ namespace vulkan_utils {
 
             for (uint32_t i = 0; i < presentModeCount; i++) {
                 // Create a Java VkPresentModeKHR object for each VkPresentModeKHR
-                jobject presetModObj = vulkan_utils::presentModeKHRObj_fromVkPresentModeKHR(env,
-                                                                                            presentModes[i]);
+                jobject presetModObj = enum_utils::setEnumFromVulkan(env, presentModes[i],
+                                                                     "io/github/ronjunevaldoz/awake/vulkan/enums/VkPresentModeKHR");
                 env->SetObjectArrayElement(presetModeArray, static_cast<jint>(i), presetModObj);
                 env->DeleteLocalRef(presetModObj);
             }

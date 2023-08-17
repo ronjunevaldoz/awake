@@ -19,10 +19,12 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain
 
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkColorSpaceKHR
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkFormat
 
+@VkMutator
 data class VkSurfaceFormatKHR(
-    val format: VkFormat,
-    val colorSpace: VkColorSpaceKHR
+    val format: VkFormat = VkFormat.VK_FORMAT_UNDEFINED,
+    val colorSpace: VkColorSpaceKHR = VkColorSpaceKHR.VK_COLORSPACE_SRGB_NONLINEAR_KHR
 )

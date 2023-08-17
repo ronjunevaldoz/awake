@@ -18,16 +18,6 @@ namespace vulkan_utils {
 
     jobjectArray queueFamilyPropertiesObj_fromVkQueueFamilyProperties(JNIEnv *pEnv, jlong device);
 
-    _jobject *formatObj_fromVkSurfaceFormatKHR(JNIEnv *env, VkFormat &format);
-
-    _jobject *colorSpaceObj_fromVkColorSpaceKHR(JNIEnv *env, VkColorSpaceKHR &colorSpace);
-
-    _jobject *surfaceFormatKHRObj_fromVkSurfaceFormatKHR(JNIEnv *env, VkSurfaceFormatKHR &format);
-
-    _jobject *presentModeKHRObj_fromVkPresentModeKHR(JNIEnv *env, VkPresentModeKHR &presentMode);
-
-    VkSwapchainCreateInfoKHR
-    VkSwapchainCreateInfoKHR_fromObject(JNIEnv *env, jobject pSwapchainObj);
 
     bool enumeratePhysicalDevices(JNIEnv *env,
                                   jlong vkInstance,
