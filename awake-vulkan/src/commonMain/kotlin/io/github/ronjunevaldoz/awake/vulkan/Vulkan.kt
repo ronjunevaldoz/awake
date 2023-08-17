@@ -22,10 +22,11 @@ package io.github.ronjunevaldoz.awake.vulkan
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPresentModeKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtensionProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.VkImage
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.VkLayerProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkInstanceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
@@ -44,10 +45,10 @@ expect object Vulkan {
     /**
      * Creates a new Vulkan instance with the provided application information.
      *
-     * @param appInfo The VkApplicationInfo containing the application-specific information.
+     * @param createInfo The VkInstanceCreateInfo containing the application-specific information.
      * @return The handle to the created Vulkan instance.
      */
-    fun vkCreateInstance(appInfo: VkApplicationInfo): Long
+    fun vkCreateInstance(createInfo: VkInstanceCreateInfo): Long
 
     /**
      * Destroys the specified Vulkan instance.
@@ -62,7 +63,14 @@ expect object Vulkan {
      *
      * @return An array of VkExtensionProperties representing the available instance extensions.
      */
-    fun vkEnumerateInstanceExtensionProperties(): Array<VkExtensionProperties>
+    fun vkEnumerateInstanceLayerProperties(): Array<VkLayerProperties>
+
+    /**
+     * Enumerates the Vulkan extension properties available for the instance.
+     *
+     * @return An array of VkExtensionProperties representing the available instance extensions.
+     */
+    fun vkEnumerateInstanceExtensionProperties(layerName: String? = null): Array<VkExtensionProperties>
 
     /**
      * Enumerates the Vulkan extension properties available for a specific physical device.
@@ -70,7 +78,10 @@ expect object Vulkan {
      * @param physicalDevice The handle to the Vulkan physical device.
      * @return An array of VkExtensionProperties representing the available device extensions.
      */
-    fun vkEnumerateDeviceExtensionProperties(physicalDevice: Long): Array<VkExtensionProperties>
+    fun vkEnumerateDeviceExtensionProperties(
+        physicalDevice: Long,
+        layerName: String? = null
+    ): Array<VkExtensionProperties>
 
     /**
      * Enumerates the available Vulkan physical devices for the specified instance.
@@ -78,7 +89,7 @@ expect object Vulkan {
      * @param instance The handle to the Vulkan instance.
      * @return An array of VkPhysicalDevice handle in a form of type Long
      */
-    fun vkEnumeratePhysicalDevices(instance: Long): List<Long>
+    fun vkEnumeratePhysicalDevices(instance: Long): LongArray
 
     /**
      * Retrieves properties of the specified physical device.

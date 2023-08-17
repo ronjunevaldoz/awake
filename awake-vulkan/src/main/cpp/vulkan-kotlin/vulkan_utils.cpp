@@ -25,6 +25,7 @@
 #include "VkShaderModuleCreateInfoAccessor.h"
 #include "VkDebugUtilsMessengerCreateInfoEXTAccessor.h"
 #include "VkSurfaceFormatKHRMutator.h"
+#include "VkInstanceCreateInfoAccessor.h"
 
 namespace vulkan_utils {
 
@@ -75,104 +76,25 @@ namespace vulkan_utils {
         return queueFamilyList;
     }
 
-    bool
-    enumeratePhysicalDevices(JNIEnv *env, jlong vkInstance, jobject pDeviceCountDirectBufferObj,
-                             jobject pPhysicalDevicesDirectBufferObj) {
+    jlongArray
+    enumeratePhysicalDevices(JNIEnv *env, jlong vkInstance) {
         auto instance = reinterpret_cast<VkInstance>(vkInstance);
 
-        // Call enumeratePhysicalDevices to get the number of physical devices
-        if (pPhysicalDevicesDirectBufferObj == nullptr) {
-            jint *intArray = reinterpret_cast<jint *>(env->GetDirectBufferAddress(
-                    pDeviceCountDirectBufferObj));
-            if (intArray == nullptr) {
-                // possible not a direct buffer?
-                return false;
-            }
-            uint32_t physicalDeviceCount = 0;
-            vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr);
-            intArray[0] = static_cast<jint>(physicalDeviceCount);
-        } else {
-            jint *intArray = reinterpret_cast<jint *>(env->GetDirectBufferAddress(
-                    pDeviceCountDirectBufferObj));
-            if (intArray == nullptr) {
-                // possible not a direct buffer?
-                return false;
-            }
-            auto *longArray = reinterpret_cast<jlong *>(env->GetDirectBufferAddress(
-                    pPhysicalDevicesDirectBufferObj));
-            if (longArray == nullptr) {
-                // possible not a direct buffer?
-                return false;
-            }
-            // Call enumeratePhysicalDevices again to fill the physical device handles in the direct ByteBuffer
-            auto deviceCount = static_cast<uint32_t>(intArray[0]);
-            std::vector<VkPhysicalDevice> devices(deviceCount);
-            vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
-            // fill the buffer
-            for (int i = 0; i < deviceCount; ++i) {
-                longArray[i] = reinterpret_cast<jlong>(devices[i]);
-            }
+        uint32_t deviceCount;
+        vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+        std::vector<VkPhysicalDevice> devices(deviceCount);
+        vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+        jlongArray deviceHandles = env->NewLongArray((jsize) deviceCount);
+        for (int i = 0; i < deviceCount; ++i) {
+            auto handle = reinterpret_cast<jlong>(devices[i]);
+            env->SetLongArrayRegion(deviceHandles, i, 1, &handle);
         }
-        return true;
+        return deviceHandles;
     }
 
-    jlong createInstance(JNIEnv *env, jobject app_info) {
-        VkApplicationInfoAccessor accessor(env, app_info);
-        VkApplicationInfo appInfo{};
-        accessor.fromObject(appInfo);
-
-        std::vector<const char *> layers{
-                "VK_LAYER_KHRONOS_validation"
-        };
-
-        if (!vulkan_utils::checkValidationLayerSupported(layers)) {
-            throw std::runtime_error("Validation layers are not supported.");
-        }
-
-
-        std::vector<const char *> enabled_inst_exts;
-
-        // check if androidSurfaceExtensionSupported
-        uint32_t extensionCount = 0;
-        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-        std::vector<VkExtensionProperties> extensions(extensionCount);
-        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
-        bool androidSurfaceExtensionSupported = false;
-        bool surfaceExtensionSupported = false;
-        bool swapChainExtensionSupported = false;
-        for (const auto &extension: extensions) {
-            if (strcmp(extension.extensionName, VK_KHR_ANDROID_SURFACE_EXTENSION_NAME) == 0) {
-                androidSurfaceExtensionSupported = true;
-            }
-            if (strcmp(extension.extensionName, VK_KHR_SURFACE_EXTENSION_NAME) == 0) {
-                surfaceExtensionSupported = true;
-            }
-            enabled_inst_exts.push_back(extension.extensionName);
-        }
-
-        if (surfaceExtensionSupported) {
-            // enable presentation queue family?
-            enabled_inst_exts.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-        }
-        if (androidSurfaceExtensionSupported) {
-            // enable surface
-            enabled_inst_exts.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
-        }
-
-        // Enable the debug utils extension if available
-        if (vulkan_utils::checkDebugUtilsExtAvailable() ||
-            vulkan_utils::checkDebugUtilsExtFromAvailableLayers()) {
-            enabled_inst_exts.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-        }
-
+    jlong createInstance(JNIEnv *env, jobject pCreateInfo) {
         VkInstanceCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-        createInfo.pApplicationInfo = &appInfo;
-        createInfo.enabledExtensionCount = static_cast<uint32_t>(enabled_inst_exts.size());
-        createInfo.ppEnabledExtensionNames = enabled_inst_exts.data();
-        createInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
-        createInfo.ppEnabledLayerNames = layers.data();
-
+        VkInstanceCreateInfoAccessor(env, pCreateInfo).fromObject(createInfo);
         VkInstance instance{};
         VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
 
@@ -181,92 +103,6 @@ namespace vulkan_utils {
         }
 
         return reinterpret_cast<jlong>(instance);
-    }
-
-// Function to enable the debug utils extension if available
-    bool checkDebugUtilsExtAvailable() {
-        // Get the instance extension count.
-        uint32_t inst_ext_count = 0;
-        vkEnumerateInstanceExtensionProperties(nullptr, &inst_ext_count, nullptr);
-
-        // Enumerate the instance extensions.
-        VkExtensionProperties inst_exts[inst_ext_count];
-        vkEnumerateInstanceExtensionProperties(nullptr, &inst_ext_count, inst_exts);
-
-        // Check for debug utils extension within the system driver or loader.
-        // Check if the debug utils extension is available (in the driver).
-        VkExtensionProperties *inst_exts_end = inst_exts + inst_ext_count;
-        bool debugUtilsExtAvailable = inst_exts_end !=
-                                      std::find_if(inst_exts, inst_exts_end,
-                                                   [](VkExtensionProperties
-                                                      extensionProperties) {
-                                                       return strcmp(
-                                                               extensionProperties.extensionName,
-                                                               VK_EXT_DEBUG_UTILS_EXTENSION_NAME) ==
-                                                              0;
-                                                   });
-
-        return debugUtilsExtAvailable;
-    }
-
-
-// Function to enable the debug utils extension if available
-    bool checkDebugUtilsExtFromAvailableLayers() {
-        // Also check the layers for the debug utils extension.
-        uint32_t layerCount;
-        vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-        std::vector<VkLayerProperties> layer_props(layerCount);
-        vkEnumerateInstanceLayerProperties(&layerCount, layer_props.data());
-
-        bool debugUtilsExtAvailable = false;
-
-        for (const auto &layer: layer_props) {
-            uint32_t layer_ext_count;
-            vkEnumerateInstanceExtensionProperties(layer.layerName, &layer_ext_count, nullptr);
-            if (layer_ext_count == 0) continue;
-
-            std::vector<VkExtensionProperties> layer_exts(layer_ext_count);
-            vkEnumerateInstanceExtensionProperties(layer.layerName, &layer_ext_count,
-                                                   layer_exts.data());
-            debugUtilsExtAvailable = std::any_of(layer_exts.begin(), layer_exts.end(),
-                                                 [](const VkExtensionProperties &extension) {
-                                                     return strcmp(extension.extensionName,
-                                                                   VK_EXT_DEBUG_UTILS_EXTENSION_NAME) ==
-                                                            0;
-                                                 });
-
-            if (debugUtilsExtAvailable) {
-                // Add the including layer into the layer request list if necessary.
-                break;
-            }
-        }
-        return debugUtilsExtAvailable;
-    }
-
-    bool checkValidationLayerSupported(const std::vector<const char *> &layers) {
-
-        // Get the layer count using a null pointer as the last parameter.
-        uint32_t instance_layer_present_count = 0;
-        vkEnumerateInstanceLayerProperties(&instance_layer_present_count, nullptr);
-
-        // Enumerate layers with a valid pointer in the last parameter.
-        std::vector<VkLayerProperties> layer_props(instance_layer_present_count);
-        vkEnumerateInstanceLayerProperties(&instance_layer_present_count, layer_props.data());
-
-        // Make sure selected validation layers are available.
-        bool validationLayersAvailable = std::all_of(layers.begin(), layers.end(),
-                                                     [&layer_props](const char *layer) {
-                                                         return std::find_if(layer_props.begin(),
-                                                                             layer_props.end(),
-                                                                             [layer](const VkLayerProperties &layerProperties) {
-                                                                                 return strcmp(
-                                                                                         layerProperties.layerName,
-                                                                                         layer) ==
-                                                                                        0;
-                                                                             }) !=
-                                                                layer_props.end();
-                                                     });
-        return validationLayersAvailable; // or false depending on the validation layer availability
     }
 
 // Function to create the debug utils messenger
@@ -519,12 +355,55 @@ namespace vulkan_utils {
         return reinterpret_cast<jlong>(graphicsQueue);
     }
 
-    // TODO check for possible leak??
-    _jobjectArray *enumerateInstanceExtensionProperties(JNIEnv *env) {
+
+    jobjectArray enumerateInstanceLayerProperties(JNIEnv *env) {
+        uint32_t layerCount;
+        vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+        std::vector<VkLayerProperties> layers(layerCount);
+        vkEnumerateInstanceLayerProperties(&layerCount, layers.data());
+
+        // init class and constructors
+        auto layerPropClass = env->FindClass(
+                "io/github/ronjunevaldoz/awake/vulkan/models/VkLayerProperties");
+        auto layerPropConstructor = env->GetMethodID(layerPropClass, "<init>",
+                                                     "(Ljava/lang/String;IILjava/lang/String;)V");
+
+        auto extensionList = env->NewObjectArray(static_cast<jint>(layerCount), layerPropClass,
+                                                 nullptr);
+        for (int i = 0; i < layerCount; i++) {
+            auto layer = layers[i];
+            auto layerName = env->NewStringUTF(layer.layerName);
+            auto layerDesc = env->NewStringUTF(layer.description);
+
+            // Create a new VkExtensionProperties object
+            auto qfpObj = env->NewObject(layerPropClass, layerPropConstructor,
+                                         static_cast<jstring>(layerName),
+                                         static_cast<jint>(layer.specVersion),
+                                         static_cast<jint>(layer.implementationVersion),
+                                         static_cast<jstring>(layerDesc)
+            );
+
+            // Add the VkExtensionProperties object to the ArrayList
+            env->SetObjectArrayElement(extensionList, i, qfpObj);
+            env->DeleteLocalRef(layerName);
+            env->DeleteLocalRef(layerDesc);
+            env->DeleteLocalRef(qfpObj);
+        }
+
+        env->DeleteLocalRef(layerPropClass);
+        return extensionList;
+    }
+
+    jobjectArray enumerateInstanceExtensionProperties(JNIEnv *env, jstring jlayer_name) {
         uint32_t extensionCount = 0;
-        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+        const char *layerName = nullptr;
+        if (jlayer_name != nullptr) {
+            layerName = env->GetStringUTFChars(jlayer_name, nullptr);
+            env->ReleaseStringUTFChars(jlayer_name, layerName);
+        }
+        vkEnumerateInstanceExtensionProperties(layerName, &extensionCount, nullptr);
         std::vector<VkExtensionProperties> extensions(extensionCount);
-        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
+        vkEnumerateInstanceExtensionProperties(layerName, &extensionCount, extensions.data());
 
         // init class and constructors
         auto extPropClass = env->FindClass(
@@ -554,14 +433,19 @@ namespace vulkan_utils {
         return extensionList;
     }
 
-    // TODO check for possible leak??
-    _jobjectArray *enumerateDeviceExtensionProperties(JNIEnv *env, jlong pPhysicalDevice) {
+    jobjectArray
+    enumerateDeviceExtensionProperties(JNIEnv *env, jlong pPhysicalDevice, jstring jlayer_name) {
         auto physicalDevice = reinterpret_cast<VkPhysicalDevice>(pPhysicalDevice);
 
+        const char *layerName = nullptr;
+        if (jlayer_name != nullptr) {
+            layerName = env->GetStringUTFChars(jlayer_name, nullptr);
+            env->ReleaseStringUTFChars(jlayer_name, layerName);
+        }
         uint32_t extensionCount = 0;
-        vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, nullptr);
+        vkEnumerateDeviceExtensionProperties(physicalDevice, layerName, &extensionCount, nullptr);
         std::vector<VkExtensionProperties> extensions(extensionCount);
-        vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount,
+        vkEnumerateDeviceExtensionProperties(physicalDevice, layerName, &extensionCount,
                                              extensions.data());
 
         // init class and constructors

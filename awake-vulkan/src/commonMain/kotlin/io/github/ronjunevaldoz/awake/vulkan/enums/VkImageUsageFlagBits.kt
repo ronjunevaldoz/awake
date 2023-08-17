@@ -46,6 +46,3 @@ enum class VkImageUsageFlagBits(val value: Int) {
 
 // Representing VkImageUsageFlags as a typealias of Int
 typealias VkImageUsageFlags = VkFlags
-
-// Representing VkInstanceCreateFlags as a typealias of Int
-typealias VkInstanceCreateFlags = VkFlags

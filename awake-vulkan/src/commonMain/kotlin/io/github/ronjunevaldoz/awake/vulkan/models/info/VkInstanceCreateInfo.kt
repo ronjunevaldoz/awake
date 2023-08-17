@@ -19,16 +19,23 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.models.info
 
-import io.github.ronjunevaldoz.awake.vulkan.Version
-import io.github.ronjunevaldoz.awake.vulkan.Version.Companion.vkVersion
+import io.github.ronjunevaldoz.awake.vulkan.VkArray
+import io.github.ronjunevaldoz.awake.vulkan.VkFlags
+import io.github.ronjunevaldoz.awake.vulkan.VkPointer
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkStructureType
 
-data class VkApplicationInfo(
-    var sType: VkStructureType = VkStructureType.VK_STRUCTURE_TYPE_APPLICATION_INFO,
-    var pNext: Any? = null,
-    var pApplicationName: String,
-    var applicationVersion: Int = Version(1, 0, 0).vkVersion,
-    var pEngineName: String,
-    var engineVersion: Int = Version(1, 0, 0).vkVersion,
-    var apiVersion: Int = Version(1, 0, 0).vkVersion
+class VkInstanceCreateInfo(
+    val sType: VkStructureType = VkStructureType.VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+    val pNext: Any? = null,
+    val flags: VkInstanceCreateFlags = 0,
+    @VkPointer
+    val pApplicationInfo: Array<VkApplicationInfo>? = null,
+    @VkArray(sizeAlias = "enabledLayerCount")
+    val ppEnabledLayerNames: Array<String>? = null,
+    @VkArray(sizeAlias = "enabledExtensionCount")
+    val ppEnabledExtensionNames: Array<String>? = null
 )
+
+
+// Representing VkInstanceCreateFlags as a typealias of Int
+typealias VkInstanceCreateFlags = VkFlags

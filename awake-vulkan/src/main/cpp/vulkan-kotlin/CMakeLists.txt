@@ -21,6 +21,7 @@ set(VULKAN_KOTLIN_SOURCES
         VkSpecializationMapEntryAccessor.cpp
         VkPipelineColorBlendAttachmentStateAccessor.cpp
         VkDebugUtilsObjectNameInfoEXTAccessor.cpp
+        VkInstanceCreateInfoAccessor.cpp
         VkDebugUtilsLabelEXTAccessor.cpp
         VkSubpassDependencyAccessor.cpp
         VkPipelineColorBlendStateCreateInfoAccessor.cpp

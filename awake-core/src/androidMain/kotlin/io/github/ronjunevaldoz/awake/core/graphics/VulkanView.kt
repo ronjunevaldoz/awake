@@ -25,7 +25,7 @@ import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import io.github.ronjunevaldoz.awake.vulkan.Version
-import io.github.ronjunevaldoz.awake.vulkan.Version.Companion.u32
+import io.github.ronjunevaldoz.awake.vulkan.Version.Companion.vkVersion
 import io.github.ronjunevaldoz.awake.vulkan.Vulkan
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkColorSpaceKHR
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkCompositeAlphaFlagBitsKHR
@@ -58,6 +58,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageSubresourceRange
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkInstanceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSubpassDescription
@@ -79,6 +80,8 @@ import io.github.ronjunevaldoz.awake.vulkan.presentation.VkAndroidSurfaceCreateI
 import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceCapabilitiesKHR
 import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceFormatKHR
 import io.github.ronjunevaldoz.awake.vulkan.utils.findQueueFamilies
+import io.github.ronjunevaldoz.awake.vulkan.utils.getAppExtProps
+import io.github.ronjunevaldoz.awake.vulkan.utils.getAppLayerProps
 import io.github.ronjunevaldoz.awake.vulkan.utils.isSwapChainSupported
 import io.github.ronjunevaldoz.awake.vulkan.utils.querySwapChainSupport
 import kotlinx.coroutines.runBlocking
@@ -171,10 +174,22 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
     private fun createInstance() {
         val appInfo = VkApplicationInfo(
             pApplicationName = "Awake Vulkan - Application",
-            pEngineName = "Awaken Vukan - Engine",
-            apiVersion = Version(1, 3, 0).u32
+            pEngineName = "Awake Vulkan - Engine",
+            apiVersion = Version(1, 3, 0).vkVersion
         )
-        instance = Vulkan.vkCreateInstance(appInfo)
+        val layerProperties = getAppLayerProps()
+        val layerExtProps = layerProperties.map { layer ->
+            getAppExtProps(layer)
+        }.flatten()
+
+        val extProperties = (getAppExtProps() + layerExtProps).distinct()
+
+        val createInfo = VkInstanceCreateInfo(
+            pApplicationInfo = arrayOf(appInfo),
+            ppEnabledLayerNames = layerProperties.toTypedArray(),
+            ppEnabledExtensionNames = extProperties.toTypedArray()
+        )
+        instance = Vulkan.vkCreateInstance(createInfo)
     }
 
     private fun pickPhysicalDevice() {

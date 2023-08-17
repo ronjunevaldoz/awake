@@ -19,22 +19,12 @@ namespace vulkan_utils {
     jobjectArray queueFamilyPropertiesObj_fromVkQueueFamilyProperties(JNIEnv *pEnv, jlong device);
 
 
-    bool enumeratePhysicalDevices(JNIEnv *env,
-                                  jlong vkInstance,
-                                  jobject pDeviceCountDirectBufferObj,
-                                  jobject pPhysicalDevicesDirectBufferObj);
+    jlongArray enumeratePhysicalDevices(JNIEnv *env, jlong vkInstance);
+
+    jobjectArray enumerateInstanceLayerProperties(JNIEnv *env);
 
     // Function to create a Vulkan instance
     jlong createInstance(JNIEnv *env, jobject app_info);
-
-    // Checking available extensions
-    bool checkDebugUtilsExtAvailable();
-
-    // Checking available extensions from layers
-    bool checkDebugUtilsExtFromAvailableLayers();
-
-    // Check if validation layer is supported
-    bool checkValidationLayerSupported(const std::vector<const char *> &layers);
 
     // Create debug utils messenger
     VkDebugUtilsMessengerEXT
@@ -105,9 +95,10 @@ namespace vulkan_utils {
 
     void destroyPipeline(jlong device, jlong graphicsPipeline);
 
-    _jobjectArray *enumerateInstanceExtensionProperties(JNIEnv *env);
+    jobjectArray enumerateInstanceExtensionProperties(JNIEnv *env, jstring layer_name);
 
-    _jobjectArray *enumerateDeviceExtensionProperties(JNIEnv *env, jlong pPhysicalDevice);
+    jobjectArray
+    enumerateDeviceExtensionProperties(JNIEnv *env, jlong pPhysicalDevice, jstring layer_name);
 
     _jobjectArray *getSwapchainImagesKHR(JNIEnv *env, jlong pDevice, jlong pSwapchain);
 

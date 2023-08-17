@@ -22,10 +22,11 @@ package io.github.ronjunevaldoz.awake.vulkan
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPresentModeKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtensionProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.VkImage
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.VkLayerProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkInstanceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
@@ -38,45 +39,29 @@ import io.github.ronjunevaldoz.awake.vulkan.presentation.VkAndroidSurfaceCreateI
 import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceCapabilitiesKHR
 import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceFormatKHR
 import io.github.ronjunevaldoz.awake.vulkan.queuefamily.VkQueueFamilyProperties
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.nio.IntBuffer
-import java.nio.LongBuffer
 
 actual object Vulkan {
     init {
         System.loadLibrary("awake-vulkan")
     }
 
-    actual external fun vkCreateInstance(appInfo: VkApplicationInfo): Long
+    actual external fun vkCreateInstance(createInfo: VkInstanceCreateInfo): Long
     actual external fun vkDestroyInstance(instance: Long)
 
-    actual external fun vkEnumerateInstanceExtensionProperties(): Array<VkExtensionProperties>
-    actual external fun vkEnumerateDeviceExtensionProperties(physicalDevice: Long): Array<VkExtensionProperties>
 
-    external fun vkEnumeratePhysicalDevices(
-        instance: Long,
-        pPhysicalDeviceCount: IntBuffer,
-        pPhysicalDevices: LongBuffer? = null
-    ): Boolean
+    /**
+     * Enumerates the Vulkan extension properties available for the instance.
+     *
+     * @return An array of VkExtensionProperties representing the available instance extensions.
+     */
+    actual external fun vkEnumerateInstanceLayerProperties(): Array<VkLayerProperties>
+    actual external fun vkEnumerateInstanceExtensionProperties(layerName: String?): Array<VkExtensionProperties>
+    actual external fun vkEnumerateDeviceExtensionProperties(
+        physicalDevice: Long,
+        layerName: String?
+    ): Array<VkExtensionProperties>
 
-    actual fun vkEnumeratePhysicalDevices(instance: Long): List<Long> {
-        val countBuffer =
-            ByteBuffer.allocateDirect(1 * Int.SIZE_BYTES).order(ByteOrder.nativeOrder())
-                .asIntBuffer()
-        val physicalDevicesBuffer =
-            ByteBuffer.allocateDirect(1 * Long.SIZE_BYTES).order(ByteOrder.nativeOrder())
-                .asLongBuffer()
-        vkEnumeratePhysicalDevices(instance, countBuffer)
-        return if (countBuffer[0] > 0) {
-            vkEnumeratePhysicalDevices(instance, countBuffer, physicalDevicesBuffer)
-            val data = LongArray(countBuffer[0])
-            physicalDevicesBuffer.get(data)
-            data.toList()
-        } else {
-            emptyList()
-        }
-    }
+    actual external fun vkEnumeratePhysicalDevices(instance: Long): LongArray
 
     actual external fun vkGetPhysicalDeviceProperties(physicalDevice: Long): VkPhysicalDeviceProperties
     actual external fun vkGetPhysicalDeviceFeatures(physicalDevice: Long): VkPhysicalDeviceFeatures

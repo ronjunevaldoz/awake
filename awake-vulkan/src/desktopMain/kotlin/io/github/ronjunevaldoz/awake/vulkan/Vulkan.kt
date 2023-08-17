@@ -22,10 +22,10 @@ package io.github.ronjunevaldoz.awake.vulkan
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPresentModeKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtensionProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.VkImage
-import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkInstanceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
@@ -46,7 +46,7 @@ actual object Vulkan {
      * @param appInfo The VkApplicationInfo containing the application-specific information.
      * @return The handle to the created Vulkan instance.
      */
-    actual fun vkCreateInstance(appInfo: VkApplicationInfo): Long {
+    actual fun vkCreateInstance(createInfo: VkInstanceCreateInfo): Long {
         TODO("Not yet implemented")
     }
 

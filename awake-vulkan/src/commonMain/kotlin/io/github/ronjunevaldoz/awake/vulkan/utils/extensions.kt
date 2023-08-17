@@ -23,12 +23,21 @@ import io.github.ronjunevaldoz.awake.vulkan.Vulkan
 import io.github.ronjunevaldoz.awake.vulkan.VulkanExtension
 
 
+fun getAppExtProps(layerName: String? = null): List<String> {
+    val extensionProperties = Vulkan.vkEnumerateInstanceExtensionProperties(layerName)
+    return extensionProperties.map { it.extensionName }.toSet().toList()
+}
+
+fun getAppLayerProps(): List<String> {
+    val layerProperties = Vulkan.vkEnumerateInstanceLayerProperties()
+    return layerProperties.map { it.layerName }.toSet().toList()
+}
+
 /**
  * Check all possible extension from app etc..
  */
 fun isAppExtSupported(vararg extensions: VulkanExtension): Boolean {
     val extensionProperties = Vulkan.vkEnumerateInstanceExtensionProperties()
-//    Log.i("App Extensions", extensionProperties.joinToString("\n"))
     val supportedExtensions: Set<String> = extensionProperties.map { it.extensionName }.toSet()
     for (extension in extensions) {
         if (extension.extensionName in supportedExtensions) {
@@ -43,7 +52,6 @@ fun isAppExtSupported(vararg extensions: VulkanExtension): Boolean {
  */
 fun isDeviceExtSupported(physicalDevice: Long, vararg extensions: VulkanExtension): Boolean {
     val extensionProperties = Vulkan.vkEnumerateDeviceExtensionProperties(physicalDevice)
-//    Log.i("Device Extensions", extensionProperties.joinToString("\n"))
     val supportedExtensions: Set<String> = extensionProperties.map { it.extensionName }.toSet()
     for (extension in extensions) {
         if (extension.extensionName in supportedExtensions) {

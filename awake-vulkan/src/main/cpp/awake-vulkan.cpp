@@ -5,8 +5,8 @@
 extern "C" {
 JNIEXPORT jlong
 Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkCreateInstance(JNIEnv *env, jobject thiz,
-                                                                  jobject app_info) {
-    return vulkan_utils::createInstance(env, app_info);
+                                                                  jobject createInfo) {
+    return vulkan_utils::createInstance(env, createInfo);
 }
 
 JNIEXPORT jlong JNICALL
@@ -50,15 +50,11 @@ Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkGetDeviceQueue(JNIEnv *env, j
 }
 // Vulkan wrapper
 
-JNIEXPORT jboolean JNICALL
+JNIEXPORT jlongArray JNICALL
 Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkEnumeratePhysicalDevices(JNIEnv *env,
                                                                             jobject thiz,
-                                                                            jlong vkInstance,
-                                                                            jobject
-                                                                            p_physical_device_count,
-                                                                            jobject p_physical_devices) {
-    return vulkan_utils::enumeratePhysicalDevices(env, vkInstance, p_physical_device_count,
-                                                  p_physical_devices);
+                                                                            jlong vkInstance) {
+    return vulkan_utils::enumeratePhysicalDevices(env, vkInstance);
 }
 
 JNIEXPORT jobject JNICALL
@@ -148,15 +144,17 @@ Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkDestroySwapchainKHR(JNIEnv *e
 
 JNIEXPORT jobjectArray JNICALL
 Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkEnumerateInstanceExtensionProperties(JNIEnv *env,
-                                                                                        jobject thiz) {
-    return vulkan_utils::enumerateInstanceExtensionProperties(env);
+                                                                                        jobject thiz,
+                                                                                        jstring layer_name) {
+    return vulkan_utils::enumerateInstanceExtensionProperties(env, layer_name);
 }
 
 JNIEXPORT jobjectArray JNICALL
 Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkEnumerateDeviceExtensionProperties(JNIEnv *env,
                                                                                       jobject thiz,
-                                                                                      jlong physical_device) {
-    return vulkan_utils::enumerateDeviceExtensionProperties(env, physical_device);
+                                                                                      jlong physical_device,
+                                                                                      jstring layer_name) {
+    return vulkan_utils::enumerateDeviceExtensionProperties(env, physical_device, layer_name);
 }
 JNIEXPORT jobjectArray JNICALL
 Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkGetSwapchainImagesKHR(JNIEnv *env,
@@ -247,4 +245,10 @@ Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkDestroyRenderPass(JNIEnv *env
                                                                      jlong device,
                                                                      jlong render_pass) {
     vulkan_utils::destroyRenderPass(device, render_pass);
+}
+extern "C"
+JNIEXPORT jobjectArray JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkEnumerateInstanceLayerProperties(JNIEnv *env,
+                                                                                    jobject thiz) {
+    return vulkan_utils::enumerateInstanceLayerProperties(env);
 }

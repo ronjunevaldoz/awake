@@ -35,6 +35,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageSubresourceRange
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkInstanceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSubpassDescription
@@ -83,6 +84,7 @@ fun main(args: Array<String>) {
 
     // application
     generateJavaToVulkanCpp<VkApplicationInfo>()
+    generateJavaToVulkanCpp<VkInstanceCreateInfo>()
     generateJavaToVulkanCpp<VkPhysicalDeviceSparseProperties>()
     generateJavaToVulkanCpp<VkPhysicalDeviceProperties>()
     generateJavaToVulkanCpp<VkPhysicalDeviceLimits>()
