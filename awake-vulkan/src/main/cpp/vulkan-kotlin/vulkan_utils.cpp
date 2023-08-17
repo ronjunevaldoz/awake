@@ -57,7 +57,6 @@ namespace vulkan_utils {
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount,
                                                  queueFamilies.data());
 
-
         // init class and constructors
         auto qfpClass = env->FindClass(
                 "io/github/ronjunevaldoz/awake/vulkan/queuefamily/VkQueueFamilyProperties");
@@ -66,11 +65,9 @@ namespace vulkan_utils {
                                                    nullptr);
         for (int i = 0; i < queueFamilyCount; i++) {
             auto queueFamily = queueFamilies[i];
-
             auto queueFamilyObj = VkQueueFamilyPropertiesMutator(env).toObject(queueFamily);
-
-            // Add the VkQueueFamilyProperties object to the ArrayList
             env->SetObjectArrayElement(queueFamilyList, i, queueFamilyObj);
+            env->DeleteLocalRef(queueFamilyObj);
         }
 
         env->DeleteLocalRef(qfpClass);
@@ -712,6 +709,7 @@ namespace vulkan_utils {
             VkGraphicsPipelineCreateInfo createInfo{};
             accessor.fromObject(createInfo);
             createInfos.push_back(createInfo);
+            env->DeleteLocalRef(createInfoObj);
         }
         std::vector<VkPipeline> pipelines(createInfoSize);
         VkResult result = vkCreateGraphicsPipelines(device, pipelineCache,
