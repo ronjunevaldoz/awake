@@ -19,9 +19,12 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.models.info.debug
 
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkObjectType
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkStructureType
 
+
+@VkMutator
 data class VkDebugUtilsObjectNameInfoEXT(
     val sType: VkStructureType = VkStructureType.VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
     val pNext: Any? = null,

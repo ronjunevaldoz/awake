@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkGraphicsPipelineCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkGraphicsPipelineCreateInfoAccessor.h>
+#include <includes/VkGraphicsPipelineCreateInfoAccessor.h>
 
 VkGraphicsPipelineCreateInfoAccessor::VkGraphicsPipelineCreateInfoAccessor(JNIEnv *env,
                                                                            jobject obj) {

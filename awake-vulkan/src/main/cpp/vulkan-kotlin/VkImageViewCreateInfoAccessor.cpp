@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkImageViewCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkImageViewCreateInfoAccessor.h>
+#include <includes/VkImageViewCreateInfoAccessor.h>
 
 VkImageViewCreateInfoAccessor::VkImageViewCreateInfoAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

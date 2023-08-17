@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkSubpassDependency
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkSubpassDependencyAccessor.h>
+#include <includes/VkSubpassDependencyAccessor.h>
 
 VkSubpassDependencyAccessor::VkSubpassDependencyAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

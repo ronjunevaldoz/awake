@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPipelineDynamicStateCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPipelineDynamicStateCreateInfoAccessor.h>
+#include <includes/VkPipelineDynamicStateCreateInfoAccessor.h>
 
 VkPipelineDynamicStateCreateInfoAccessor::VkPipelineDynamicStateCreateInfoAccessor(JNIEnv *env,
                                                                                    jobject obj) {

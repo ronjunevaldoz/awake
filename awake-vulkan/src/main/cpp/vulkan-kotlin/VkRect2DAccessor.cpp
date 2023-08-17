@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkRect2D
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkRect2DAccessor.h>
+#include <includes/VkRect2DAccessor.h>
 
 VkRect2DAccessor::VkRect2DAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

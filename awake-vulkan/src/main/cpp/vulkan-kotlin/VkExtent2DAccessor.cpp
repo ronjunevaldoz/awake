@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkExtent2D
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkExtent2DAccessor.h>
+#include <includes/VkExtent2DAccessor.h>
 
 VkExtent2DAccessor::VkExtent2DAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

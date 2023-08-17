@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPipelineMultisampleStateCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPipelineMultisampleStateCreateInfoAccessor.h>
+#include <includes/VkPipelineMultisampleStateCreateInfoAccessor.h>
 
 VkPipelineMultisampleStateCreateInfoAccessor::VkPipelineMultisampleStateCreateInfoAccessor(
         JNIEnv *env, jobject obj) {

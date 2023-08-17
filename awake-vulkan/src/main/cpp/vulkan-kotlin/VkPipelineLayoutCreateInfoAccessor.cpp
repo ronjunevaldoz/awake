@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPipelineLayoutCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPipelineLayoutCreateInfoAccessor.h>
+#include <includes/VkPipelineLayoutCreateInfoAccessor.h>
 
 VkPipelineLayoutCreateInfoAccessor::VkPipelineLayoutCreateInfoAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

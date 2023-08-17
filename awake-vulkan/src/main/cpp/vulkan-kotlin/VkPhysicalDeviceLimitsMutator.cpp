@@ -3,7 +3,7 @@
  *  Vulkan mutator for VkPhysicalDeviceLimits
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPhysicalDeviceLimitsMutator.h>
+#include <includes/VkPhysicalDeviceLimitsMutator.h>
 
 VkPhysicalDeviceLimitsMutator::VkPhysicalDeviceLimitsMutator(JNIEnv *env) {
     this->env = env;
@@ -282,6 +282,7 @@ VkPhysicalDeviceLimitsMutator::toObject(VkPhysicalDeviceLimits source) {
                      static_cast<jint>(source.maxFragmentCombinedOutputResources));
     env->SetIntField(newObj, maxComputeSharedMemorySizeField,
                      static_cast<jint>(source.maxComputeSharedMemorySize));
+    // processing primitive array
     jintArray maxComputeWorkGroupCount = env->NewIntArray(3);
     env->SetIntArrayRegion(maxComputeWorkGroupCount, 0, 3,
                            reinterpret_cast<jint *>(source.maxComputeWorkGroupCount ));
@@ -289,6 +290,7 @@ VkPhysicalDeviceLimitsMutator::toObject(VkPhysicalDeviceLimits source) {
     env->DeleteLocalRef(maxComputeWorkGroupCount);
     env->SetIntField(newObj, maxComputeWorkGroupInvocationsField,
                      static_cast<jint>(source.maxComputeWorkGroupInvocations));
+    // processing primitive array
     jintArray maxComputeWorkGroupSize = env->NewIntArray(3);
     env->SetIntArrayRegion(maxComputeWorkGroupSize, 0, 3,
                            reinterpret_cast<jint *>(source.maxComputeWorkGroupSize ));
@@ -309,11 +311,13 @@ VkPhysicalDeviceLimitsMutator::toObject(VkPhysicalDeviceLimits source) {
     env->SetFloatField(newObj, maxSamplerAnisotropyField,
                        static_cast<jfloat>(source.maxSamplerAnisotropy));
     env->SetIntField(newObj, maxViewportsField, static_cast<jint>(source.maxViewports));
+    // processing primitive array
     jintArray maxViewportDimensions = env->NewIntArray(2);
     env->SetIntArrayRegion(maxViewportDimensions, 0, 2,
                            reinterpret_cast<jint *>(source.maxViewportDimensions ));
     env->SetObjectField(newObj, maxViewportDimensionsField, maxViewportDimensions);
     env->DeleteLocalRef(maxViewportDimensions);
+    // processing primitive array
     jfloatArray viewportBoundsRange = env->NewFloatArray(2);
     env->SetFloatArrayRegion(viewportBoundsRange, 0, 2,
                              reinterpret_cast<jfloat *>(source.viewportBoundsRange ));
@@ -377,11 +381,13 @@ VkPhysicalDeviceLimitsMutator::toObject(VkPhysicalDeviceLimits source) {
                      static_cast<jint>(source.maxCombinedClipAndCullDistances));
     env->SetIntField(newObj, discreteQueuePrioritiesField,
                      static_cast<jint>(source.discreteQueuePriorities));
+    // processing primitive array
     jfloatArray pointSizeRange = env->NewFloatArray(2);
     env->SetFloatArrayRegion(pointSizeRange, 0, 2,
                              reinterpret_cast<jfloat *>(source.pointSizeRange ));
     env->SetObjectField(newObj, pointSizeRangeField, pointSizeRange);
     env->DeleteLocalRef(pointSizeRange);
+    // processing primitive array
     jfloatArray lineWidthRange = env->NewFloatArray(2);
     env->SetFloatArrayRegion(lineWidthRange, 0, 2,
                              reinterpret_cast<jfloat *>(source.lineWidthRange ));

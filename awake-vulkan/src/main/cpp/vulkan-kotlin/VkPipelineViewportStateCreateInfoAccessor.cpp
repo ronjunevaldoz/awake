@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPipelineViewportStateCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPipelineViewportStateCreateInfoAccessor.h>
+#include <includes/VkPipelineViewportStateCreateInfoAccessor.h>
 
 VkPipelineViewportStateCreateInfoAccessor::VkPipelineViewportStateCreateInfoAccessor(JNIEnv *env,
                                                                                      jobject obj) {

@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkDeviceQueueCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkDeviceQueueCreateInfoAccessor.h>
+#include <includes/VkDeviceQueueCreateInfoAccessor.h>
 
 VkDeviceQueueCreateInfoAccessor::VkDeviceQueueCreateInfoAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

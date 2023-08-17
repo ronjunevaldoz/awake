@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPushConstantRange
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPushConstantRangeAccessor.h>
+#include <includes/VkPushConstantRangeAccessor.h>
 
 VkPushConstantRangeAccessor::VkPushConstantRangeAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

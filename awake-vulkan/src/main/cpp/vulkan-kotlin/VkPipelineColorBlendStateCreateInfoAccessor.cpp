@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPipelineColorBlendStateCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPipelineColorBlendStateCreateInfoAccessor.h>
+#include <includes/VkPipelineColorBlendStateCreateInfoAccessor.h>
 
 VkPipelineColorBlendStateCreateInfoAccessor::VkPipelineColorBlendStateCreateInfoAccessor(
         JNIEnv *env, jobject obj) {

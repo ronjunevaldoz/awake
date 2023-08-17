@@ -3,7 +3,7 @@
  *  Vulkan mutator for VkExtent3D
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkExtent3DMutator.h>
+#include <includes/VkExtent3DMutator.h>
 
 VkExtent3DMutator::VkExtent3DMutator(JNIEnv *env) {
     this->env = env;

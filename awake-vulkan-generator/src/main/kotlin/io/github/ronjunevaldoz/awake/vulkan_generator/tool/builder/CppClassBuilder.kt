@@ -140,7 +140,7 @@ class CppClassBuilder(
             append(" *  Created by Ron June Valdoz")
             append(" */\n\n")
 
-            append("#include  <includes/$className.h>\n\n")
+            append("#include <includes/$className.h>\n\n")
 
             for (constructor in constructors) {
                 append(constructor.value)

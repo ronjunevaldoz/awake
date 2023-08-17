@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkSurfaceCapabilitiesKHR
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkSurfaceCapabilitiesKHRAccessor.h>
+#include <includes/VkSurfaceCapabilitiesKHRAccessor.h>
 
 VkSurfaceCapabilitiesKHRAccessor::VkSurfaceCapabilitiesKHRAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

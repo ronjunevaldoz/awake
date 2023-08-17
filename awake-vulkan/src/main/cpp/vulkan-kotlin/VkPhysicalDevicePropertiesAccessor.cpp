@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPhysicalDeviceProperties
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPhysicalDevicePropertiesAccessor.h>
+#include <includes/VkPhysicalDevicePropertiesAccessor.h>
 
 VkPhysicalDevicePropertiesAccessor::VkPhysicalDevicePropertiesAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

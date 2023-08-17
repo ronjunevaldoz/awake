@@ -11,9 +11,8 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-//#include <ObjectMutator.h>
-//#include <VkDebugUtilsLabelEXT[]Mutator.h>
-//#include <VkDebugUtilsObjectNameInfoEXT[]Mutator.h>
+#include <VkDebugUtilsLabelEXTMutator.h>
+#include <VkDebugUtilsObjectNameInfoEXTMutator.h>
 
 class VkDebugUtilsMessengerCallbackDataEXTMutator {
 private:
@@ -32,7 +31,6 @@ public:
     VkDebugUtilsMessengerCallbackDataEXTMutator(JNIEnv *env);
 
     jobject toObject(VkDebugUtilsMessengerCallbackDataEXT source);
-
     ~VkDebugUtilsMessengerCallbackDataEXTMutator();
 };
 

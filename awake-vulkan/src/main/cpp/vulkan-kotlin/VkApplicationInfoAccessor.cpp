@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkApplicationInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkApplicationInfoAccessor.h>
+#include <includes/VkApplicationInfoAccessor.h>
 
 VkApplicationInfoAccessor::VkApplicationInfoAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

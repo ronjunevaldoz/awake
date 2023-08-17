@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkAttachmentDescription
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkAttachmentDescriptionAccessor.h>
+#include <includes/VkAttachmentDescriptionAccessor.h>
 
 VkAttachmentDescriptionAccessor::VkAttachmentDescriptionAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

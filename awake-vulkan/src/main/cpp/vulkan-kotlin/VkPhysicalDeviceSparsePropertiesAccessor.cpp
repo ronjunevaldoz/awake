@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPhysicalDeviceSparseProperties
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPhysicalDeviceSparsePropertiesAccessor.h>
+#include <includes/VkPhysicalDeviceSparsePropertiesAccessor.h>
 
 VkPhysicalDeviceSparsePropertiesAccessor::VkPhysicalDeviceSparsePropertiesAccessor(JNIEnv *env,
                                                                                    jobject obj) {

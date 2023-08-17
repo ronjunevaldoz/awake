@@ -244,14 +244,16 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
 
                 val severityString = severity
                 val typeString = messageType
+                val messageIdName = callbackData.pMessageIdName
                 val messageIdNumber = callbackData.messageIdNumber
+                val message = callbackData.pMessage
                 val logMessage = String.format(
                     "%s %s: \n[%s] Code %d :\n%s",
                     typeString,
                     severityString,
-                    "messageIdName",
+                    messageIdName,
                     messageIdNumber,
-                    "message"
+                    message
                 )
                 when (severity) {
                     VkDebugUtilsMessageSeverityFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT ->

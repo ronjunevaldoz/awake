@@ -3,7 +3,7 @@
  *  Vulkan mutator for VkPhysicalDeviceSparseProperties
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPhysicalDeviceSparsePropertiesMutator.h>
+#include <includes/VkPhysicalDeviceSparsePropertiesMutator.h>
 
 VkPhysicalDeviceSparsePropertiesMutator::VkPhysicalDeviceSparsePropertiesMutator(JNIEnv *env) {
     this->env = env;

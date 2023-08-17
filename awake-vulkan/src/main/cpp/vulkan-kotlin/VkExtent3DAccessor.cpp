@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkExtent3D
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkExtent3DAccessor.h>
+#include <includes/VkExtent3DAccessor.h>
 
 VkExtent3DAccessor::VkExtent3DAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

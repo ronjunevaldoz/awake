@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkShaderModuleCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkShaderModuleCreateInfoAccessor.h>
+#include <includes/VkShaderModuleCreateInfoAccessor.h>
 
 VkShaderModuleCreateInfoAccessor::VkShaderModuleCreateInfoAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

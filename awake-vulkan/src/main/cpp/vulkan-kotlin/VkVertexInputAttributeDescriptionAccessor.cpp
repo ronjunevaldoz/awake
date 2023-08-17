@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkVertexInputAttributeDescription
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkVertexInputAttributeDescriptionAccessor.h>
+#include <includes/VkVertexInputAttributeDescriptionAccessor.h>
 
 VkVertexInputAttributeDescriptionAccessor::VkVertexInputAttributeDescriptionAccessor(JNIEnv *env,
                                                                                      jobject obj) {

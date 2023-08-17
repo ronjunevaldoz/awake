@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPipelineColorBlendAttachmentState
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPipelineColorBlendAttachmentStateAccessor.h>
+#include <includes/VkPipelineColorBlendAttachmentStateAccessor.h>
 
 VkPipelineColorBlendAttachmentStateAccessor::VkPipelineColorBlendAttachmentStateAccessor(
         JNIEnv *env, jobject obj) {

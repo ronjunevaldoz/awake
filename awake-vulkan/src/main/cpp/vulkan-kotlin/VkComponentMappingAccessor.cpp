@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkComponentMapping
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkComponentMappingAccessor.h>
+#include <includes/VkComponentMappingAccessor.h>
 
 VkComponentMappingAccessor::VkComponentMappingAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

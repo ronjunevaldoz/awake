@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkViewport
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkViewportAccessor.h>
+#include <includes/VkViewportAccessor.h>
 
 VkViewportAccessor::VkViewportAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

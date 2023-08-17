@@ -5,10 +5,12 @@ set(VULKAN_KOTLIN_SOURCES
         VkExtent2DMutator.cpp
         VkDeviceQueueCreateInfoAccessor.cpp
         vulkan_utils.cpp
+        VkDebugUtilsLabelEXTMutator.cpp
         VkPhysicalDeviceSparsePropertiesMutator.cpp
         VkOffset2DAccessor.cpp
         VkPhysicalDeviceFeaturesMutator.cpp
         VkImageSubresourceRangeAccessor.cpp
+        VkDebugUtilsObjectNameInfoEXTMutator.cpp
         VkPhysicalDevicePropertiesAccessor.cpp
         VkRect2DAccessor.cpp
         VkDeviceCreateInfoAccessor.cpp

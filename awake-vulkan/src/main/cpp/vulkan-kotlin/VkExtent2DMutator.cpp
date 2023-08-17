@@ -3,7 +3,7 @@
  *  Vulkan mutator for VkExtent2D
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkExtent2DMutator.h>
+#include <includes/VkExtent2DMutator.h>
 
 VkExtent2DMutator::VkExtent2DMutator(JNIEnv *env) {
     this->env = env;

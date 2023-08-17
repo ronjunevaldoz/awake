@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPipelineDepthStencilStateCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPipelineDepthStencilStateCreateInfoAccessor.h>
+#include <includes/VkPipelineDepthStencilStateCreateInfoAccessor.h>
 
 VkPipelineDepthStencilStateCreateInfoAccessor::VkPipelineDepthStencilStateCreateInfoAccessor(
         JNIEnv *env, jobject obj) {

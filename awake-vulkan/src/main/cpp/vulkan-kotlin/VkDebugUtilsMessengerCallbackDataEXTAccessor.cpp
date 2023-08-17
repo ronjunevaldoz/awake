@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkDebugUtilsMessengerCallbackDataEXT
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkDebugUtilsMessengerCallbackDataEXTAccessor.h>
+#include <includes/VkDebugUtilsMessengerCallbackDataEXTAccessor.h>
 
 VkDebugUtilsMessengerCallbackDataEXTAccessor::VkDebugUtilsMessengerCallbackDataEXTAccessor(
         JNIEnv *env, jobject obj) {

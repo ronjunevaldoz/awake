@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkAttachmentReference
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkAttachmentReferenceAccessor.h>
+#include <includes/VkAttachmentReferenceAccessor.h>
 
 VkAttachmentReferenceAccessor::VkAttachmentReferenceAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

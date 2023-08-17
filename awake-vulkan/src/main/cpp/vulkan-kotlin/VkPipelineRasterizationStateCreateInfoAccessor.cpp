@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPipelineRasterizationStateCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPipelineRasterizationStateCreateInfoAccessor.h>
+#include <includes/VkPipelineRasterizationStateCreateInfoAccessor.h>
 
 VkPipelineRasterizationStateCreateInfoAccessor::VkPipelineRasterizationStateCreateInfoAccessor(
         JNIEnv *env, jobject obj) {

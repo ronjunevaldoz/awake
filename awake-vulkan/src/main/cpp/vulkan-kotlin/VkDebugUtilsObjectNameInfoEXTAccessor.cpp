@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkDebugUtilsObjectNameInfoEXT
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkDebugUtilsObjectNameInfoEXTAccessor.h>
+#include <includes/VkDebugUtilsObjectNameInfoEXTAccessor.h>
 
 VkDebugUtilsObjectNameInfoEXTAccessor::VkDebugUtilsObjectNameInfoEXTAccessor(JNIEnv *env,
                                                                              jobject obj) {

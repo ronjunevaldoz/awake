@@ -3,7 +3,7 @@
  *  Vulkan mutator for VkSurfaceCapabilitiesKHR
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkSurfaceCapabilitiesKHRMutator.h>
+#include <includes/VkSurfaceCapabilitiesKHRMutator.h>
 
 VkSurfaceCapabilitiesKHRMutator::VkSurfaceCapabilitiesKHRMutator(JNIEnv *env) {
     this->env = env;

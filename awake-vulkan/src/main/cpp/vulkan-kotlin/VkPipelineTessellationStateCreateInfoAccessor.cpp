@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPipelineTessellationStateCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPipelineTessellationStateCreateInfoAccessor.h>
+#include <includes/VkPipelineTessellationStateCreateInfoAccessor.h>
 
 VkPipelineTessellationStateCreateInfoAccessor::VkPipelineTessellationStateCreateInfoAccessor(
         JNIEnv *env, jobject obj) {

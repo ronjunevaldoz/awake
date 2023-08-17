@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkImageSubresourceRange
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkImageSubresourceRangeAccessor.h>
+#include <includes/VkImageSubresourceRangeAccessor.h>
 
 VkImageSubresourceRangeAccessor::VkImageSubresourceRangeAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

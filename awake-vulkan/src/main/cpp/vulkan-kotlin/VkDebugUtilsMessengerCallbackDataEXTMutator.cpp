@@ -3,7 +3,7 @@
  *  Vulkan mutator for VkDebugUtilsMessengerCallbackDataEXT
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkDebugUtilsMessengerCallbackDataEXTMutator.h>
+#include <includes/VkDebugUtilsMessengerCallbackDataEXTMutator.h>
 
 VkDebugUtilsMessengerCallbackDataEXTMutator::VkDebugUtilsMessengerCallbackDataEXTMutator(
         JNIEnv *env) {
@@ -32,18 +32,54 @@ VkDebugUtilsMessengerCallbackDataEXTMutator::toObject(VkDebugUtilsMessengerCallb
     env->SetObjectField(newObj, sTypeField,
                         enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.sType),
                                                       "io/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType"));
-//    ObjectMutator pNextMutator(env);
-//    env->SetObjectField(newObj, pNextField, pNextMutator.toObject(source.pNext));
+    // processing Any, Void, Null, Object
+    env->SetObjectField(newObj, pNextField, (jobject) source.pNext);
     env->SetIntField(newObj, flagsField, static_cast<jint>(source.flags));
-//    env->SetObjectField(newObj, pMessageIdNameField, static_cast<jstring>(source.pMessageIdName));
+    // process string
+    auto pMessageIdName = env->NewStringUTF(source.pMessageIdName);
+    env->SetObjectField(newObj, pMessageIdNameField, pMessageIdName);
     env->SetIntField(newObj, messageIdNumberField, static_cast<jint>(source.messageIdNumber));
-//    env->SetObjectField(newObj, pMessageField, static_cast<jstring>(source.pMessage));
-//    VkDebugUtilsLabelEXT[]Mutator pQueueLabelsMutator(env);
-//    env->SetObjectField(newObj, pQueueLabelsField, pQueueLabelsMutator.toObject(source.pQueueLabels));
-//    VkDebugUtilsLabelEXT[]Mutator pCmdBufLabelsMutator(env);
-//    env->SetObjectField(newObj, pCmdBufLabelsField, pCmdBufLabelsMutator.toObject(source.pCmdBufLabels));
-//    VkDebugUtilsObjectNameInfoEXT[]Mutator pObjectsMutator(env);
-//    env->SetObjectField(newObj, pObjectsField, pObjectsMutator.toObject(source.pObjects));
+    // process string
+    auto pMessage = env->NewStringUTF(source.pMessage);
+    env->SetObjectField(newObj, pMessageField, pMessage);
+    // processing non-primitive array
+    // array data not yet implemented
+    // pQueueLabels
+    jclass pQueueLabelsClazz = env->FindClass(
+            "io/github/ronjunevaldoz/awake/vulkan/models/info/debug/VkDebugUtilsLabelEXT");
+    jobjectArray pQueueLabelsArray = env->NewObjectArray(source.queueLabelCount, pQueueLabelsClazz,
+                                                         nullptr);
+    for (int i = 0; i < source.queueLabelCount; ++i) {
+        auto element = source.pQueueLabels[i];
+        auto obj = VkDebugUtilsLabelEXTMutator(env).toObject(element);
+        env->SetObjectArrayElement(pQueueLabelsArray, i, obj);
+    }
+    env->SetObjectField(newObj, pQueueLabelsField, pQueueLabelsArray);
+    // processing non-primitive array
+    // array data not yet implemented
+    // pCmdBufLabels
+    jclass pCmdBufLabelsClazz = env->FindClass(
+            "io/github/ronjunevaldoz/awake/vulkan/models/info/debug/VkDebugUtilsLabelEXT");
+    jobjectArray pCmdBufLabelsArray = env->NewObjectArray(source.cmdBufLabelCount,
+                                                          pCmdBufLabelsClazz, nullptr);
+    for (int i = 0; i < source.cmdBufLabelCount; ++i) {
+        auto element = source.pCmdBufLabels[i];
+        auto obj = VkDebugUtilsLabelEXTMutator(env).toObject(element);
+        env->SetObjectArrayElement(pCmdBufLabelsArray, i, obj);
+    }
+    env->SetObjectField(newObj, pCmdBufLabelsField, pCmdBufLabelsArray);
+    // processing non-primitive array
+    // array data not yet implemented
+    // pObjects
+    jclass pObjectsClazz = env->FindClass(
+            "io/github/ronjunevaldoz/awake/vulkan/models/info/debug/VkDebugUtilsObjectNameInfoEXT");
+    jobjectArray pObjectsArray = env->NewObjectArray(source.objectCount, pObjectsClazz, nullptr);
+    for (int i = 0; i < source.objectCount; ++i) {
+        auto element = source.pObjects[i];
+        auto obj = VkDebugUtilsObjectNameInfoEXTMutator(env).toObject(element);
+        env->SetObjectArrayElement(pObjectsArray, i, obj);
+    }
+    env->SetObjectField(newObj, pObjectsField, pObjectsArray);
     return newObj;
 }
 

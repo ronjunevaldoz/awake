@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkRenderPassCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkRenderPassCreateInfoAccessor.h>
+#include <includes/VkRenderPassCreateInfoAccessor.h>
 
 VkRenderPassCreateInfoAccessor::VkRenderPassCreateInfoAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

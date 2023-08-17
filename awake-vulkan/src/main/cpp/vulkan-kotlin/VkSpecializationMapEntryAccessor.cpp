@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkSpecializationMapEntry
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkSpecializationMapEntryAccessor.h>
+#include <includes/VkSpecializationMapEntryAccessor.h>
 
 VkSpecializationMapEntryAccessor::VkSpecializationMapEntryAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

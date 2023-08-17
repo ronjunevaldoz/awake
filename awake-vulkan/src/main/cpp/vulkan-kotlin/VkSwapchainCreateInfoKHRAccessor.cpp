@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkSwapchainCreateInfoKHR
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkSwapchainCreateInfoKHRAccessor.h>
+#include <includes/VkSwapchainCreateInfoKHRAccessor.h>
 
 VkSwapchainCreateInfoKHRAccessor::VkSwapchainCreateInfoKHRAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

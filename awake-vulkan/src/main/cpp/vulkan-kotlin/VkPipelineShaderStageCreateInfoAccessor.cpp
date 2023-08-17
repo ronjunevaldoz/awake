@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPipelineShaderStageCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPipelineShaderStageCreateInfoAccessor.h>
+#include <includes/VkPipelineShaderStageCreateInfoAccessor.h>
 
 VkPipelineShaderStageCreateInfoAccessor::VkPipelineShaderStageCreateInfoAccessor(JNIEnv *env,
                                                                                  jobject obj) {

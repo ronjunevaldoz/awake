@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkQueueFamilyProperties
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkQueueFamilyPropertiesAccessor.h>
+#include <includes/VkQueueFamilyPropertiesAccessor.h>
 
 VkQueueFamilyPropertiesAccessor::VkQueueFamilyPropertiesAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkPipelineInputAssemblyStateCreateInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPipelineInputAssemblyStateCreateInfoAccessor.h>
+#include <includes/VkPipelineInputAssemblyStateCreateInfoAccessor.h>
 
 VkPipelineInputAssemblyStateCreateInfoAccessor::VkPipelineInputAssemblyStateCreateInfoAccessor(
         JNIEnv *env, jobject obj) {

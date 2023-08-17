@@ -22,130 +22,31 @@ package io.github.ronjunevaldoz.awake.vulkan_generator.vulkan
 import io.github.ronjunevaldoz.awake.vulkan.VkMutator
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.JNIType
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.builder.CppClassBuilder
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.builder.CppFunctionBodyBuilder
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cast
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cppClass
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getArrayElementJavaType
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getVkArray
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getVkConstArray
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.setArrayRegion
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.setJavaValue
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toJavaSignature
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toJavaType
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toJavaTypeArray
+import java.lang.reflect.Field
 
 fun createVulkanMutator(clazz: Class<*>) {
     if (!clazz.isAnnotationPresent(VkMutator::class.java)) {
         return
     }
-    val declareMembers = clazz.declaredFields
     val cppClassCode =
         cppClass(clazz.simpleName + "Mutator", "Vulkan mutator for ${clazz.simpleName}") {
-            import("<jni.h>")
-            import("<vulkan/vulkan.h>")
-            import("<string>")
-            import("<vector>")
-            import("<enum_utils.h>")
-
-            member("private", "JNIEnv*", "env")
-            member("private", "jclass", "clazz")
-            declareMembers.forEach { member ->
-                member("private", "jfieldID", member.name + "Field")
-            }
-
-            destructor {
-                // default destructor
-                body(2) {
-                    child("// env->DeleteGlobalRef(clazz);")
-                }
-            }
-
-            constructor(
-                true,
-                1, listOf(
-                    Pair("env", "JNIEnv*"),
-                )
-            ) {
-                body(2) {
-                    child("this->env = env;")
-                    members.forEach { member ->
-                        if (member.type == "jfieldID") {
-                            val javaField =
-                                declareMembers.find { it.name + "Field" == member.name }!!
-                            val javaSig = "\"${javaField.toJavaSignature()}\""
-                            val sourceClass = "clazz"
-                            val fieldName = "\"${javaField.name}\""
-                            child("${member.name} = env->GetFieldID($sourceClass, $fieldName, $javaSig);")
-                        } else if (member.type == "jclass") {
-                            val javaClassSig = "\"${clazz.name.replace(".", "/")}\""
-                            child("${member.name} = env->FindClass($javaClassSig);")
-                        }
-                    }
-                }
-            }
-
-            function(
-                1, "jobject", "toObject",
-                listOf(Pair("source", clazz.simpleName))
-            ) {
-                body(2) {
-                    // return clazz info
-                    child("auto constructor = env->GetMethodID(clazz, \"<init>\", \"()V\");")
-                    child("auto newObj = env->NewObject(clazz, constructor);")
-                    declareMembers.forEach { javaMember ->
-                        val field = javaMember.name + "Field"
-                        val functionName = javaMember.cast("source." + javaMember.name)
-
-                        if (javaMember.type.isArray && javaMember.type.componentType.isPrimitive) {
-
-                            val arraySize =
-                                javaMember.getVkConstArray()?.arraySize ?: "<NO ARRAY SIZE>"
-                            val buffer =
-                                "reinterpret_cast<${javaMember.getArrayElementJavaType()} *>(source.${javaMember.name} )"
-                            child("${javaMember.toJavaTypeArray()}  ${javaMember.name} = env->New${javaMember.type.componentType.simpleName.capitalize()}Array($arraySize);")
-                            child(
-                                "env->" + javaMember.setArrayRegion(
-                                    javaMember.name,
-                                    "0",
-                                    arraySize,
-                                    buffer
-                                )
-                            )
-                            child("env->SetObjectField(newObj, $field, ${javaMember.name});")
-                            child("env->DeleteLocalRef(${javaMember.name});")
-
-                        } else if (javaMember.toJavaType() == JNIType.JObject) {
-                            if (javaMember.type.isEnum) {
-                                // process enum
-                                child(
-                                    "${
-                                        javaMember.setJavaValue(
-                                            "env",
-                                            "newObj",
-                                            field,
-                                            functionName
-                                        )
-                                    };"
-                                )
-                            } else {
-                                child("${javaMember.type.simpleName}Mutator ${javaMember.name}Mutator(env);")
-                                import("<${javaMember.type.simpleName}Mutator.h>")
-                                child("env->SetObjectField(newObj, $field, ${javaMember.name}Mutator.toObject(source.${javaMember.name}));")
-                            }
-                        } else {
-                            child(
-                                "${
-                                    javaMember.setJavaValue(
-                                        "env",
-                                        "newObj",
-                                        field,
-                                        functionName
-                                    )
-                                };"
-                            )
-                        }
-                    }
-                    child("return newObj;")
-                }
-            }
+            createImports()
+            createMembers(clazz)
+            createDestructor()
+            createConstructor(clazz)
+            createToObjectFunction(clazz)
         }
 
     val awakeVulkanCpp = "awake-vulkan/src/main/cpp/vulkan-kotlin"
@@ -154,4 +55,191 @@ fun createVulkanMutator(clazz: Class<*>) {
         cppClassCode.first
     )
     FileWriter.writeFile("$awakeVulkanCpp/${clazz.simpleName + "Mutator"}.cpp", cppClassCode.second)
+}
+
+fun CppClassBuilder.createImports() {
+    import("<jni.h>")
+    import("<vulkan/vulkan.h>")
+    import("<string>")
+    import("<vector>")
+    import("<enum_utils.h>")
+}
+
+fun CppClassBuilder.createMembers(clazz: Class<*>) {
+    val declareMembers = clazz.declaredFields
+    member("private", "JNIEnv*", "env")
+    member("private", "jclass", "clazz")
+    declareMembers.forEach { member ->
+        member("private", "jfieldID", member.name + "Field")
+    }
+}
+
+fun CppClassBuilder.createDestructor() {
+    destructor {
+        // default destructor
+        body(2) {
+            child("// env->DeleteGlobalRef(clazz);")
+        }
+    }
+}
+
+fun CppClassBuilder.createConstructor(clazz: Class<*>) {
+    val declareMembers = clazz.declaredFields
+    constructor(
+        true,
+        1, listOf(
+            Pair("env", "JNIEnv*"),
+        )
+    ) {
+        body(2) {
+            child("this->env = env;")
+            members.forEach { member ->
+                if (member.type == "jfieldID") {
+                    val javaField =
+                        declareMembers.find { it.name + "Field" == member.name }!!
+                    val javaSig = "\"${javaField.toJavaSignature()}\""
+                    val sourceClass = "clazz"
+                    val fieldName = "\"${javaField.name}\""
+                    child("${member.name} = env->GetFieldID($sourceClass, $fieldName, $javaSig);")
+                } else if (member.type == "jclass") {
+                    val javaClassSig = "\"${clazz.name.replace(".", "/")}\""
+                    child("${member.name} = env->FindClass($javaClassSig);")
+                }
+            }
+        }
+    }
+}
+
+fun CppClassBuilder.createToObjectFunction(clazz: Class<*>) {
+    val declareMembers = clazz.declaredFields
+    function(
+        1, "jobject", "toObject",
+        listOf(Pair("source", clazz.simpleName))
+    ) {
+        body(2) {
+            // return clazz info
+            child("auto constructor = env->GetMethodID(clazz, \"<init>\", \"()V\");")
+            child("auto newObj = env->NewObject(clazz, constructor);")
+            declareMembers.forEach { javaMember ->
+                when {
+                    javaMember.type.isArray -> processMutatorArray(
+                        javaMember,
+                        import = { import(it) })
+
+                    javaMember.type.isEnum -> processMutatorEnum(javaMember)
+                    // int, byte, short, long, float, double, boolean and char
+                    javaMember.type.isPrimitive -> processMutatorPrimitive(javaMember)
+                    // Object, Any, Void, String
+                    else -> processMutatorObject(javaMember, import = { import(it) })
+                }
+            }
+            child("return newObj;")
+        }
+    }
+}
+
+fun CppFunctionBodyBuilder.processMutatorObject(
+    javaMember: Field,
+    import: (dependency: String) -> Unit
+) {
+    val fieldIdName = javaMember.name + "Field"
+    if (javaMember.toJavaType() == JNIType.JString) {
+        child("// process string")
+        child("auto ${javaMember.name} = env->NewStringUTF(source.${javaMember.name});")
+        child("env->SetObjectField(newObj, $fieldIdName, ${javaMember.name});")
+    } else if (javaMember.type.simpleName.startsWith("vk", true)) {
+        if (javaMember.type.isArray) {
+            child("${javaMember.type.componentType.simpleName}Mutator ${javaMember.name}Mutator(env);")
+            import("<${javaMember.type.componentType.simpleName}Mutator.h>")
+            child("env->SetObjectField(newObj, $fieldIdName, ${javaMember.name}Mutator.toObject(source.${javaMember.name}));")
+        } else {
+            child("${javaMember.type.simpleName}Mutator ${javaMember.name}Mutator(env);")
+            import("<${javaMember.type.simpleName}Mutator.h>")
+            child("env->SetObjectField(newObj, $fieldIdName, ${javaMember.name}Mutator.toObject(source.${javaMember.name}));")
+        }
+    } else {
+        child("// processing Any, Void, Null, Object")
+        child("env->SetObjectField(newObj, $fieldIdName, (jobject) source.${javaMember.name});")
+    }
+}
+
+
+fun CppFunctionBodyBuilder.processMutatorPrimitive(javaMember: Field) {
+    val fieldIdName = javaMember.name + "Field"
+    if (javaMember.toJavaType() == JNIType.JChar) {
+        child("// process char")
+        child("auto ${javaMember.name} = env->NewStringUTF(source.${javaMember.name});")
+        child("env->SetObjectField(newObj, $fieldIdName, ${javaMember.name});")
+    } else {
+        val functionName = javaMember.cast("source." + javaMember.name)
+        val assignPrimitiveValue = javaMember.setJavaValue(
+            "env",
+            "newObj",
+            fieldIdName,
+            functionName
+        )
+        child("$assignPrimitiveValue;")
+    }
+}
+
+fun CppFunctionBodyBuilder.processMutatorArray(
+    javaMember: Field,
+    import: (dependency: String) -> Unit
+) {
+    val fieldIdName = javaMember.name + "Field"
+    if (javaMember.type.componentType.isPrimitive) {
+        child("// processing primitive array")
+        val arraySize =
+            javaMember.getVkConstArray()?.arraySize ?: "<NO ARRAY SIZE>"
+        val buffer =
+            "reinterpret_cast<${javaMember.getArrayElementJavaType()} *>(source.${javaMember.name} )"
+        child("${javaMember.toJavaTypeArray()}  ${javaMember.name} = env->New${javaMember.type.componentType.simpleName.capitalize()}Array($arraySize);")
+        child(
+            "env->" + javaMember.setArrayRegion(
+                javaMember.name,
+                "0",
+                arraySize,
+                buffer
+            )
+        )
+        child("env->SetObjectField(newObj, $fieldIdName, ${javaMember.name});")
+        child("env->DeleteLocalRef(${javaMember.name});")
+    } else {
+        child("// processing non-primitive array")
+        child("// array data not yet implemented")
+        child("// ${javaMember.name}")
+        val javaArray = javaMember.getVkArray()
+        if (javaArray != null) {
+            val vulkanArrayName = "${javaMember.name}Array"
+
+            import("<${javaMember.type.componentType.simpleName}Mutator.h>")
+            child(
+                "jclass ${javaMember.name}Clazz = env->FindClass(\"${
+                    javaMember.type.componentType.name.replace(
+                        ".",
+                        "/"
+                    )
+                }\");"
+            )
+            child("${javaMember.toJavaTypeArray()} $vulkanArrayName = env->NewObjectArray(source.${javaArray.sizeAlias}, ${javaMember.name}Clazz, nullptr);")
+            child("for (int i = 0; i < source.${javaArray.sizeAlias}; ++i) {")
+            child("    auto element = source.${javaMember.name}[i];")
+            child("    auto obj = ${javaMember.type.componentType.simpleName}Mutator(env).toObject(element);")
+            child("    env->SetObjectArrayElement($vulkanArrayName, i, obj);")
+            child("}")
+            child("env->SetObjectField(newObj, $fieldIdName, $vulkanArrayName);")
+        }
+    }
+}
+
+fun CppFunctionBodyBuilder.processMutatorEnum(javaMember: Field) {
+    val fieldIdName = javaMember.name + "Field"
+    val functionName = javaMember.cast("source." + javaMember.name)
+    val assignEnumValue = javaMember.setJavaValue(
+        "env",
+        "newObj",
+        fieldIdName,
+        functionName
+    )
+    child("$assignEnumValue;")
 }

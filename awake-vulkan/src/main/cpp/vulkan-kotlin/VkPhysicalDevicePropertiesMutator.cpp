@@ -3,7 +3,7 @@
  *  Vulkan mutator for VkPhysicalDeviceProperties
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkPhysicalDevicePropertiesMutator.h>
+#include <includes/VkPhysicalDevicePropertiesMutator.h>
 
 VkPhysicalDevicePropertiesMutator::VkPhysicalDevicePropertiesMutator(JNIEnv *env) {
     this->env = env;
@@ -34,11 +34,13 @@ VkPhysicalDevicePropertiesMutator::toObject(VkPhysicalDeviceProperties source) {
     env->SetObjectField(newObj, deviceTypeField,
                         enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.deviceType),
                                                       "io/github/ronjunevaldoz/awake/vulkan/enums/VkPhysicalDeviceType"));
+    // processing primitive array
     jcharArray deviceName = env->NewCharArray(VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
     env->SetCharArrayRegion(deviceName, 0, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE,
                             reinterpret_cast<jchar *>(source.deviceName ));
     env->SetObjectField(newObj, deviceNameField, deviceName);
     env->DeleteLocalRef(deviceName);
+    // processing primitive array
     jbyteArray pipelineCacheUUID = env->NewByteArray(VK_UUID_SIZE);
     env->SetByteArrayRegion(pipelineCacheUUID, 0, VK_UUID_SIZE,
                             reinterpret_cast<jbyte *>(source.pipelineCacheUUID ));

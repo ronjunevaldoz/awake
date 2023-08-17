@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkOffset2D
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkOffset2DAccessor.h>
+#include <includes/VkOffset2DAccessor.h>
 
 VkOffset2DAccessor::VkOffset2DAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

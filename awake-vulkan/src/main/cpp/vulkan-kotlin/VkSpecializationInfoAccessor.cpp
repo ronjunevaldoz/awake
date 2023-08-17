@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkSpecializationInfo
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkSpecializationInfoAccessor.h>
+#include <includes/VkSpecializationInfoAccessor.h>
 
 VkSpecializationInfoAccessor::VkSpecializationInfoAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

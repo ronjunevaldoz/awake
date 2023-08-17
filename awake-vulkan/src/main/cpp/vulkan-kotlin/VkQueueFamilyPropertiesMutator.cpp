@@ -3,7 +3,7 @@
  *  Vulkan mutator for VkQueueFamilyProperties
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkQueueFamilyPropertiesMutator.h>
+#include <includes/VkQueueFamilyPropertiesMutator.h>
 
 VkQueueFamilyPropertiesMutator::VkQueueFamilyPropertiesMutator(JNIEnv *env) {
     this->env = env;

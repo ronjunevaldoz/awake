@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkStencilOpState
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkStencilOpStateAccessor.h>
+#include <includes/VkStencilOpStateAccessor.h>
 
 VkStencilOpStateAccessor::VkStencilOpStateAccessor(JNIEnv *env, jobject obj) {
     this->env = env;

@@ -3,7 +3,7 @@
  *  Vulkan accessor for VkVertexInputBindingDescription
  *  Created by Ron June Valdoz */
 
-#include  <includes/VkVertexInputBindingDescriptionAccessor.h>
+#include <includes/VkVertexInputBindingDescriptionAccessor.h>
 
 VkVertexInputBindingDescriptionAccessor::VkVertexInputBindingDescriptionAccessor(JNIEnv *env,
                                                                                  jobject obj) {
