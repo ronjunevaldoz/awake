@@ -22,18 +22,23 @@ jobject
 VkDebugUtilsObjectNameInfoEXTMutator::toObject(VkDebugUtilsObjectNameInfoEXT source) {
     auto constructor = env->GetMethodID(clazz, "<init>", "()V");
     auto newObj = env->NewObject(clazz, constructor);
-    env->SetObjectField(newObj, sTypeField,
-                        enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.sType),
-                                                      "io/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType"));
+    auto sType = enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.sType),
+                                               "io/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType");
+    env->SetObjectField(newObj, sTypeField, sType);
+    env->DeleteLocalRef(sType);
     // processing Any, Void, Null, Object
-    env->SetObjectField(newObj, pNextField, (jobject) source.pNext);
-    env->SetObjectField(newObj, objectTypeField,
-                        enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.objectType),
-                                                      "io/github/ronjunevaldoz/awake/vulkan/enums/VkObjectType"));
+    auto pNext = (jobject) source.pNext;
+    env->SetObjectField(newObj, pNextField, pNext);
+    env->DeleteLocalRef(pNext);
+    auto objectType = enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.objectType),
+                                                    "io/github/ronjunevaldoz/awake/vulkan/enums/VkObjectType");
+    env->SetObjectField(newObj, objectTypeField, objectType);
+    env->DeleteLocalRef(objectType);
     env->SetLongField(newObj, objectHandleField, static_cast<jlong>(source.objectHandle));
     // process string
     auto pObjectName = env->NewStringUTF(source.pObjectName);
     env->SetObjectField(newObj, pObjectNameField, pObjectName);
+    env->DeleteLocalRef(pObjectName);
     return newObj;
 }
 

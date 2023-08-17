@@ -19,12 +19,14 @@ jobject
 VkSurfaceFormatKHRMutator::toObject(VkSurfaceFormatKHR source) {
     auto constructor = env->GetMethodID(clazz, "<init>", "()V");
     auto newObj = env->NewObject(clazz, constructor);
-    env->SetObjectField(newObj, formatField,
-                        enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.format),
-                                                      "io/github/ronjunevaldoz/awake/vulkan/enums/VkFormat"));
-    env->SetObjectField(newObj, colorSpaceField,
-                        enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.colorSpace),
-                                                      "io/github/ronjunevaldoz/awake/vulkan/enums/VkColorSpaceKHR"));
+    auto format = enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.format),
+                                                "io/github/ronjunevaldoz/awake/vulkan/enums/VkFormat");
+    env->SetObjectField(newObj, formatField, format);
+    env->DeleteLocalRef(format);
+    auto colorSpace = enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.colorSpace),
+                                                    "io/github/ronjunevaldoz/awake/vulkan/enums/VkColorSpaceKHR");
+    env->SetObjectField(newObj, colorSpaceField, colorSpace);
+    env->DeleteLocalRef(colorSpace);
     return newObj;
 }
 

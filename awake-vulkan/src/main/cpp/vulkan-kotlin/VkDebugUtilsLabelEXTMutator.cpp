@@ -20,14 +20,18 @@ jobject
 VkDebugUtilsLabelEXTMutator::toObject(VkDebugUtilsLabelEXT source) {
     auto constructor = env->GetMethodID(clazz, "<init>", "()V");
     auto newObj = env->NewObject(clazz, constructor);
-    env->SetObjectField(newObj, sTypeField,
-                        enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.sType),
-                                                      "io/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType"));
+    auto sType = enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.sType),
+                                               "io/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType");
+    env->SetObjectField(newObj, sTypeField, sType);
+    env->DeleteLocalRef(sType);
     // processing Any, Void, Null, Object
-    env->SetObjectField(newObj, pNextField, (jobject) source.pNext);
+    auto pNext = (jobject) source.pNext;
+    env->SetObjectField(newObj, pNextField, pNext);
+    env->DeleteLocalRef(pNext);
     // process string
     auto pLabelName = env->NewStringUTF(source.pLabelName);
     env->SetObjectField(newObj, pLabelNameField, pLabelName);
+    env->DeleteLocalRef(pLabelName);
     // processing primitive array
     jfloatArray color = env->NewFloatArray(4);
     env->SetFloatArrayRegion(color, 0, 4, reinterpret_cast<jfloat *>(source.color ));

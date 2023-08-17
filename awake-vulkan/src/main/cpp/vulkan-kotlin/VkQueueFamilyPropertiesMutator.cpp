@@ -24,9 +24,10 @@ VkQueueFamilyPropertiesMutator::toObject(VkQueueFamilyProperties source) {
     env->SetIntField(newObj, queueCountField, static_cast<jint>(source.queueCount));
     env->SetIntField(newObj, timestampValidBitsField, static_cast<jint>(source.timestampValidBits));
     VkExtent3DMutator minImageTransferGranularityMutator(env);
-    env->SetObjectField(newObj, minImageTransferGranularityField,
-                        minImageTransferGranularityMutator.toObject(
-                                source.minImageTransferGranularity));
+    auto minImageTransferGranularity = minImageTransferGranularityMutator.toObject(
+            source.minImageTransferGranularity);
+    env->SetObjectField(newObj, minImageTransferGranularityField, minImageTransferGranularity);
+    env->DeleteLocalRef(minImageTransferGranularity);
     return newObj;
 }
 

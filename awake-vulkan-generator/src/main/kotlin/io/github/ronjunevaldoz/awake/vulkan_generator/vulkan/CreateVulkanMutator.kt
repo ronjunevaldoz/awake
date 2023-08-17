@@ -143,24 +143,26 @@ fun CppFunctionBodyBuilder.processMutatorObject(
     import: (dependency: String) -> Unit
 ) {
     val fieldIdName = javaMember.name + "Field"
+    val objName = javaMember.name
     if (javaMember.toJavaType() == JNIType.JString) {
         child("// process string")
-        child("auto ${javaMember.name} = env->NewStringUTF(source.${javaMember.name});")
-        child("env->SetObjectField(newObj, $fieldIdName, ${javaMember.name});")
+        child("auto $objName = env->NewStringUTF(source.$objName);")
     } else if (javaMember.type.simpleName.startsWith("vk", true)) {
         if (javaMember.type.isArray) {
-            child("${javaMember.type.componentType.simpleName}Mutator ${javaMember.name}Mutator(env);")
             import("<${javaMember.type.componentType.simpleName}Mutator.h>")
-            child("env->SetObjectField(newObj, $fieldIdName, ${javaMember.name}Mutator.toObject(source.${javaMember.name}));")
+            child("${javaMember.type.componentType.simpleName}Mutator ${objName}Mutator(env);")
+            child("auto $objName = ${objName}Mutator.toObject(source.$objName);")
         } else {
-            child("${javaMember.type.simpleName}Mutator ${javaMember.name}Mutator(env);")
             import("<${javaMember.type.simpleName}Mutator.h>")
-            child("env->SetObjectField(newObj, $fieldIdName, ${javaMember.name}Mutator.toObject(source.${javaMember.name}));")
+            child("${javaMember.type.simpleName}Mutator ${javaMember.name}Mutator(env);")
+            child("auto $objName = ${objName}Mutator.toObject(source.$objName);")
         }
     } else {
         child("// processing Any, Void, Null, Object")
-        child("env->SetObjectField(newObj, $fieldIdName, (jobject) source.${javaMember.name});")
+        child("auto $objName = (jobject) source.$objName;")
     }
+    child("env->SetObjectField(newObj, $fieldIdName, $objName);")
+    child("env->DeleteLocalRef($objName);")
 }
 
 
@@ -206,8 +208,6 @@ fun CppFunctionBodyBuilder.processMutatorArray(
         child("env->DeleteLocalRef(${javaMember.name});")
     } else {
         child("// processing non-primitive array")
-        child("// array data not yet implemented")
-        child("// ${javaMember.name}")
         val javaArray = javaMember.getVkArray()
         if (javaArray != null) {
             val vulkanArrayName = "${javaMember.name}Array"
@@ -226,8 +226,11 @@ fun CppFunctionBodyBuilder.processMutatorArray(
             child("    auto element = source.${javaMember.name}[i];")
             child("    auto obj = ${javaMember.type.componentType.simpleName}Mutator(env).toObject(element);")
             child("    env->SetObjectArrayElement($vulkanArrayName, i, obj);")
+            child("    env->DeleteLocalRef(obj);")
             child("}")
             child("env->SetObjectField(newObj, $fieldIdName, $vulkanArrayName);")
+            child("env->DeleteLocalRef($vulkanArrayName);")
+            child("env->DeleteLocalRef(${javaMember.name}Clazz);")
         }
     }
 }
@@ -239,7 +242,9 @@ fun CppFunctionBodyBuilder.processMutatorEnum(javaMember: Field) {
         "env",
         "newObj",
         fieldIdName,
-        functionName
+        javaMember.name
     )
+    child("auto ${javaMember.name} = $functionName;")
     child("$assignEnumValue;")
+    child("env->DeleteLocalRef(${javaMember.name});")
 }

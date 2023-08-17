@@ -31,9 +31,10 @@ VkPhysicalDevicePropertiesMutator::toObject(VkPhysicalDeviceProperties source) {
     env->SetIntField(newObj, driverVersionField, static_cast<jint>(source.driverVersion));
     env->SetIntField(newObj, vendorIDField, static_cast<jint>(source.vendorID));
     env->SetIntField(newObj, deviceIDField, static_cast<jint>(source.deviceID));
-    env->SetObjectField(newObj, deviceTypeField,
-                        enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.deviceType),
-                                                      "io/github/ronjunevaldoz/awake/vulkan/enums/VkPhysicalDeviceType"));
+    auto deviceType = enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.deviceType),
+                                                    "io/github/ronjunevaldoz/awake/vulkan/enums/VkPhysicalDeviceType");
+    env->SetObjectField(newObj, deviceTypeField, deviceType);
+    env->DeleteLocalRef(deviceType);
     // processing primitive array
     jcharArray deviceName = env->NewCharArray(VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
     env->SetCharArrayRegion(deviceName, 0, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE,
@@ -47,10 +48,13 @@ VkPhysicalDevicePropertiesMutator::toObject(VkPhysicalDeviceProperties source) {
     env->SetObjectField(newObj, pipelineCacheUUIDField, pipelineCacheUUID);
     env->DeleteLocalRef(pipelineCacheUUID);
     VkPhysicalDeviceLimitsMutator limitsMutator(env);
-    env->SetObjectField(newObj, limitsField, limitsMutator.toObject(source.limits));
+    auto limits = limitsMutator.toObject(source.limits);
+    env->SetObjectField(newObj, limitsField, limits);
+    env->DeleteLocalRef(limits);
     VkPhysicalDeviceSparsePropertiesMutator sparsePropertiesMutator(env);
-    env->SetObjectField(newObj, sparsePropertiesField,
-                        sparsePropertiesMutator.toObject(source.sparseProperties));
+    auto sparseProperties = sparsePropertiesMutator.toObject(source.sparseProperties);
+    env->SetObjectField(newObj, sparsePropertiesField, sparseProperties);
+    env->DeleteLocalRef(sparseProperties);
     return newObj;
 }
 

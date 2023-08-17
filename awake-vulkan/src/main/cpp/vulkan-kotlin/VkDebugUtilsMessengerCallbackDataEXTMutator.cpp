@@ -29,22 +29,25 @@ jobject
 VkDebugUtilsMessengerCallbackDataEXTMutator::toObject(VkDebugUtilsMessengerCallbackDataEXT source) {
     auto constructor = env->GetMethodID(clazz, "<init>", "()V");
     auto newObj = env->NewObject(clazz, constructor);
-    env->SetObjectField(newObj, sTypeField,
-                        enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.sType),
-                                                      "io/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType"));
+    auto sType = enum_utils::setEnumFromVulkan(env, static_cast<jint>(source.sType),
+                                               "io/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType");
+    env->SetObjectField(newObj, sTypeField, sType);
+    env->DeleteLocalRef(sType);
     // processing Any, Void, Null, Object
-    env->SetObjectField(newObj, pNextField, (jobject) source.pNext);
+    auto pNext = (jobject) source.pNext;
+    env->SetObjectField(newObj, pNextField, pNext);
+    env->DeleteLocalRef(pNext);
     env->SetIntField(newObj, flagsField, static_cast<jint>(source.flags));
     // process string
     auto pMessageIdName = env->NewStringUTF(source.pMessageIdName);
     env->SetObjectField(newObj, pMessageIdNameField, pMessageIdName);
+    env->DeleteLocalRef(pMessageIdName);
     env->SetIntField(newObj, messageIdNumberField, static_cast<jint>(source.messageIdNumber));
     // process string
     auto pMessage = env->NewStringUTF(source.pMessage);
     env->SetObjectField(newObj, pMessageField, pMessage);
+    env->DeleteLocalRef(pMessage);
     // processing non-primitive array
-    // array data not yet implemented
-    // pQueueLabels
     jclass pQueueLabelsClazz = env->FindClass(
             "io/github/ronjunevaldoz/awake/vulkan/models/info/debug/VkDebugUtilsLabelEXT");
     jobjectArray pQueueLabelsArray = env->NewObjectArray(source.queueLabelCount, pQueueLabelsClazz,
@@ -53,11 +56,12 @@ VkDebugUtilsMessengerCallbackDataEXTMutator::toObject(VkDebugUtilsMessengerCallb
         auto element = source.pQueueLabels[i];
         auto obj = VkDebugUtilsLabelEXTMutator(env).toObject(element);
         env->SetObjectArrayElement(pQueueLabelsArray, i, obj);
+        env->DeleteLocalRef(obj);
     }
     env->SetObjectField(newObj, pQueueLabelsField, pQueueLabelsArray);
+    env->DeleteLocalRef(pQueueLabelsArray);
+    env->DeleteLocalRef(pQueueLabelsClazz);
     // processing non-primitive array
-    // array data not yet implemented
-    // pCmdBufLabels
     jclass pCmdBufLabelsClazz = env->FindClass(
             "io/github/ronjunevaldoz/awake/vulkan/models/info/debug/VkDebugUtilsLabelEXT");
     jobjectArray pCmdBufLabelsArray = env->NewObjectArray(source.cmdBufLabelCount,
@@ -66,11 +70,12 @@ VkDebugUtilsMessengerCallbackDataEXTMutator::toObject(VkDebugUtilsMessengerCallb
         auto element = source.pCmdBufLabels[i];
         auto obj = VkDebugUtilsLabelEXTMutator(env).toObject(element);
         env->SetObjectArrayElement(pCmdBufLabelsArray, i, obj);
+        env->DeleteLocalRef(obj);
     }
     env->SetObjectField(newObj, pCmdBufLabelsField, pCmdBufLabelsArray);
+    env->DeleteLocalRef(pCmdBufLabelsArray);
+    env->DeleteLocalRef(pCmdBufLabelsClazz);
     // processing non-primitive array
-    // array data not yet implemented
-    // pObjects
     jclass pObjectsClazz = env->FindClass(
             "io/github/ronjunevaldoz/awake/vulkan/models/info/debug/VkDebugUtilsObjectNameInfoEXT");
     jobjectArray pObjectsArray = env->NewObjectArray(source.objectCount, pObjectsClazz, nullptr);
@@ -78,8 +83,11 @@ VkDebugUtilsMessengerCallbackDataEXTMutator::toObject(VkDebugUtilsMessengerCallb
         auto element = source.pObjects[i];
         auto obj = VkDebugUtilsObjectNameInfoEXTMutator(env).toObject(element);
         env->SetObjectArrayElement(pObjectsArray, i, obj);
+        env->DeleteLocalRef(obj);
     }
     env->SetObjectField(newObj, pObjectsField, pObjectsArray);
+    env->DeleteLocalRef(pObjectsArray);
+    env->DeleteLocalRef(pObjectsClazz);
     return newObj;
 }
 

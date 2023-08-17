@@ -22,7 +22,6 @@ public:
     VkSurfaceFormatKHRMutator(JNIEnv *env);
 
     jobject toObject(VkSurfaceFormatKHR source);
-
     ~VkSurfaceFormatKHRMutator();
 };
 
