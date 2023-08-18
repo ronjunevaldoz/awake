@@ -61,6 +61,7 @@ set(VULKAN_KOTLIN_SOURCES
         VkExtent3DAccessor.cpp
         VkPipelineRasterizationStateCreateInfoAccessor.cpp
         VkPipelineMultisampleStateCreateInfoAccessor.cpp
+        VkFramebufferCreateInfoAccessor.cpp
         VkStencilOpStateAccessor.cpp
         VkRenderPassCreateInfoAccessor.cpp
         VkPhysicalDevicePropertiesMutator.cpp

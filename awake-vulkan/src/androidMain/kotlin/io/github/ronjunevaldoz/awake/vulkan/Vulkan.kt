@@ -24,6 +24,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.VkExtensionProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.VkImage
 import io.github.ronjunevaldoz.awake.vulkan.models.VkLayerProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkFramebufferCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkInstanceCreateInfo
@@ -158,4 +159,10 @@ actual object Vulkan {
     ): Long
 
     actual external fun vkDestroyRenderPass(device: Long, renderPass: Long)
+    actual external fun vkCreateFramebuffer(
+        device: Long,
+        framebufferInfo: VkFramebufferCreateInfo
+    ): Long
+
+    actual external fun vkDestroyFramebuffer(device: Long, framebuffer: Long)
 }

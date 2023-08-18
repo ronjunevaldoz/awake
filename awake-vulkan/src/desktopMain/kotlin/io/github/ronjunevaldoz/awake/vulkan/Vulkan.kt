@@ -22,7 +22,9 @@ package io.github.ronjunevaldoz.awake.vulkan
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPresentModeKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtensionProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.VkImage
+import io.github.ronjunevaldoz.awake.vulkan.models.VkLayerProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkFramebufferCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkInstanceCreateInfo
@@ -43,7 +45,7 @@ actual object Vulkan {
     /**
      * Creates a new Vulkan instance with the provided application information.
      *
-     * @param appInfo The VkApplicationInfo containing the application-specific information.
+     * @param createInfo The VkInstanceCreateInfo containing the application-specific information.
      * @return The handle to the created Vulkan instance.
      */
     actual fun vkCreateInstance(createInfo: VkInstanceCreateInfo): Long {
@@ -63,7 +65,16 @@ actual object Vulkan {
      *
      * @return An array of VkExtensionProperties representing the available instance extensions.
      */
-    actual fun vkEnumerateInstanceExtensionProperties(): Array<VkExtensionProperties> {
+    actual fun vkEnumerateInstanceLayerProperties(): Array<VkLayerProperties> {
+        TODO("Not yet implemented")
+    }
+
+    /**
+     * Enumerates the Vulkan extension properties available for the instance.
+     *
+     * @return An array of VkExtensionProperties representing the available instance extensions.
+     */
+    actual fun vkEnumerateInstanceExtensionProperties(layerName: String?): Array<VkExtensionProperties> {
         TODO("Not yet implemented")
     }
 
@@ -73,7 +84,10 @@ actual object Vulkan {
      * @param physicalDevice The handle to the Vulkan physical device.
      * @return An array of VkExtensionProperties representing the available device extensions.
      */
-    actual fun vkEnumerateDeviceExtensionProperties(physicalDevice: Long): Array<VkExtensionProperties> {
+    actual fun vkEnumerateDeviceExtensionProperties(
+        physicalDevice: Long,
+        layerName: String?
+    ): Array<VkExtensionProperties> {
         TODO("Not yet implemented")
     }
 
@@ -83,7 +97,7 @@ actual object Vulkan {
      * @param instance The handle to the Vulkan instance.
      * @return An array of VkPhysicalDevice handle in a form of type Long
      */
-    actual fun vkEnumeratePhysicalDevices(instance: Long): List<Long> {
+    actual fun vkEnumeratePhysicalDevices(instance: Long): LongArray {
         TODO("Not yet implemented")
     }
 
@@ -303,6 +317,16 @@ actual object Vulkan {
     actual fun vkDestroyPipelineCache(device: Long, pipelineCache: Long) {
     }
 
+    actual fun vkCreatePipelineLayout(
+        device: Long,
+        createInfo: VkPipelineLayoutCreateInfo
+    ): Long {
+        TODO("Not yet implemented")
+    }
+
+    actual fun vkDestroyPipelineLayout(device: Long, pipelineLayout: Long) {
+    }
+
     actual fun vkCreateGraphicsPipeline(
         device: Long,
         pipelineCache: Long,
@@ -314,26 +338,6 @@ actual object Vulkan {
     actual fun vkDestroyPipeline(device: Long, pipeline: Long) {
     }
 
-    actual fun createDebugUtilsMessenger(
-        instance: Long,
-        createInfo: VkDebugUtilsMessengerCreateInfoEXT
-    ): Long {
-        TODO("Not yet implemented")
-    }
-
-    actual fun destroyDebugUtilsMessenger(instance: Long, debugUtilsMessenger: Long) {
-    }
-
-    actual fun vkCreatePipelineLayout(
-        device: Long,
-        createInfo: VkPipelineLayoutCreateInfo
-    ): Long {
-        TODO("Not yet implemented")
-    }
-
-    actual fun vkDestroyPipelineLayout(device: Long, pipelineLayout: Long) {
-    }
-
     actual fun vkCreateRenderPass(
         device: Long,
         createInfo: VkRenderPassCreateInfo
@@ -342,5 +346,25 @@ actual object Vulkan {
     }
 
     actual fun vkDestroyRenderPass(device: Long, renderPass: Long) {
+    }
+
+    actual fun vkCreateFramebuffer(
+        device: Long,
+        framebufferInfo: VkFramebufferCreateInfo
+    ): Long {
+        TODO("Not yet implemented")
+    }
+
+    actual fun vkDestroyFramebuffer(device: Long, framebuffer: Long) {
+    }
+
+    actual fun createDebugUtilsMessenger(
+        instance: Long,
+        createInfo: VkDebugUtilsMessengerCreateInfoEXT
+    ): Long {
+        TODO("Not yet implemented")
+    }
+
+    actual fun destroyDebugUtilsMessenger(instance: Long, debugUtilsMessenger: Long) {
     }
 }

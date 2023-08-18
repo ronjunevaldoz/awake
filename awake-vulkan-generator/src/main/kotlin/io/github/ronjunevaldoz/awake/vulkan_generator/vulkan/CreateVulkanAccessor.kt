@@ -28,6 +28,7 @@ import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getArrayElement
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getArrayElementJavaType
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getArrayRegion
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getJavaValue
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getObjectJavaValue
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getVkArray
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getVkHandle
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.isVkConstArray
@@ -93,7 +94,7 @@ fun createVulkanAccessor(clazz: Class<*>) {
             val hasArrayField = true
 
             // generate getters
-            generateVulkanGetters(clazz, declareMembers, hasArrayField)
+            generateVulkanGetters(clazz, declareMembers)
 
 
             generateVulkanFromObject(clazz, declareMembers, hasArrayField)
@@ -113,15 +114,9 @@ fun createVulkanAccessor(clazz: Class<*>) {
 
 private fun CppClassBuilder.generateVulkanGetters(
     clazz: Class<*>,
-    declareMembers: Array<Field>,
-    hasArrayField: Boolean
+    declareMembers: Array<Field>
 ) {
     declareMembers.forEach { javaMember ->
-        val type = if (javaMember.type.isArray) {
-            javaMember.toJavaTypeArray()
-        } else {
-            javaMember.toJavaType()
-        }
         val returnType: String = if (javaMember.type.isEnum) {
             javaMember.type.simpleName
         } else {
@@ -171,275 +166,18 @@ private fun CppClassBuilder.generateVulkanGetters(
             }
         }
 
-        fun CppFunctionBodyBuilder.createBody(void: Boolean = false) {
-            val javaValue = javaMember.getJavaValue(
-                "env",
-                "obj",
-                javaMember.name + "Field"
-            )
-
-            val suffix = javaMember.javaTypeSuffix()
-            val localVariable = javaMember.name + suffix
-            val arrayName = javaMember.name
-            fun processArray() {
-                fun processDefaultArrayData(clazzInfo: String, arrayVariable: String) {
-                    // generate array size assignee
-                    val vkArray = javaMember.getVkArray()
-                    if (vkArray != null) {
-                        val arraySizeName = vkArray.sizeAlias // javaMember.name + "Count"
-                        if (arraySizeName.isNotEmpty()) {
-                            child("    $clazzInfo.${arraySizeName} = 0;")
-                        }
-                        child("    clazzInfo.$arrayName = nullptr;")
-                    } else if (javaMember.isVkConstArray()) {
-                        child("    // const array")
-                        child("    // clazzInfo.$arrayName = nullptr;")
-                    } else {
-                        child("    clazzInfo.$arrayName = nullptr;")
-                    }
-                    child("    env->DeleteLocalRef($arrayVariable); // release null reference")
-                }
-
-                fun processStringArray(javaType: JNIType) {
-                    child("$returnType $arrayName;")
-                    child("for (int i = 0; i < size; ++i) {")
-                    child(
-                        "     auto element = ($javaType) env->${
-                            javaMember.getArrayElement(
-                                localVariable,
-                                "i"
-                            )
-                        };"
-                    )
-                    child("     auto str = env->GetStringUTFChars(element, nullptr);")
-                    child("     auto result = strdup(str); // Allocate memory and copy the string")
-                    child("     env->ReleaseStringUTFChars(element, str); // Release the local string reference")
-                    child("     $arrayName.push_back(result);")
-                    child("}")
-                }
-
-                fun processObjectArray(javaType: JNIType) {
-                    if (javaMember.type.componentType.isEnum) {
-                        // process enum array
-                        child("$returnType $arrayName;")
-                        child("for (int i = 0; i < size; ++i) {")
-                        child(
-                            "     auto element = ($javaType) env->${
-                                javaMember.getArrayElement(
-                                    localVariable,
-                                    "i"
-                                )
-                            };"
-                        )
-                        val enumName = javaMember.type.componentType.simpleName
-                        child("     $arrayName.push_back(static_cast<$enumName>(enum_utils::getEnumFromObject(env, element))); // type is enum")
-                        child("}")
-                    } else {
-                        val accessor =
-                            "${javaMember.type.componentType.simpleName}Accessor"  // TODO fix hardcoded
-
-                        child("$returnType $arrayName;")
-                        child("for (int i = 0; i < size; ++i) {")
-                        child(
-                            "     auto element = ($javaType) env->${
-                                javaMember.getArrayElement(
-                                    localVariable,
-                                    "i"
-                                )
-                            };"
-                        )
-                        // possible std::vector<void*> or void*
-                        if (returnType !in listOf("void*", "std::vector<void*>")) {
-                            import("<$accessor.cpp>") // TODO move to .h
-                            child("    // experimental optimize accessor")
-                            child("    $accessor accessor(env, element);") // TODO fix hardcoded
-                            if (void) {
-                                child("    ${javaMember.type.componentType.simpleName} ref{};")
-                                child("    accessor.fromObject(ref);")
-                                child("    $arrayName.push_back(ref);")
-                            } else {
-                                child("    $arrayName.push_back(accessor.fromObject());")
-                            }
-                        } else {
-                            // possible type is Any or Null??
-                            child("    $arrayName.push_back(element); // type is Any??")
-                        }
-                        child("    env->DeleteLocalRef(element); // release element reference")
-                        child("}")
-                    }
-                }
-
-                fun processPrimitiveArray() {
-                    child("// primitive array?")
-                    child("$returnType $arrayName(size);")
-                    child(
-                        "env->${
-                            javaMember.getArrayRegion(
-                                localVariable,
-                                "0",
-                                "size",
-                                "reinterpret_cast<${javaMember.getArrayElementJavaType()} *>(${arrayName}.data())"
-                            )
-                        }"
-                    )
-                }
-
-                fun processArrayData(clazzInfo: String, arrayVariable: String) {
-                    val elementType = javaMember.type.componentType
-                    // generate array size assignee
-                    val vkArray = javaMember.getVkArray()
-                    if (vkArray != null) {
-                        val arraySizeName = vkArray.sizeAlias // javaMember.name + "Count"
-                        if (arraySizeName.isNotEmpty()) {
-                            val stride = if (vkArray.stride == UInt::class) {
-                                " * sizeof(uint32_t)"
-                            } else {
-                                ""
-                            }
-                            child("auto $arraySizeName = static_cast<uint32_t>($arrayName.size()$stride);")
-                            child("$clazzInfo.${arraySizeName} = $arraySizeName;")
-                        } else {
-                            child("// no array size generated")
-                        }
-                    }
-                    if (elementType.isPrimitive) {
-                        if (javaMember.isVkConstArray()) {
-                            // fixed size array
-                            child("std::copy(${arrayName}.begin(), ${arrayName}.end(), $clazzInfo.${arrayName}); // fixed array size")
-                        } else {
-                            child("// Make a copy of the primitive to ensure proper memory management;")
-                            val newData = if (javaMember.toJavaTypeArray() == JNIType.JIntArray) {
-                                "uint32_t"
-                            } else {
-                                javaMember.type.componentType.simpleName
-                            }
-                            child("auto copy = new ${newData}[size];")
-                            child("std::copy(${arrayName}.begin(), ${arrayName}.end(), copy);")
-                            child("clazzInfo.$arrayName = copy;")
-//                            child("$clazzInfo.${arrayName} = $arrayName.data(); // primitive $comment")
-                        }
-                    } else {
-//                        child("$clazzInfo.${arrayName} = $arrayName.data(); // object $comment")
-                        child("// Make a copy of the object to ensure proper memory management;")
-                        val newData = if (javaMember.toJavaType() == JNIType.JString) {
-                            "const char*"
-                        } else if (!javaMember.type.componentType.simpleName.startsWith("vk", true)
-                            && javaMember.toJavaType() == JNIType.JObject
-                        ) {
-                            "const void*"
-                        } else if (javaMember.toJavaType() == JNIType.JLong && javaMember.isVkHandle()) {
-                            javaMember.getVkHandle().name
-                        } else if (javaMember.toJavaType() == JNIType.JInt) {
-                            "uint32_t"
-                        } else {
-                            javaMember.type.componentType.simpleName
-                        }
-                        child("auto copy = new ${newData}[size];")
-                        child("std::copy(${arrayName}.begin(), ${arrayName}.end(), copy);")
-                        child("clazzInfo.$arrayName = copy;")
-                    }
-                    child("env->DeleteLocalRef($arrayVariable); // release reference")
-                }
-
-
-                child("auto $localVariable = ($type) $javaValue;")
-                child("if($localVariable == nullptr) {")
-                processDefaultArrayData("clazzInfo", localVariable)
-                if (void) {
-                    child("    return;")
-                } else {
-                    child("    return {};")
-                }
-                child("}")
-                child("auto size = env->GetArrayLength($localVariable);")
-                when (val javaElementType = javaMember.getArrayElementJavaType()) {
-                    JNIType.JString -> processStringArray(javaElementType)
-                    JNIType.JObject -> processObjectArray(javaElementType)
-                    else -> processPrimitiveArray()
-                }
-                child("// processing array data")
-                processArrayData("clazzInfo", localVariable)
-            }
-
-            fun processObject() {
-                // object
-                if (type == JNIType.JString) {
-                    child("auto $localVariable = ($type) $javaValue;")
-                    child("auto str = ($returnType) env->GetStringUTFChars($localVariable, nullptr);")
-                    child("auto result = strdup(str); // Allocate memory and copy the string")
-                    child("env->ReleaseStringUTFChars($localVariable, str); // Release the local string reference")
-                    child("clazzInfo.${javaMember.name} = result;")
-                } else {
-                    if (javaMember.isVkHandle()) {
-                        child("return reinterpret_cast<$returnType>($javaValue); // VkHandle from object??")
-                    } else if (returnType.startsWith("vk", true)) {
-                        // vulkan object
-                        // object is null??
-                        // should be accessed by an accessor
-                        val accessor =
-                            "${javaMember.type.simpleName}Accessor"  // TODO fix hardcoded
-                        import("<$accessor.cpp>") // TODO move to .h
-                        child("auto $localVariable = ($type) $javaValue;")
-                        child("if($localVariable == nullptr) {")
-                        if (hasArrayField) {
-                            child("    env->DeleteLocalRef($localVariable); // Delete null object reference")
-                            child("    return;")
-                        } else {
-                            child("    return {};")
-                        }
-                        child("}")
-                        child("$accessor accessor(env, $localVariable);") // TODO fix hardcoded
-                        // experimental
-                        if (void) {
-                            child("${javaMember.type.simpleName} ref{};")
-                            child("accessor.fromObject(ref);")
-                            if (javaMember.isVkPointer()) {
-                                child("clazzInfo.${javaMember.name} = &ref;")
-                            } else {
-                                child("clazzInfo.${javaMember.name} = ref;")
-                            }
-                            child("env->DeleteLocalRef($localVariable); // Delete object reference")
-                        } else {
-                            child("return (${returnType}) (accessor.fromObject()); // Object is null, should be accessed by an accessor")
-                        }
-                    } else {
-                        if (void) {
-                            child("auto ref = (${returnType}) ($type) $javaValue; // Any Object")
-                            child("clazzInfo.${javaMember.name} = ref;")
-                        } else {
-                            child("return (${returnType}) ($type) $javaValue; // Any Object")
-                        }
-                    }
-                }
-            }
-
-            fun processEnum() {
-                child("auto $localVariable = ($type) $javaValue;")
-                child("auto enumValue = (${returnType}) enum_utils::getEnumFromObject(env, $localVariable);")
-                child("env->DeleteLocalRef($localVariable); // release enum reference")
-                child("return enumValue;")
-            }
-
-            fun processPrimitive() {
-                if (javaMember.isVkHandle()) {
-                    child("auto value = $javaValue;")
-                    child("if(value == 0) {")
-                    child("     return VK_NULL_HANDLE;")
-                    child("}")
-                    child("return reinterpret_cast<$returnType>(value); // VkHandle")
-                } else if (javaMember.isVkPointer()) {
-                    child("auto ptr = ($returnType) $javaValue; // Primitive Pointer")
-                    child("clazzInfo.${javaMember.name} = &ptr; // Primitive Pointer")
-                } else {
-                    child("return (${returnType}) ($type) $javaValue; // primitive")
-                }
-            }
-            // convert to vulkan value
+        fun CppFunctionBodyBuilder.createBody() {
+            val void = getReturnType(javaMember.type) == "void"
             when {
-                javaMember.type.isEnum -> processEnum()
-                javaMember.type.isPrimitive -> processPrimitive()
-                javaMember.type.isArray -> processArray()
-                else -> processObject()
+                javaMember.type.isEnum -> processEnumAccessor(javaMember, returnType)
+                javaMember.type.isPrimitive -> processPrimitiveAccessor(javaMember, returnType)
+                javaMember.type.isArray -> processArrayAccessor(
+                    void,
+                    javaMember,
+                    returnType,
+                    import = { import(it) })
+
+                else -> processObjectAccessor(void, javaMember, returnType, import = { import(it) })
             }
         }
         function(
@@ -449,91 +187,337 @@ private fun CppClassBuilder.generateVulkanGetters(
             getParameter(javaMember.type)
         ) {
             body(2) {
-                createBody(void = getReturnType(javaMember.type) == "void")
+                createBody()
             }
         }
     }
 }
 
-private fun CppClassBuilder.generateVulkanFromObject(
-    clazz: Class<*>,
-    declareMembers: Array<Field>,
-    hasArrayField: Boolean
+fun CppFunctionBodyBuilder.processArrayAccessor(
+    void: Boolean,
+    javaMember: Field,
+    returnType: String,
+    import: (dependency: String) -> Unit
 ) {
-    val clazzInfo = "clazzInfo"
-    fun CppFunctionBodyBuilder.createBody(void: Boolean = false) {
-        if (!void) {
-            child("${clazz.simpleName} $clazzInfo{};")
+    val arrayName = javaMember.name
+    val suffix = javaMember.javaTypeSuffix()
+    val localVariable = javaMember.name + suffix
+    val javaType = javaMember.toJavaTypeArray()
+    val javaValue = javaMember.getJavaValue(
+        "env",
+        "obj",
+        javaMember.name + "Field"
+    )
+
+    fun processDefaultElement(clazzInfo: String, arrayVariable: String) {
+        // generate array size assignee
+        val vkArray = javaMember.getVkArray()
+        if (vkArray != null) {
+            val arraySizeName = vkArray.sizeAlias // javaMember.name + "Count"
+            if (arraySizeName.isNotEmpty()) {
+                child("    $clazzInfo.${arraySizeName} = 0;")
+            }
+            child("    clazzInfo.$arrayName = nullptr;")
+        } else if (javaMember.isVkConstArray()) {
+            child("    // const array")
+            child("    // clazzInfo.$arrayName = nullptr;")
+        } else {
+            child("    clazzInfo.$arrayName = nullptr;")
         }
-        declareMembers.forEach { javaMember ->
-            val functionName = "get" + javaMember.name
-            val returnType: String = if (javaMember.type.isEnum) {
-                javaMember.type.simpleName
-            } else if (javaMember.isVkHandle()) {
-                javaMember.getVkHandle().name
-            } else {
-                javaMember.toVulkanType()
-            }
-
-            fun generateEnum(comment: String) {
-                child("$clazzInfo.${javaMember.name} = ${functionName}(); // $comment")
-            }
-
-            fun generatePrimitive(comment: String) {
-                child("$clazzInfo.${javaMember.name} = ${functionName}(); // $comment")
-            }
-
-
-            fun generateDefault(returnType: String, comment: String) {
-                if (returnType.contains("void", true)
-                    || returnType.contains("char", true)
-                    || returnType.startsWith("vk", true)
-                ) {
-                    child("${functionName}(clazzInfo); // $comment")
-                } else {
-                    child("$clazzInfo.${javaMember.name} = ${functionName}(); // $comment")
-                }
-            }
-
-            fun generateVkHandle(comment: String) {
-                child("$clazzInfo.${javaMember.name} = ${functionName}(); // $comment")
-            }
-
-            fun generatePointer(comment: String) {
-                child("${functionName}(clazzInfo); // $comment")
-            }
-
-            fun processArrayData(comment: String) {
-                val elementType = javaMember.type.componentType
-                child("${functionName}(clazzInfo);  // ${elementType.simpleName} $comment")
-            }
-            if (javaMember.type.isArray) {
-                processArrayData("Object Array")
-            } else if (javaMember.isVkPointer()) {
-                generatePointer("Pointer")
-            } else if (javaMember.isVkHandle()) {
-                generateVkHandle("VkHandle")
-            } else if (javaMember.type.isEnum) {
-                generateEnum("Enum $returnType")
-            } else if (javaMember.type.isPrimitive) {
-                generatePrimitive("Primitive $returnType")
-            } else {
-                generateDefault(returnType, "Other $returnType")
-            }
-        }
-        if (!void) {
-            child("return clazzInfo;")
-        }
+        child("    env->DeleteLocalRef($arrayVariable); // release null reference")
     }
 
-    function(
-        1,
-        if (hasArrayField) "void" else clazz.simpleName,
-        "fromObject",
-        if (hasArrayField) listOf(Pair(clazzInfo, clazz.simpleName + "&")) else emptyList()
-    ) {
-        body(2) {
-            createBody(void = hasArrayField)
+    fun processStringElement(javaType: JNIType) {
+        child("$returnType $arrayName;")
+        child("for (int i = 0; i < size; ++i) {")
+        child(
+            "     auto element = ($javaType) env->${
+                javaMember.getArrayElement(
+                    localVariable,
+                    "i"
+                )
+            };"
+        )
+        child("     auto str = env->GetStringUTFChars(element, nullptr);")
+        child("     auto result = strdup(str); // Allocate memory and copy the string")
+        child("     env->ReleaseStringUTFChars(element, str); // Release the local string reference")
+        child("     $arrayName.push_back(result);")
+        child("}")
+    }
+
+    fun processObjectElement(javaType: JNIType) {
+        val accessor =
+            "${javaMember.type.componentType.simpleName}Accessor"  // TODO fix hardcoded
+
+        child("$returnType $arrayName;")
+        child("for (int i = 0; i < size; ++i) {")
+        child(
+            "     auto element = ($javaType) env->${
+                javaMember.getArrayElement(
+                    localVariable,
+                    "i"
+                )
+            };"
+        )
+        if (returnType !in listOf("void*", "std::vector<void*>")) {
+            import("<$accessor.h>")
+            child("    // experimental optimize accessor")
+            child("    $accessor accessor(env, element);") // TODO fix hardcoded
+            if (void) {
+                child("    ${javaMember.type.componentType.simpleName} ref{};")
+                child("    accessor.fromObject(ref);")
+                child("    $arrayName.push_back(ref);")
+            } else {
+                child("    $arrayName.push_back(accessor.fromObject());")
+            }
+        } else {
+            // possible type is Any or Null??
+            child("    $arrayName.push_back(element); // type is Any??")
         }
+        child("    env->DeleteLocalRef(element); // release element reference")
+        child("}")
+    }
+
+    fun processObjectVkHandleElement() {
+        child("// vkhandle array?")
+        child("$returnType $arrayName;")
+        child("for (int i = 0; i < size; ++i) {")
+        val handle = javaMember.getVkHandle()
+        child(
+            "     auto element = env->GetObjectArrayElement($localVariable, i);"
+        )
+        // get long value
+        child(
+            "   jmethodID getValueMethod = ${
+                javaMember.type.componentType.getObjectJavaValue(
+                    "element",
+                    javaMember.toJavaSignature(true)
+                )
+            };"
+        )
+        child("   jlong value = env->Call${javaMember.type.componentType.simpleName}Method(element, getValueMethod);")
+
+        child("   $arrayName.push_back(reinterpret_cast<${handle.name}>(value)); //vkhandle ")
+        child("   env->DeleteLocalRef(element); // release element reference")
+        child("}")
+    }
+
+    fun processPrimitiveElement() {
+        child("// primitive array?")
+        child("$returnType $arrayName(size);")
+        child(
+            "env->${
+                javaMember.getArrayRegion(
+                    localVariable,
+                    "0",
+                    "size",
+                    "reinterpret_cast<${javaMember.getArrayElementJavaType()} *>(${arrayName}.data())"
+                )
+            }"
+        )
+    }
+
+    fun processEnumElement() {
+        // process enum element
+        child("$returnType $arrayName;")
+        child("for (int i = 0; i < size; ++i) {")
+        child(
+            "     auto element = ($javaType) env->${
+                javaMember.getArrayElement(
+                    localVariable,
+                    "i"
+                )
+            };"
+        )
+        val enumName = javaMember.type.componentType.simpleName
+        child("     $arrayName.push_back(static_cast<$enumName>(enum_utils::getEnumFromObject(env, element))); // type is enum")
+        child("}")
+    }
+
+    fun processCopy(clazzInfo: String, arrayVariable: String) {
+        child("// processing array data")
+        val elementType = javaMember.type.componentType
+        // generate array size assignee
+        val vkArray = javaMember.getVkArray()
+        if (vkArray != null) {
+            val arraySizeName = vkArray.sizeAlias // javaMember.name + "Count"
+            if (arraySizeName.isNotEmpty()) {
+                val stride = if (vkArray.stride == UInt::class) {
+                    " * sizeof(uint32_t)"
+                } else {
+                    ""
+                }
+                child("auto $arraySizeName = static_cast<uint32_t>($arrayName.size()$stride);")
+                child("$clazzInfo.${arraySizeName} = $arraySizeName;")
+            } else {
+                child("// no array size generated")
+            }
+        }
+        if (elementType.isPrimitive) {
+            if (javaMember.isVkConstArray()) {
+                // fixed size array
+                child("std::copy(${arrayName}.begin(), ${arrayName}.end(), $clazzInfo.${arrayName}); // fixed array size")
+            } else {
+                child("// Make a copy of the primitive to ensure proper memory management;")
+                val newData = if (javaMember.toJavaTypeArray() == JNIType.JIntArray) {
+                    "uint32_t"
+                } else {
+                    javaMember.type.componentType.simpleName
+                }
+                child("auto copy = new ${newData}[size];")
+                child("std::copy(${arrayName}.begin(), ${arrayName}.end(), copy);")
+                child("clazzInfo.$arrayName = copy;")
+//                            child("$clazzInfo.${arrayName} = $arrayName.data(); // primitive $comment")
+            }
+        } else {
+//                        child("$clazzInfo.${arrayName} = $arrayName.data(); // object $comment")
+            child("// Make a copy of the object to ensure proper memory management;")
+            val newData = if (javaMember.toJavaType() == JNIType.JString) {
+                "const char*"
+            } else if (!javaMember.type.componentType.simpleName.startsWith("vk", true)
+                && javaMember.toJavaType() == JNIType.JObject
+            ) {
+                "const void*"
+            } else if (javaMember.toJavaType() == JNIType.JLong && javaMember.isVkHandle()) {
+                javaMember.getVkHandle().name
+            } else if (javaMember.toJavaType() == JNIType.JInt) {
+                "uint32_t"
+            } else {
+                javaMember.type.componentType.simpleName
+            }
+            child("auto copy = new ${newData}[size];")
+            child("std::copy(${arrayName}.begin(), ${arrayName}.end(), copy);")
+            child("clazzInfo.$arrayName = copy;")
+        }
+        child("env->DeleteLocalRef($arrayVariable); // release reference")
+    }
+
+    // create script here
+
+    child("auto $localVariable = ($javaType) $javaValue;")
+    child("if($localVariable == nullptr) {")
+    processDefaultElement("clazzInfo", localVariable)
+    if (void) {
+        child("    return;")
+    } else {
+        child("    return {};")
+    }
+    child("}")
+    child("auto size = env->GetArrayLength($localVariable);")
+    val element = javaMember.type.componentType
+    val javaElementType = javaMember.getArrayElementJavaType()
+    when {
+        element.isPrimitive -> processPrimitiveElement()
+        element.isEnum -> processEnumElement()
+        element.isArray -> throw RuntimeException("Nested array not supported")
+        else -> when (javaElementType) {
+            JNIType.JString -> processStringElement(javaElementType)
+            JNIType.JObject -> processObjectElement(javaElementType)
+            else -> {
+                if (!javaMember.isVkHandle()) {
+                    processPrimitiveElement()
+                } else {
+                    processObjectVkHandleElement()
+                }
+            }
+        }
+    }
+    processCopy("clazzInfo", localVariable)
+}
+
+fun CppFunctionBodyBuilder.processObjectAccessor(
+    void: Boolean,
+    javaMember: Field,
+    returnType: String,
+    import: (dependency: String) -> Unit
+) {
+    val suffix = javaMember.javaTypeSuffix()
+    val localVariable = javaMember.name + suffix
+    val javaType = javaMember.toJavaType()
+    val javaValue = javaMember.getJavaValue(
+        "env",
+        "obj",
+        javaMember.name + "Field"
+    )
+    // object
+    if (javaType == JNIType.JString) {
+        child("auto $localVariable = ($javaType) $javaValue;")
+        child("auto str = ($returnType) env->GetStringUTFChars($localVariable, nullptr);")
+        child("auto result = strdup(str); // Allocate memory and copy the string")
+        child("env->ReleaseStringUTFChars($localVariable, str); // Release the local string reference")
+        child("clazzInfo.${javaMember.name} = result;")
+    } else {
+        if (javaMember.isVkHandle()) {
+            child("return reinterpret_cast<$returnType>($javaValue); // VkHandle from object??")
+        } else if (returnType.startsWith("vk", true)) {
+            // vulkan object
+            // object is null??
+            // should be accessed by an accessor
+            val accessor =
+                "${javaMember.type.simpleName}Accessor"  // TODO fix hardcoded
+            import("<$accessor.cpp>") // TODO move to .h
+            child("auto $localVariable = ($javaType) $javaValue;")
+            child("if($localVariable == nullptr) {")
+            child("    env->DeleteLocalRef($localVariable); // Delete null object reference")
+            child("    return;")
+            child("}")
+            child("$accessor accessor(env, $localVariable);") // TODO fix hardcoded
+            // experimental
+            if (void) {
+                child("${javaMember.type.simpleName} ref{};")
+                child("accessor.fromObject(ref);")
+                if (javaMember.isVkPointer()) {
+                    child("clazzInfo.${javaMember.name} = &ref;")
+                } else {
+                    child("clazzInfo.${javaMember.name} = ref;")
+                }
+                child("env->DeleteLocalRef($localVariable); // Delete object reference")
+            } else {
+                child("return (${returnType}) (accessor.fromObject()); // Object is null, should be accessed by an accessor")
+            }
+        } else {
+            if (void) {
+                child("auto ref = (${returnType}) ($javaType) $javaValue; // Any Object")
+                child("clazzInfo.${javaMember.name} = ref;")
+            } else {
+                child("return (${returnType}) ($javaType) $javaValue; // Any Object")
+            }
+        }
+    }
+}
+
+fun CppFunctionBodyBuilder.processEnumAccessor(javaMember: Field, returnType: String) {
+    val suffix = javaMember.javaTypeSuffix()
+    val localVariable = javaMember.name + suffix
+    val javaType = javaMember.toJavaType()
+    val javaValue = javaMember.getJavaValue(
+        "env",
+        "obj",
+        javaMember.name + "Field"
+    )
+    child("auto $localVariable = ($javaType) $javaValue;")
+    child("auto enumValue = (${returnType}) enum_utils::getEnumFromObject(env, $localVariable);")
+    child("env->DeleteLocalRef($localVariable); // release enum reference")
+    child("return enumValue;")
+}
+
+fun CppFunctionBodyBuilder.processPrimitiveAccessor(javaMember: Field, returnType: String) {
+    val javaType = javaMember.toJavaType()
+    val javaValue = javaMember.getJavaValue(
+        "env",
+        "obj",
+        javaMember.name + "Field"
+    )
+    if (javaMember.isVkHandle()) {
+        child("auto value = $javaValue;")
+        child("if(value == 0) {")
+        child("     return VK_NULL_HANDLE;")
+        child("}")
+        child("return reinterpret_cast<$returnType>(value); // VkHandle")
+    } else if (javaMember.isVkPointer()) {
+        child("auto ptr = ($returnType) $javaValue; // Primitive Pointer")
+        child("clazzInfo.${javaMember.name} = &ptr; // Primitive Pointer")
+    } else {
+        child("return (${returnType}) ($javaType) $javaValue; // primitive")
     }
 }

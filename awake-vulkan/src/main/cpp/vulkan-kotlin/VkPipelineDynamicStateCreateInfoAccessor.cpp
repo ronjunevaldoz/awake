@@ -50,8 +50,8 @@ VkPipelineDynamicStateCreateInfoAccessor::getpDynamicStates(
     auto size = env->GetArrayLength(pDynamicStatesArray);
     std::vector<VkDynamicState> pDynamicStates;
     for (int i = 0; i < size; ++i) {
-        auto element = (jobject) env->GetObjectArrayElement(pDynamicStatesArray,
-                                                            i); // actual type is VkDynamicState[];
+        auto element = (jobjectArray) env->GetObjectArrayElement(pDynamicStatesArray,
+                                                                 i); // actual type is VkDynamicState[];
         pDynamicStates.push_back(static_cast<VkDynamicState>(enum_utils::getEnumFromObject(env,
                                                                                            element))); // type is enum
     }

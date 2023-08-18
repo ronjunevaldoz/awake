@@ -26,6 +26,7 @@
 #include "VkDebugUtilsMessengerCreateInfoEXTAccessor.h"
 #include "VkSurfaceFormatKHRMutator.h"
 #include "VkInstanceCreateInfoAccessor.h"
+#include "VkFramebufferCreateInfoAccessor.h"
 
 namespace vulkan_utils {
 
@@ -654,5 +655,26 @@ namespace vulkan_utils {
         auto device = reinterpret_cast<VkDevice>(pDevice);
         auto renderPass = reinterpret_cast<VkRenderPass>(pRenderPass);
         vkDestroyRenderPass(device, renderPass, nullptr);
+    }
+
+
+    jlong createFramebuffer(JNIEnv *env, jlong pDevice, jobject pCreateInfo) {
+        auto device = reinterpret_cast<VkDevice>(pDevice);
+        VkFramebufferCreateInfoAccessor accessor(env, pCreateInfo);
+        VkFramebufferCreateInfo createInfo;
+        accessor.fromObject(createInfo);
+        VkFramebuffer handle;
+        VkResult result = vkCreateFramebuffer(device, &createInfo, nullptr, &handle);
+
+        if (result != VK_SUCCESS) {
+            return 0;
+        }
+        return reinterpret_cast<jlong>(handle);
+    }
+
+    void destroyFramebuffer(jlong pDevice, jlong pFrameBuffer) {
+        auto device = reinterpret_cast<VkDevice>(pDevice);
+        auto frameBuffer = reinterpret_cast<VkFramebuffer>(pFrameBuffer);
+        vkDestroyFramebuffer(device, frameBuffer, nullptr);
     }
 }

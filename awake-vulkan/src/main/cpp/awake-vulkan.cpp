@@ -252,3 +252,17 @@ Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkEnumerateInstanceLayerPropert
                                                                                     jobject thiz) {
     return vulkan_utils::enumerateInstanceLayerProperties(env);
 }
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkCreateFramebuffer(JNIEnv *env, jobject thiz,
+                                                                     jlong device,
+                                                                     jobject framebuffer_info) {
+    return vulkan_utils::createFramebuffer(env, device, framebuffer_info);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkDestroyFramebuffer(JNIEnv *env, jobject thiz,
+                                                                      jlong device,
+                                                                      jlong framebuffer) {
+    vulkan_utils::destroyFramebuffer(device, framebuffer);
+}

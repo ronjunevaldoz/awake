@@ -91,17 +91,23 @@ VkPipelineLayoutCreateInfoAccessor::getsetLayoutCount() {
 
 void
 VkPipelineLayoutCreateInfoAccessor::getpSetLayouts(VkPipelineLayoutCreateInfo &clazzInfo) {
-    auto pSetLayoutsArray = (jlongArray) env->GetObjectField(obj, pSetLayoutsField);
+    auto pSetLayoutsArray = (jobjectArray) env->GetObjectField(obj, pSetLayoutsField);
     if (pSetLayoutsArray == nullptr) {
         clazzInfo.pSetLayouts = nullptr;
         env->DeleteLocalRef(pSetLayoutsArray); // release null reference
         return;
     }
     auto size = env->GetArrayLength(pSetLayoutsArray);
-    // primitive array?
-    std::vector<VkDescriptorSetLayout> pSetLayouts(size);
-    env->GetLongArrayRegion(pSetLayoutsArray, 0, size,
-                            reinterpret_cast<jlong *>(pSetLayouts.data()));
+    // vkhandle array?
+    std::vector<VkDescriptorSetLayout> pSetLayouts;
+    for (int i = 0; i < size; ++i) {
+        auto element = env->GetObjectArrayElement(pSetLayoutsArray, i);
+        jmethodID getValueMethod = env->GetMethodID(env->GetObjectClass(element), "longValue",
+                                                    "()J");
+        jlong value = env->CallLongMethod(element, getValueMethod);
+        pSetLayouts.push_back(reinterpret_cast<VkDescriptorSetLayout>(value)); //vkhandle
+        env->DeleteLocalRef(element); // release element reference
+    }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
     auto copy = new VkDescriptorSetLayout[size];

@@ -124,6 +124,9 @@ fun Field.toVulkanType(): String {
 
 fun Field.toJavaTypeArray(): JNIType {
     val comType = type.componentType
+    if (isVkHandle()) {
+        return JNIType.JObjectArray
+    }
     return when {
         comType == Int::class.javaPrimitiveType || comType.simpleName.contains(
             "Integer",
@@ -162,6 +165,11 @@ fun Field.toJavaTypeArray(): JNIType {
 
         comType == String::class.javaPrimitiveType || comType == String::class.java || comType.simpleName.contains(
             "String",
+            true
+        ) -> JNIType.JObjectArray
+
+        comType == Object::class.javaPrimitiveType || comType == Object::class.java || comType.simpleName.contains(
+            "Object",
             true
         ) -> JNIType.JObjectArray
 
@@ -385,6 +393,60 @@ fun Field.setJavaValue(env: String = "env", obj: String, fieldID: String, value:
     return "$env->Set${type}Field($objParam, $fieldIdParam, $value)"
 }
 
+fun Class<*>.getObjectJavaValue(obj: String, sig: String): String {
+    val comType = this
+    val type = when {
+        comType == Int::class.javaPrimitiveType || comType.simpleName.contains(
+            "Integer",
+            true
+        ) -> "Int"
+
+        comType == Long::class.javaPrimitiveType || comType.simpleName.contains(
+            "Long",
+            true
+        ) -> "Long"
+
+        comType == Short::class.javaPrimitiveType || comType.simpleName.contains(
+            "Short",
+            true
+        ) -> "Short"
+
+        comType == Byte::class.javaPrimitiveType || comType.simpleName.contains(
+            "Byte",
+            true
+        ) -> "Byte"
+
+        comType == Double::class.javaPrimitiveType || comType.simpleName.contains(
+            "Double",
+            true
+        ) -> "Double"
+
+        comType == Float::class.javaPrimitiveType || comType.simpleName.contains(
+            "Float",
+            true
+        ) -> "Float"
+
+        comType == Char::class.javaPrimitiveType || comType.simpleName.contains(
+            "Character",
+            true
+        ) -> "Char"
+
+        comType == String::class.java || comType.simpleName.contains("String", true)
+        -> "Object"
+
+        comType == Boolean::class.javaPrimitiveType || comType.simpleName.contains(
+            "Boolean",
+            true
+        ) -> "Boolean"
+
+        else -> "Object"
+    }
+    if (comType.isArray) {
+        throw Exception("Not yet supported")
+    }
+    return "env->GetMethodID(env->GetObjectClass($obj), \"${type.toLowerCase()}Value\", \"()$sig\")"
+}
+
 fun Field.getArrayElement(list: String, index: String): String {
     return when (type.componentType) {
         String::class.javaPrimitiveType, java.lang.String::class.java -> "GetObjectArrayElement($list, $index); // actual type is ${type.simpleName}"
@@ -457,8 +519,9 @@ fun Field.getArrayRegion(
     }
 }
 
-fun Field.toJavaSignature(): String {
-    return when (val javaTypeName = type.name) {
+fun Field.toJavaSignature(element: Boolean = false): String {
+    return when (val javaTypeName =
+        if (element) type.componentType.simpleName.toLowerCase() else type.name) {
         "boolean" -> "Z"
         "byte" -> "B"
         "char" -> "C"

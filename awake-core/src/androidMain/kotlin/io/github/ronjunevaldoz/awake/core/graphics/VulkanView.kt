@@ -55,6 +55,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.VkViewport
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkFramebufferCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageSubresourceRange
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
@@ -99,12 +100,13 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
     var device: Long = 0
     var swapChain: Long = 0
     var swapChainExtent: VkExtent2D = VkExtent2D()
-    var imageViews: List<Long> = emptyList()
+    var swapChainImageViews: List<Long> = emptyList()
     var swapChainImageFormat = VkFormat.VK_FORMAT_UNDEFINED
     var renderPass: Long = 0
     var pipelineCache: Long = 0
     var pipelineLayout: Long = 0
     var graphicsPipeline: LongArray = longArrayOf()
+    var frameBuffers: List<Long> = emptyList()
 
     init {
         Vulkan
@@ -144,6 +146,20 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         swapChain()
         createRenderPass()
         createGraphicsPipeline()
+        createFramebuffers()
+    }
+
+    private fun createFramebuffers() {
+        frameBuffers = swapChainImageViews.map { imageView ->
+            val frameBufferInfo = VkFramebufferCreateInfo(
+                renderPass = renderPass,
+                pAttachments = arrayOf(imageView),
+                width = swapChainExtent.width,
+                height = swapChainExtent.height,
+                layers = 1
+            )
+            Vulkan.vkCreateFramebuffer(device, frameBufferInfo)
+        }.toList()
     }
 
     private fun createRenderPass() {
@@ -353,7 +369,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
 
     private fun createImageViews() {
         val swapChainImages = Vulkan.vkGetSwapchainImagesKHR(device, swapChain)
-        val swapChainImageViews = swapChainImages.map { swapChainImage ->
+        swapChainImageViews = swapChainImages.map { swapChainImage ->
             val createInfo = VkImageViewCreateInfo(
                 image = swapChainImage.image,
                 viewType = VkImageViewType.VK_IMAGE_VIEW_TYPE_2D,
@@ -368,7 +384,6 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             )
             Vulkan.vkCreateImageView(device, createInfo)
         }
-        imageViews = swapChainImageViews
     }
 
     fun createShaderModule(code: IntArray): Long {
@@ -537,7 +552,10 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         Vulkan.vkDestroySurface(instance, surface)
         Vulkan.vkDestroyInstance(instance)
         Vulkan.vkDestroySwapchainKHR(physicalDevice, swapChain)
-        imageViews.forEach { imageView ->
+        frameBuffers.forEach { frameBuffer ->
+            Vulkan.vkDestroyFramebuffer(device, frameBuffer)
+        }
+        swapChainImageViews.forEach { imageView ->
             Vulkan.vkDestroyImageView(device, imageView)
         }
         graphicsPipeline.forEach { pipeline ->

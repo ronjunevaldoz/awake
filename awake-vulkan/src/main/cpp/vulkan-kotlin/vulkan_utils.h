@@ -109,6 +109,10 @@ namespace vulkan_utils {
     jlong createRenderPass(JNIEnv *env, jlong device, jobject pCreateInfo);
 
     void destroyRenderPass(jlong device, jlong renderPass);
+
+    jlong createFramebuffer(JNIEnv *env, jlong device, jobject pCreateInfo);
+
+    void destroyFramebuffer(jlong device, jlong frameBuffer);
 }
 
 #endif //AWAKE_VULKAN_UTILS_H

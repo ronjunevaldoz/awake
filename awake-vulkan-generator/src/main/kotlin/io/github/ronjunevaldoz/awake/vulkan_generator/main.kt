@@ -32,6 +32,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkComponentMapping
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkFramebufferCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageSubresourceRange
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
@@ -140,6 +141,9 @@ fun main(args: Array<String>) {
     generateJavaToVulkanCpp<VkSubpassDescription>()
     generateJavaToVulkanCpp<VkSubpassDependency>()
     generateJavaToVulkanCpp<VkRenderPassCreateInfo>()
+
+    // frame buffer
+    generateJavaToVulkanCpp<VkFramebufferCreateInfo>()
 
     println(cmakeListTemplate("awake-vulkan/src/main/cpp/vulkan-kotlin/"))
 }
