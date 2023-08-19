@@ -57,9 +57,11 @@ private:
 public:
 
     static void init(JNIEnv *jniEnv, jobject obj) {
-        if (!sInstance) {
-            sInstance = new VkDebugUtilsMessengerCreateInfoEXTAccessor(jniEnv, obj);
+        if (sInstance) {
+            delete sInstance;
+            sInstance = nullptr;
         }
+        sInstance = new VkDebugUtilsMessengerCreateInfoEXTAccessor(jniEnv, obj);
     }
 
     static VkDebugUtilsMessengerCreateInfoEXTAccessor getInstance() {

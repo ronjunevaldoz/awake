@@ -43,7 +43,6 @@ import io.github.ronjunevaldoz.awake.vulkan.enums.VkShaderStageFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSharingMode
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSurfaceTransformFlagBitsKHR
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkVertexInputRate
-import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkDebugUtilsMessageSeverityFlagBitsEXT
 import io.github.ronjunevaldoz.awake.vulkan.has
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentReference
@@ -64,6 +63,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSubpassDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.DebugUtilsFormattedCallback
 import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.VkDebugUtilsMessengerCreateInfoEXT
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendAttachmentState
@@ -91,6 +91,7 @@ import org.jetbrains.compose.resources.resource
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
+
 class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callback2 {
 
     var debugUtilsMessenger: Long = 0
@@ -106,7 +107,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
     var pipelineCache: Long = 0
     var pipelineLayout: Long = 0
     var graphicsPipeline: LongArray = longArrayOf()
-    var frameBuffers: List<Long> = emptyList()
+    var swapChainFrameBuffers: List<Long> = emptyList()
 
     init {
         Vulkan
@@ -147,10 +148,31 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         createRenderPass()
         createGraphicsPipeline()
         createFramebuffers()
+        createCommandPool()
+        createCommandBuffer()
+    }
+
+    private fun createCommandBuffer() {
+//        VkRenderPassBeginInfo(
+//            framebuffer = swapChainFrameBuffers[imageIndex],
+//            renderArea = VkRect2D(
+//                extent = swapChainExtent
+//            ),
+//            pClearValues = arrayOf(VkClearColorValue.rgba(0f, 0f, 0f, 1f))
+//        )
+    }
+
+    private fun createCommandPool() {
+        val (graphicsFamily, presentFamily) = findQueueFamilies(physicalDevice, surface)
+
+//        VkCommandPoolCreateInfo(
+//            flags = VkCommandPoolCreateFlagBits.VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT.value,
+//            queueFamilyIndex = graphicsFamily!!
+//        )
     }
 
     private fun createFramebuffers() {
-        frameBuffers = swapChainImageViews.map { imageView ->
+        swapChainFrameBuffers = swapChainImageViews.map { imageView ->
             val frameBufferInfo = VkFramebufferCreateInfo(
                 renderPass = renderPass,
                 pAttachments = arrayOf(imageView),
@@ -269,34 +291,25 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         device = Vulkan.vkCreateDevice(physicalDevice, deviceInfo) // VkDevice
     }
 
+
     private fun setupDebugMessenger() {
+        val androidLogCallback: (String, String) -> Unit = { severity, message ->
+            when (severity) {
+                "Warning" -> Log.w("AwakeVk", message)
+                "Info" -> Log.i("AwakeVk", message)
+                "Error" -> Log.e("AwakeVk", message)
+                "Verbose" -> Log.v("AwakeVk", message)
+                else -> Log.d("AwakeVk", message)
+            }
+        }
         val createInfo = VkDebugUtilsMessengerCreateInfoEXT(
             pfnUserCallback = { severity, messageType, callbackData, userData ->
-
-                val severityString = severity
-                val typeString = messageType
-                val messageIdName = callbackData.pMessageIdName
-                val messageIdNumber = callbackData.messageIdNumber
-                val message = callbackData.pMessage
-                val logMessage = String.format(
-                    "%s %s: \n[%s] Code %d :\n%s",
-                    typeString,
-                    severityString,
-                    messageIdName,
-                    messageIdNumber,
-                    message
+                DebugUtilsFormattedCallback(androidLogCallback).invoke(
+                    severity,
+                    messageType,
+                    callbackData,
+                    userData
                 )
-                when (severity) {
-                    VkDebugUtilsMessageSeverityFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT ->
-                        Log.w("AwakeVk", logMessage)
-
-                    VkDebugUtilsMessageSeverityFlagBitsEXT.VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT ->
-                        Log.e("AwakeVk", logMessage)
-
-                    else -> Log.d("AwakeVk", logMessage)
-                }
-                Log.d("Userdata", "${userData}")
-                false
             },
             pUserData = null
         )
@@ -547,22 +560,26 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
     }
 
     private fun destroy() {
-        Vulkan.destroyDebugUtilsMessenger(instance, debugUtilsMessenger)
-        Vulkan.vkDestroyDevice(device)
-        Vulkan.vkDestroySurface(instance, surface)
-        Vulkan.vkDestroyInstance(instance)
-        Vulkan.vkDestroySwapchainKHR(physicalDevice, swapChain)
-        frameBuffers.forEach { frameBuffer ->
+        swapChainFrameBuffers.forEach { frameBuffer ->
             Vulkan.vkDestroyFramebuffer(device, frameBuffer)
         }
-        swapChainImageViews.forEach { imageView ->
-            Vulkan.vkDestroyImageView(device, imageView)
-        }
+
         graphicsPipeline.forEach { pipeline ->
             Vulkan.vkDestroyPipeline(device, pipeline)
         }
+
+        Vulkan.vkDestroyPipelineLayout(device, pipelineLayout)
         Vulkan.vkDestroyRenderPass(device, renderPass)
         Vulkan.vkDestroyPipelineCache(device, pipelineCache)
-        Vulkan.vkDestroyPipelineLayout(device, pipelineLayout)
+
+        swapChainImageViews.forEach { imageView ->
+            Vulkan.vkDestroyImageView(device, imageView)
+        }
+
+        Vulkan.vkDestroySwapchainKHR(device, swapChain)
+        Vulkan.vkDestroySurface(instance, surface)
+        Vulkan.vkDestroyDevice(device)
+        Vulkan.destroyDebugUtilsMessenger(instance, debugUtilsMessenger)
+        Vulkan.vkDestroyInstance(instance)
     }
 }

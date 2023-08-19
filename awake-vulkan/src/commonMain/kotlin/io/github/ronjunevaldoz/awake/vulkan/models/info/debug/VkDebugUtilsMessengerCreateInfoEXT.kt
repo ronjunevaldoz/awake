@@ -26,6 +26,7 @@ import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkDebugUtilsMessageSever
 import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkDebugUtilsMessageSeverityFlagsEXT
 import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkDebugUtilsMessageTypeFlagBitsEXT
 import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkDebugUtilsMessageTypeFlagsEXT
+import io.github.ronjunevaldoz.awake.vulkan.enums.flags.formatted
 
 
 typealias PFN_vkDebugUtilsMessengerCallbackEXT = (
@@ -52,3 +53,28 @@ data class VkDebugUtilsMessengerCreateInfoEXT(
 
 typealias VkDebugUtilsMessengerCreateFlagsEXT = VkFlags
 
+typealias LogCallback = (String, String) -> Unit
+
+val DebugUtilsFormattedCallback: (LogCallback) -> PFN_vkDebugUtilsMessengerCallbackEXT =
+    { logCallback ->
+        { severity, messageType, callbackData, userData ->
+            val severityString = severity.formatted
+            val types = messageType.formatted
+            val messageIdName = callbackData.pMessageIdName
+            val messageIdNumber = callbackData.messageIdNumber
+            val message = callbackData.pMessage
+
+            val formattedMessage = message.split(",").joinToString("\n") {
+                it.trim().split("|").joinToString("\n") { it.trim() }
+            }
+
+            val logMessage = buildString {
+                appendLine("$types $severityString:")
+                appendLine("[$messageIdName] Code $messageIdNumber:")
+                appendLine(formattedMessage)
+            }
+
+            logCallback(severityString, logMessage)
+            false
+        }
+    }

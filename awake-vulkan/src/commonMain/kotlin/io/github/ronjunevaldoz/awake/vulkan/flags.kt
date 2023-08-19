@@ -20,6 +20,7 @@
 package io.github.ronjunevaldoz.awake.vulkan
 
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkCompositeAlphaFlagBitsKHR
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkEnum
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkImageUsageFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkQueueFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSampleCountFlagBits
@@ -29,6 +30,10 @@ import io.github.ronjunevaldoz.awake.vulkan.enums.VkSurfaceTransformFlagBitsKHR
 
 fun VkSampleCountFlagBits.toFlags(): VkSampleCountFlags {
     return value
+}
+
+infix fun VkFlags.has(bit: VkEnum): Boolean {
+    return this and bit.value != 0
 }
 
 infix fun VkFlags.has(bit: VkSampleCountFlagBits): Boolean {
