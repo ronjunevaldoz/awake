@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkPhysicalDeviceLimitsMutator.h>
-#include <VkPhysicalDeviceSparsePropertiesMutator.h>
+#include <includes/VkPhysicalDeviceLimitsMutator.h>
+#include <includes/VkPhysicalDeviceSparsePropertiesMutator.h>
 
 class VkPhysicalDevicePropertiesMutator {
 private:
@@ -33,5 +33,4 @@ public:
     jobject toObject(VkPhysicalDeviceProperties source);
     ~VkPhysicalDevicePropertiesMutator();
 };
-
 #endif // VKPHYSICALDEVICEPROPERTIESMUTATOR_H

@@ -59,6 +59,7 @@ VkPipelineShaderStageCreateInfoAccessor::getpSpecializationInfo(
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkSpecializationInfo[size];
     std::copy(pSpecializationInfo.begin(), pSpecializationInfo.end(), copy);
     clazzInfo.pSpecializationInfo = copy;

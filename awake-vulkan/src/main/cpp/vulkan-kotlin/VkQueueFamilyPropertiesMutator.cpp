@@ -7,8 +7,7 @@
 
 VkQueueFamilyPropertiesMutator::VkQueueFamilyPropertiesMutator(JNIEnv *env) {
     this->env = env;
-    clazz = env->FindClass(
-            "io/github/ronjunevaldoz/awake/vulkan/queuefamily/VkQueueFamilyProperties");
+    clazz = env->FindClass("io/github/ronjunevaldoz/awake/vulkan/models/VkQueueFamilyProperties");
     queueFlagsField = env->GetFieldID(clazz, "queueFlags", "I");
     queueCountField = env->GetFieldID(clazz, "queueCount", "I");
     timestampValidBitsField = env->GetFieldID(clazz, "timestampValidBits", "I");

@@ -65,6 +65,7 @@ VkRenderPassCreateInfoAccessor::getpAttachments(VkRenderPassCreateInfo &clazzInf
     auto attachmentCount = static_cast<uint32_t>(pAttachments.size());
     clazzInfo.attachmentCount = attachmentCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkAttachmentDescription[size];
     std::copy(pAttachments.begin(), pAttachments.end(), copy);
     clazzInfo.pAttachments = copy;
@@ -96,6 +97,7 @@ VkRenderPassCreateInfoAccessor::getpDependencies(VkRenderPassCreateInfo &clazzIn
     auto dependencyCount = static_cast<uint32_t>(pDependencies.size());
     clazzInfo.dependencyCount = dependencyCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkSubpassDependency[size];
     std::copy(pDependencies.begin(), pDependencies.end(), copy);
     clazzInfo.pDependencies = copy;
@@ -137,6 +139,7 @@ VkRenderPassCreateInfoAccessor::getpSubpasses(VkRenderPassCreateInfo &clazzInfo)
     auto subpassCount = static_cast<uint32_t>(pSubpasses.size());
     clazzInfo.subpassCount = subpassCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkSubpassDescription[size];
     std::copy(pSubpasses.begin(), pSubpasses.end(), copy);
     clazzInfo.pSubpasses = copy;

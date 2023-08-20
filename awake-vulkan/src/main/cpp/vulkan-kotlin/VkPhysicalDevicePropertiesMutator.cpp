@@ -8,7 +8,7 @@
 VkPhysicalDevicePropertiesMutator::VkPhysicalDevicePropertiesMutator(JNIEnv *env) {
     this->env = env;
     clazz = env->FindClass(
-            "io/github/ronjunevaldoz/awake/vulkan/physicaldevice/VkPhysicalDeviceProperties");
+            "io/github/ronjunevaldoz/awake/vulkan/models/physicaldevice/VkPhysicalDeviceProperties");
     apiVersionField = env->GetFieldID(clazz, "apiVersion", "I");
     driverVersionField = env->GetFieldID(clazz, "driverVersion", "I");
     vendorIDField = env->GetFieldID(clazz, "vendorID", "I");
@@ -18,9 +18,9 @@ VkPhysicalDevicePropertiesMutator::VkPhysicalDevicePropertiesMutator(JNIEnv *env
     deviceNameField = env->GetFieldID(clazz, "deviceName", "[C");
     pipelineCacheUUIDField = env->GetFieldID(clazz, "pipelineCacheUUID", "[B");
     limitsField = env->GetFieldID(clazz, "limits",
-                                  "Lio/github/ronjunevaldoz/awake/vulkan/physicaldevice/VkPhysicalDeviceLimits;");
+                                  "Lio/github/ronjunevaldoz/awake/vulkan/models/physicaldevice/VkPhysicalDeviceLimits;");
     sparsePropertiesField = env->GetFieldID(clazz, "sparseProperties",
-                                            "Lio/github/ronjunevaldoz/awake/vulkan/physicaldevice/VkPhysicalDeviceSparseProperties;");
+                                            "Lio/github/ronjunevaldoz/awake/vulkan/models/physicaldevice/VkPhysicalDeviceSparseProperties;");
 }
 
 jobject

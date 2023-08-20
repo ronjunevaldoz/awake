@@ -19,6 +19,8 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.enums
 
+import io.github.ronjunevaldoz.awake.vulkan.VkFlags
+
 // Representing VkSurfaceTransformFlagBitsKHR as an enum class
 enum class VkSurfaceTransformFlagBitsKHR(val value: Int) {
     VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR(0x00000001),
@@ -32,3 +34,5 @@ enum class VkSurfaceTransformFlagBitsKHR(val value: Int) {
     VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR(0x00000100),
     VK_SURFACE_TRANSFORM_FLAG_BITS_MAX_ENUM_KHR(0x7FFFFFFF)
 }
+
+typealias VkSurfaceTransformFlagsKHR = VkFlags

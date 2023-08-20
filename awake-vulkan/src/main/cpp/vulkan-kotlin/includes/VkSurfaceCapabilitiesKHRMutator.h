@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkExtent2DMutator.h>
+#include <includes/VkExtent2DMutator.h>
 
 class VkSurfaceCapabilitiesKHRMutator {
 private:
@@ -33,5 +33,4 @@ public:
     jobject toObject(VkSurfaceCapabilitiesKHR source);
     ~VkSurfaceCapabilitiesKHRMutator();
 };
-
 #endif // VKSURFACECAPABILITIESKHRMUTATOR_H

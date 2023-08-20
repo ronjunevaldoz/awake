@@ -8,7 +8,7 @@
 VkPhysicalDeviceLimitsMutator::VkPhysicalDeviceLimitsMutator(JNIEnv *env) {
     this->env = env;
     clazz = env->FindClass(
-            "io/github/ronjunevaldoz/awake/vulkan/physicaldevice/VkPhysicalDeviceLimits");
+            "io/github/ronjunevaldoz/awake/vulkan/models/physicaldevice/VkPhysicalDeviceLimits");
     maxImageDimension1DField = env->GetFieldID(clazz, "maxImageDimension1D", "I");
     maxImageDimension2DField = env->GetFieldID(clazz, "maxImageDimension2D", "I");
     maxImageDimension3DField = env->GetFieldID(clazz, "maxImageDimension3D", "I");

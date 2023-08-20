@@ -26,5 +26,4 @@ public:
     jobject toObject(VkDebugUtilsLabelEXT source);
     ~VkDebugUtilsLabelEXTMutator();
 };
-
 #endif // VKDEBUGUTILSLABELEXTMUTATOR_H

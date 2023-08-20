@@ -77,5 +77,4 @@ public:
     jobject toObject(VkPhysicalDeviceFeatures source);
     ~VkPhysicalDeviceFeaturesMutator();
 };
-
 #endif // VKPHYSICALDEVICEFEATURESMUTATOR_H

@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan.physicaldevice
+package io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice
 
 import io.github.ronjunevaldoz.awake.vulkan.VK_MAX_PHYSICAL_DEVICE_NAME_SIZE
 import io.github.ronjunevaldoz.awake.vulkan.VK_UUID_SIZE

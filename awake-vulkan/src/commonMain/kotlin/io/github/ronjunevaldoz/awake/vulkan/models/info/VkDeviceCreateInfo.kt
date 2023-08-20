@@ -22,7 +22,7 @@ package io.github.ronjunevaldoz.awake.vulkan.models.info
 import io.github.ronjunevaldoz.awake.vulkan.VkArray
 import io.github.ronjunevaldoz.awake.vulkan.VkFlags
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkStructureType
-import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
+import io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice.VkPhysicalDeviceFeatures
 
 class VkDeviceCreateInfo(
     val sType: VkStructureType = VkStructureType.VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,

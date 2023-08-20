@@ -7,12 +7,12 @@
 #define VKDEVICECREATEINFOACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkDeviceQueueCreateInfoAccessor.h>
-#include <VkPhysicalDeviceFeaturesAccessor.h>
+#include <includes/VkDeviceQueueCreateInfoAccessor.h>
+#include <includes/VkPhysicalDeviceFeaturesAccessor.h>
 
 class VkDeviceCreateInfoAccessor {
 private:
@@ -47,5 +47,4 @@ public:
 
     ~VkDeviceCreateInfoAccessor();
 };
-
 #endif // VKDEVICECREATEINFOACCESSOR_H

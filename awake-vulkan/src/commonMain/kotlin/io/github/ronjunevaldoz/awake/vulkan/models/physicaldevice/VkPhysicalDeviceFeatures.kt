@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan.physicaldevice
+package io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice
 
 import io.github.ronjunevaldoz.awake.vulkan.VkBool32
 import io.github.ronjunevaldoz.awake.vulkan.VkMutator

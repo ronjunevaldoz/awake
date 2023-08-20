@@ -25,7 +25,7 @@ import io.github.ronjunevaldoz.awake.vulkan.VkHandleRef
 import io.github.ronjunevaldoz.awake.vulkan.VkPointer
 import java.lang.reflect.Field
 
-enum class JNIType(private val value: String) {
+enum class JNIType(val value: String) {
     JByte("jbyte"),
     JChar("jchar"),
     JBoolean("jboolean"),
@@ -70,6 +70,42 @@ fun Field.primitiveTypeIsNull(): Boolean {
                     type.simpleName.contains("byte", true) ||
                     type.simpleName.contains("double", true) ||
                     type.simpleName.contains("float", true))
+}
+
+fun Class<*>.toVulkanType(): String {
+    val isPrimitiveArray = isArray && componentType.isPrimitive
+    val isArray = isArray && !isPrimitiveArray
+    val elementType = if (isArray) componentType.simpleName else simpleName
+    val simpleName = elementType.toLowerCase()
+
+    if (isAnnotationPresent(VkHandleRef::class.java)) {
+        val handle = getDeclaredAnnotation(VkHandleRef::class.java)
+        return handle.name
+    }
+
+    // by default the value should all unsigned
+    var prefix = "u"
+
+    if (name.contains("index", true)) {
+        prefix = ""
+    }
+
+    val type = when {
+        simpleName.contains("int") -> "${prefix}int32_t"
+        simpleName.contains("long") -> "${prefix}int64_t"
+        simpleName.contains("short") -> "${prefix}int16_t"
+        simpleName.contains("byte") -> "${prefix}int8_t"
+        simpleName.contains("double") -> "double"
+        simpleName.contains("float") -> "float"
+        simpleName.contains("boolean") -> "VkBool32"
+        simpleName.contains("char") -> "char"
+        simpleName.contains("string") -> "const char*"
+        simpleName.contains("object") -> "void*"
+        isArray -> elementType
+        else -> elementType
+    }
+
+    return type
 }
 
 fun Field.toVulkanType(): String {
@@ -123,324 +159,83 @@ fun Field.toVulkanType(): String {
 }
 
 fun Field.toJavaTypeArray(): JNIType {
-    val comType = type.componentType
     if (isVkHandle()) {
         return JNIType.JObjectArray
     }
-    return when {
-        comType == Int::class.javaPrimitiveType || comType.simpleName.contains(
-            "Integer",
-            true
-        ) -> JNIType.JIntArray
-
-        comType == Long::class.javaPrimitiveType || comType.simpleName.contains(
-            "Long",
-            true
-        ) -> JNIType.JLongArray
-
-        comType == Short::class.javaPrimitiveType || comType.simpleName.contains(
-            "Short",
-            true
-        ) -> JNIType.JShortArray
-
-        comType == Byte::class.javaPrimitiveType || comType.simpleName.contains(
-            "Byte",
-            true
-        ) -> JNIType.JByteArray
-
-        comType == Double::class.javaPrimitiveType || comType.simpleName.contains(
-            "Double",
-            true
-        ) -> JNIType.JDoubleArray
-
-        comType == Float::class.javaPrimitiveType || comType.simpleName.contains(
-            "Float",
-            true
-        ) -> JNIType.JFloatArray
-
-        comType == Char::class.javaPrimitiveType || comType == Char::class.java || comType.simpleName.contains(
-            "Char",
-            true
-        ) -> JNIType.JCharArray
-
-        comType == String::class.javaPrimitiveType || comType == String::class.java || comType.simpleName.contains(
-            "String",
-            true
-        ) -> JNIType.JObjectArray
-
-        comType == Object::class.javaPrimitiveType || comType == Object::class.java || comType.simpleName.contains(
-            "Object",
-            true
-        ) -> JNIType.JObjectArray
-
-        comType == Boolean::class.javaPrimitiveType || comType.simpleName.contains(
-            "Boolean",
-            true
-        ) -> JNIType.JBooleanArray
-
-        else -> JNIType.JObjectArray
-    }
+    return type.toJavaType(true)
 }
 
 fun Field.getArrayElementJavaType(): JNIType {
-    val comType = type.componentType
-    return when {
-        comType == Int::class.javaPrimitiveType || comType.simpleName.contains(
-            "Integer",
-            true
-        ) -> JNIType.JInt
-
-        comType == Long::class.javaPrimitiveType || comType.simpleName.contains(
-            "Long",
-            true
-        ) -> JNIType.JLong
-
-        comType == Short::class.javaPrimitiveType || comType.simpleName.contains(
-            "Short",
-            true
-        ) -> JNIType.JShort
-
-        comType == Byte::class.javaPrimitiveType || comType.simpleName.contains(
-            "Byte",
-            true
-        ) -> JNIType.JByte
-
-        comType == Double::class.javaPrimitiveType || comType.simpleName.contains(
-            "Double",
-            true
-        ) -> JNIType.JDouble
-
-        comType == Float::class.javaPrimitiveType || comType.simpleName.contains(
-            "Float",
-            true
-        ) -> JNIType.JFloat
-
-        comType == Char::class.javaPrimitiveType || comType.simpleName.contains(
-            "Character",
-            true
-        ) -> JNIType.JChar
-
-        comType == String::class.java || comType.simpleName.contains(
-            "String",
-            true
-        ) -> JNIType.JString
-
-        comType == Boolean::class.javaPrimitiveType || comType.simpleName.contains(
-            "Boolean",
-            true
-        ) -> JNIType.JBoolean
-
-        else -> JNIType.JObject
-    }
+    return type.componentType.toJavaType()
 }
 
 fun Field.toJavaType(): JNIType {
-    val clazz = type
-    return when {
-        clazz == Int::class.javaPrimitiveType || clazz.simpleName.contains(
-            "Integer",
-            true
-        ) -> JNIType.JInt
+    return type.toJavaType()
+}
 
-        clazz == Long::class.javaPrimitiveType || clazz.simpleName.contains(
-            "Long",
-            true
-        ) -> JNIType.JLong
-
-        clazz == Short::class.javaPrimitiveType || clazz.simpleName.contains(
-            "Short",
-            true
-        ) -> JNIType.JShort
-
-        clazz == Byte::class.javaPrimitiveType || clazz.simpleName.contains(
-            "Byte",
-            true
-        ) -> JNIType.JByte
-
-        clazz == Double::class.javaPrimitiveType || clazz.simpleName.contains(
-            "Double",
-            true
-        ) -> JNIType.JDouble
-
-        clazz == Float::class.javaPrimitiveType || clazz.simpleName.contains(
-            "Float",
-            true
-        ) -> JNIType.JFloat
-
-        clazz == Char::class.javaPrimitiveType || clazz.simpleName.contains(
-            "Character",
-            true
-        ) -> JNIType.JChar
-
-        clazz == String::class.java || clazz.simpleName.contains(
-            "String",
-            true
-        ) -> JNIType.JString
-
-        clazz == Boolean::class.javaPrimitiveType || clazz.simpleName.contains(
-            "Boolean",
-            true
-        ) -> JNIType.JBoolean
+fun Class<*>.toJavaType(includeArray: Boolean = false): JNIType {
+    if (isArray && includeArray) {
+        return when (componentType) {
+            Int::class.javaPrimitiveType, java.lang.Integer::class.java -> JNIType.JIntArray
+            Long::class.javaPrimitiveType, java.lang.Long::class.java -> JNIType.JLongArray
+            Short::class.javaPrimitiveType, java.lang.Short::class.java -> JNIType.JShortArray
+            Byte::class.javaPrimitiveType, java.lang.Byte::class.java -> JNIType.JByteArray
+            Double::class.javaPrimitiveType, java.lang.Double::class.java -> JNIType.JDoubleArray
+            Float::class.javaPrimitiveType, java.lang.Float::class.java -> JNIType.JFloatArray
+            Char::class.javaPrimitiveType, Char::class.java -> JNIType.JCharArray
+            String::class.java, java.lang.String::class.java -> JNIType.JObjectArray
+            Object::class.java, java.lang.Object::class.java -> JNIType.JObjectArray
+            Boolean::class.javaPrimitiveType, java.lang.Boolean::class.java -> JNIType.JBooleanArray
+            else -> JNIType.JObjectArray
+        }
+    }
+    return when (this) {
+        Int::class.javaPrimitiveType, Integer::class.java -> JNIType.JInt
+        Long::class.javaPrimitiveType, java.lang.Long::class.java -> JNIType.JLong
+        Short::class.javaPrimitiveType, java.lang.Short::class.java -> JNIType.JShort
+        Byte::class.javaPrimitiveType, java.lang.Byte::class.java -> JNIType.JByte
+        Double::class.javaPrimitiveType, java.lang.Double::class.java -> JNIType.JDouble
+        Float::class.javaPrimitiveType, java.lang.Float::class.java -> JNIType.JFloat
+        Char::class.javaPrimitiveType, Character::class.java -> JNIType.JChar
+        String::class.java -> JNIType.JString
+        Boolean::class.javaPrimitiveType, java.lang.Boolean::class.java -> JNIType.JBoolean
         else -> JNIType.JObject
     }
 }
+
+fun Class<*>?.toTypeName(): String {
+    val typeMapping = mapOf(
+        Int::class.javaPrimitiveType to "Int",
+        Long::class.javaPrimitiveType to "Long",
+        Short::class.javaPrimitiveType to "Short",
+        Byte::class.javaPrimitiveType to "Byte",
+        Double::class.javaPrimitiveType to "Double",
+        Float::class.javaPrimitiveType to "Float",
+        Char::class.javaPrimitiveType to "Char",
+        String::class.java to "Object",
+        Boolean::class.javaPrimitiveType to "Boolean"
+    )
+
+    return typeMapping[this] ?: "Object"
+}
+
 fun Field.getJavaValue(env: String = "env", obj: String, fieldID: String): String {
-    val comType = type
-    val objParam = obj //"\"$obj\""
-    val fieldIdParam = fieldID //"\"$fieldID\""
-    val type = when {
-        comType == Int::class.javaPrimitiveType || comType.simpleName.contains(
-            "Integer",
-            true
-        ) -> "Int"
-
-        comType == Long::class.javaPrimitiveType || comType.simpleName.contains(
-            "Long",
-            true
-        ) -> "Long"
-
-        comType == Short::class.javaPrimitiveType || comType.simpleName.contains(
-            "Short",
-            true
-        ) -> "Short"
-
-        comType == Byte::class.javaPrimitiveType || comType.simpleName.contains(
-            "Byte",
-            true
-        ) -> "Byte"
-
-        comType == Double::class.javaPrimitiveType || comType.simpleName.contains(
-            "Double",
-            true
-        ) -> "Double"
-
-        comType == Float::class.javaPrimitiveType || comType.simpleName.contains(
-            "Float",
-            true
-        ) -> "Float"
-
-        comType == Char::class.javaPrimitiveType || comType.simpleName.contains(
-            "Character",
-            true
-        ) -> "Char"
-
-        comType == String::class.java || comType.simpleName.contains("String", true)
-        -> "Object"
-
-        comType == Boolean::class.javaPrimitiveType || comType.simpleName.contains(
-            "Boolean",
-            true
-        ) -> "Boolean"
-
-        else -> "Object"
+    val clazz = type
+    val type = clazz.toTypeName()
+    if (clazz.isArray) {
+        return "$env->GetObjectField($obj, $fieldID)"
     }
-    if (comType.isArray) {
-        return "$env->GetObjectField($objParam, $fieldIdParam)"
-    }
-    return "$env->Get${type}Field($objParam, $fieldIdParam)"
+    return "$env->Get${type}Field($obj, $fieldID)"
 }
 
 fun Field.setJavaValue(env: String = "env", obj: String, fieldID: String, value: String): String {
-    val comType = type
-    val objParam = obj //"\"$obj\""
-    val fieldIdParam = fieldID //"\"$fieldID\""
-    val type = when {
-        comType == Int::class.javaPrimitiveType || comType.simpleName.contains(
-            "Integer",
-            true
-        ) -> "Int"
-
-        comType == Long::class.javaPrimitiveType || comType.simpleName.contains(
-            "Long",
-            true
-        ) -> "Long"
-
-        comType == Short::class.javaPrimitiveType || comType.simpleName.contains(
-            "Short",
-            true
-        ) -> "Short"
-
-        comType == Byte::class.javaPrimitiveType || comType.simpleName.contains(
-            "Byte",
-            true
-        ) -> "Byte"
-
-        comType == Double::class.javaPrimitiveType || comType.simpleName.contains(
-            "Double",
-            true
-        ) -> "Double"
-
-        comType == Float::class.javaPrimitiveType || comType.simpleName.contains(
-            "Float",
-            true
-        ) -> "Float"
-
-        comType == Char::class.javaPrimitiveType || comType.simpleName.contains(
-            "Character",
-            true
-        ) -> "Char"
-
-        comType == String::class.java || comType.simpleName.contains("String", true)
-        -> "Object"
-
-        comType == Boolean::class.javaPrimitiveType || comType.simpleName.contains(
-            "Boolean",
-            true
-        ) -> "Boolean"
-
-        else -> "Object"
-    }
-    return "$env->Set${type}Field($objParam, $fieldIdParam, $value)"
+    val type = type.toTypeName()
+    return "$env->Set${type}Field($obj, $fieldID, $value)"
 }
 
 fun Class<*>.getObjectJavaValue(obj: String, sig: String): String {
     val comType = this
-    val type = when {
-        comType == Int::class.javaPrimitiveType || comType.simpleName.contains(
-            "Integer",
-            true
-        ) -> "Int"
-
-        comType == Long::class.javaPrimitiveType || comType.simpleName.contains(
-            "Long",
-            true
-        ) -> "Long"
-
-        comType == Short::class.javaPrimitiveType || comType.simpleName.contains(
-            "Short",
-            true
-        ) -> "Short"
-
-        comType == Byte::class.javaPrimitiveType || comType.simpleName.contains(
-            "Byte",
-            true
-        ) -> "Byte"
-
-        comType == Double::class.javaPrimitiveType || comType.simpleName.contains(
-            "Double",
-            true
-        ) -> "Double"
-
-        comType == Float::class.javaPrimitiveType || comType.simpleName.contains(
-            "Float",
-            true
-        ) -> "Float"
-
-        comType == Char::class.javaPrimitiveType || comType.simpleName.contains(
-            "Character",
-            true
-        ) -> "Char"
-
-        comType == String::class.java || comType.simpleName.contains("String", true)
-        -> "Object"
-
-        comType == Boolean::class.javaPrimitiveType || comType.simpleName.contains(
-            "Boolean",
-            true
-        ) -> "Boolean"
-
-        else -> "Object"
-    }
+    val type = simpleName
     if (comType.isArray) {
         throw Exception("Not yet supported")
     }
@@ -460,7 +255,6 @@ fun Field.getArrayElement(list: String, index: String): String {
         }
     }
 }
-
 
 fun Field.setArrayRegion(
     list: String,

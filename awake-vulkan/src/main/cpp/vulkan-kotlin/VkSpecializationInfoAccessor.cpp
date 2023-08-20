@@ -56,6 +56,7 @@ VkSpecializationInfoAccessor::getpMapEntries(VkSpecializationInfo &clazzInfo) {
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkSpecializationMapEntry[size];
     std::copy(pMapEntries.begin(), pMapEntries.end(), copy);
     clazzInfo.pMapEntries = copy;
@@ -80,6 +81,7 @@ VkSpecializationInfoAccessor::getpData(VkSpecializationInfo &clazzInfo) {
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new const void *[size];
     std::copy(pData.begin(), pData.end(), copy);
     clazzInfo.pData = copy;

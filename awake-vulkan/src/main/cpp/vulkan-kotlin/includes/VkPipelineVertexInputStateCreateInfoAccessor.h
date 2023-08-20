@@ -7,12 +7,12 @@
 #define VKPIPELINEVERTEXINPUTSTATECREATEINFOACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkVertexInputBindingDescriptionAccessor.h>
-#include <VkVertexInputAttributeDescriptionAccessor.h>
+#include <includes/VkVertexInputBindingDescriptionAccessor.h>
+#include <includes/VkVertexInputAttributeDescriptionAccessor.h>
 
 class VkPipelineVertexInputStateCreateInfoAccessor {
 private:
@@ -41,5 +41,4 @@ public:
 
     ~VkPipelineVertexInputStateCreateInfoAccessor();
 };
-
 #endif // VKPIPELINEVERTEXINPUTSTATECREATEINFOACCESSOR_H

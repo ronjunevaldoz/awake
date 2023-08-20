@@ -7,12 +7,12 @@
 #define VKPIPELINEVIEWPORTSTATECREATEINFOACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkViewportAccessor.h>
-#include <VkRect2DAccessor.h>
+#include <includes/VkViewportAccessor.h>
+#include <includes/VkRect2DAccessor.h>
 
 class VkPipelineViewportStateCreateInfoAccessor {
 private:
@@ -41,5 +41,4 @@ public:
 
     ~VkPipelineViewportStateCreateInfoAccessor();
 };
-
 #endif // VKPIPELINEVIEWPORTSTATECREATEINFOACCESSOR_H

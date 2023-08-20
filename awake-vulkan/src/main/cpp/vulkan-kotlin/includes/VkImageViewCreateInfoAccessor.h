@@ -7,12 +7,12 @@
 #define VKIMAGEVIEWCREATEINFOACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkComponentMappingAccessor.h>
-#include <VkImageSubresourceRangeAccessor.h>
+#include <includes/VkComponentMappingAccessor.h>
+#include <includes/VkImageSubresourceRangeAccessor.h>
 
 class VkImageViewCreateInfoAccessor {
 private:
@@ -50,5 +50,4 @@ public:
 
     ~VkImageViewCreateInfoAccessor();
 };
-
 #endif // VKIMAGEVIEWCREATEINFOACCESSOR_H

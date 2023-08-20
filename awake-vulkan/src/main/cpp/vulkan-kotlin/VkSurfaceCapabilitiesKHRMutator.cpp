@@ -7,8 +7,7 @@
 
 VkSurfaceCapabilitiesKHRMutator::VkSurfaceCapabilitiesKHRMutator(JNIEnv *env) {
     this->env = env;
-    clazz = env->FindClass(
-            "io/github/ronjunevaldoz/awake/vulkan/presentation/swapchain/VkSurfaceCapabilitiesKHR");
+    clazz = env->FindClass("io/github/ronjunevaldoz/awake/vulkan/models/VkSurfaceCapabilitiesKHR");
     minImageCountField = env->GetFieldID(clazz, "minImageCount", "I");
     maxImageCountField = env->GetFieldID(clazz, "maxImageCount", "I");
     currentExtentField = env->GetFieldID(clazz, "currentExtent",

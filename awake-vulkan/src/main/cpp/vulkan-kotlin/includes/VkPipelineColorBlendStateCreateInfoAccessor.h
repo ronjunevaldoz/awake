@@ -7,11 +7,11 @@
 #define VKPIPELINECOLORBLENDSTATECREATEINFOACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkPipelineColorBlendAttachmentStateAccessor.h>
+#include <includes/VkPipelineColorBlendAttachmentStateAccessor.h>
 
 class VkPipelineColorBlendStateCreateInfoAccessor {
 private:
@@ -46,5 +46,4 @@ public:
 
     ~VkPipelineColorBlendStateCreateInfoAccessor();
 };
-
 #endif // VKPIPELINECOLORBLENDSTATECREATEINFOACCESSOR_H

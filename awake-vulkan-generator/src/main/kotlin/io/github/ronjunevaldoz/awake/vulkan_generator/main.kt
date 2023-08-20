@@ -19,16 +19,27 @@
 
 package io.github.ronjunevaldoz.awake.vulkan_generator
 
+import io.github.ronjunevaldoz.awake.vulkan.Vulkan
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentReference
+import io.github.ronjunevaldoz.awake.vulkan.models.VkExtensionProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent3D
+import io.github.ronjunevaldoz.awake.vulkan.models.VkLayerProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.VkOffset2D
+import io.github.ronjunevaldoz.awake.vulkan.models.VkQueueFamilyProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.VkRect2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkStencilOpState
 import io.github.ronjunevaldoz.awake.vulkan.models.VkSubpassDependency
+import io.github.ronjunevaldoz.awake.vulkan.models.VkSurfaceCapabilitiesKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.VkSurfaceFormatKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.VkViewport
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkAndroidSurfaceCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandBufferAllocateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandBufferBeginInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandBufferInheritanceInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandPoolCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkComponentMapping
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
@@ -62,15 +73,13 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkSpecializatio
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkSpecializationMapEntry
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputAttributeDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputBindingDescription
-import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
-import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceLimits
-import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceProperties
-import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceSparseProperties
-import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceCapabilitiesKHR
-import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceFormatKHR
-import io.github.ronjunevaldoz.awake.vulkan.queuefamily.VkQueueFamilyProperties
+import io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice.VkPhysicalDeviceFeatures
+import io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice.VkPhysicalDeviceLimits
+import io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice.VkPhysicalDeviceProperties
+import io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice.VkPhysicalDeviceSparseProperties
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.cmakeListTemplate
+import io.github.ronjunevaldoz.awake.vulkan_generator.vulkan.createVulkanUtils
 import io.github.ronjunevaldoz.awake.vulkan_generator.vulkan.generateJavaToVulkanCpp
 
 fun main(args: Array<String>) {
@@ -103,6 +112,7 @@ fun main(args: Array<String>) {
     generateJavaToVulkanCpp<VkImageViewCreateInfo>()
     generateJavaToVulkanCpp<VkSwapchainCreateInfoKHR>()
     // presentation
+    generateJavaToVulkanCpp<VkAndroidSurfaceCreateInfoKHR>()
     generateJavaToVulkanCpp<VkSurfaceCapabilitiesKHR>()
     generateJavaToVulkanCpp<VkSurfaceFormatKHR>()
 
@@ -144,6 +154,20 @@ fun main(args: Array<String>) {
 
     // frame buffer
     generateJavaToVulkanCpp<VkFramebufferCreateInfo>()
+
+    // command buffers
+    generateJavaToVulkanCpp<VkCommandBufferAllocateInfo>()
+    generateJavaToVulkanCpp<VkCommandBufferBeginInfo>()
+    generateJavaToVulkanCpp<VkCommandPoolCreateInfo>()
+    generateJavaToVulkanCpp<VkCommandBufferInheritanceInfo>()
+
+
+    // props
+    generateJavaToVulkanCpp<VkExtensionProperties>()
+    generateJavaToVulkanCpp<VkLayerProperties>()
+
+    // vulkan awake utils
+    createVulkanUtils(Vulkan::class.java)
 
     println(cmakeListTemplate("awake-vulkan/src/main/cpp/vulkan-kotlin/"))
 }

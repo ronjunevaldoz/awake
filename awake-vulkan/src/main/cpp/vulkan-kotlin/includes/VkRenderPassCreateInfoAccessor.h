@@ -7,13 +7,13 @@
 #define VKRENDERPASSCREATEINFOACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkAttachmentDescriptionAccessor.h>
-#include <VkSubpassDescriptionAccessor.h>
-#include <VkSubpassDependencyAccessor.h>
+#include <includes/VkAttachmentDescriptionAccessor.h>
+#include <includes/VkSubpassDescriptionAccessor.h>
+#include <includes/VkSubpassDependencyAccessor.h>
 
 class VkRenderPassCreateInfoAccessor {
 private:
@@ -45,5 +45,4 @@ public:
 
     ~VkRenderPassCreateInfoAccessor();
 };
-
 #endif // VKRENDERPASSCREATEINFOACCESSOR_H

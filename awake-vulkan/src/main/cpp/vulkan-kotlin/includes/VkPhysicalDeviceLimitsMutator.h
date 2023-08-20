@@ -128,5 +128,4 @@ public:
     jobject toObject(VkPhysicalDeviceLimits source);
     ~VkPhysicalDeviceLimitsMutator();
 };
-
 #endif // VKPHYSICALDEVICELIMITSMUTATOR_H

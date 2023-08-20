@@ -7,20 +7,20 @@
 #define VKGRAPHICSPIPELINECREATEINFOACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkPipelineShaderStageCreateInfoAccessor.h>
-#include <VkPipelineVertexInputStateCreateInfoAccessor.h>
-#include <VkPipelineInputAssemblyStateCreateInfoAccessor.h>
-#include <VkPipelineTessellationStateCreateInfoAccessor.h>
-#include <VkPipelineViewportStateCreateInfoAccessor.h>
-#include <VkPipelineRasterizationStateCreateInfoAccessor.h>
-#include <VkPipelineMultisampleStateCreateInfoAccessor.h>
-#include <VkPipelineDepthStencilStateCreateInfoAccessor.h>
-#include <VkPipelineColorBlendStateCreateInfoAccessor.h>
-#include <VkPipelineDynamicStateCreateInfoAccessor.h>
+#include <includes/VkPipelineShaderStageCreateInfoAccessor.h>
+#include <includes/VkPipelineVertexInputStateCreateInfoAccessor.h>
+#include <includes/VkPipelineInputAssemblyStateCreateInfoAccessor.h>
+#include <includes/VkPipelineTessellationStateCreateInfoAccessor.h>
+#include <includes/VkPipelineViewportStateCreateInfoAccessor.h>
+#include <includes/VkPipelineRasterizationStateCreateInfoAccessor.h>
+#include <includes/VkPipelineMultisampleStateCreateInfoAccessor.h>
+#include <includes/VkPipelineDepthStencilStateCreateInfoAccessor.h>
+#include <includes/VkPipelineColorBlendStateCreateInfoAccessor.h>
+#include <includes/VkPipelineDynamicStateCreateInfoAccessor.h>
 
 class VkGraphicsPipelineCreateInfoAccessor {
 private:
@@ -91,5 +91,4 @@ public:
 
     ~VkGraphicsPipelineCreateInfoAccessor();
 };
-
 #endif // VKGRAPHICSPIPELINECREATEINFOACCESSOR_H

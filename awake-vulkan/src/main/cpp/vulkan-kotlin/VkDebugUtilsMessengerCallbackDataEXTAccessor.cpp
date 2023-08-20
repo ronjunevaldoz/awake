@@ -81,6 +81,7 @@ VkDebugUtilsMessengerCallbackDataEXTAccessor::getpQueueLabels(
     auto queueLabelCount = static_cast<uint32_t>(pQueueLabels.size());
     clazzInfo.queueLabelCount = queueLabelCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkDebugUtilsLabelEXT[size];
     std::copy(pQueueLabels.begin(), pQueueLabels.end(), copy);
     clazzInfo.pQueueLabels = copy;
@@ -118,6 +119,7 @@ VkDebugUtilsMessengerCallbackDataEXTAccessor::getpCmdBufLabels(
     auto cmdBufLabelCount = static_cast<uint32_t>(pCmdBufLabels.size());
     clazzInfo.cmdBufLabelCount = cmdBufLabelCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkDebugUtilsLabelEXT[size];
     std::copy(pCmdBufLabels.begin(), pCmdBufLabels.end(), copy);
     clazzInfo.pCmdBufLabels = copy;
@@ -174,6 +176,7 @@ VkDebugUtilsMessengerCallbackDataEXTAccessor::getpObjects(
     auto objectCount = static_cast<uint32_t>(pObjects.size());
     clazzInfo.objectCount = objectCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkDebugUtilsObjectNameInfoEXT[size];
     std::copy(pObjects.begin(), pObjects.end(), copy);
     clazzInfo.pObjects = copy;

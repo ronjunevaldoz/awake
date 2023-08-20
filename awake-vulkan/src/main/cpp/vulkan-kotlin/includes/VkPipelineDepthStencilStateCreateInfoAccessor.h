@@ -7,11 +7,11 @@
 #define VKPIPELINEDEPTHSTENCILSTATECREATEINFOACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkStencilOpStateAccessor.h>
+#include <includes/VkStencilOpStateAccessor.h>
 
 class VkPipelineDepthStencilStateCreateInfoAccessor {
 private:
@@ -61,5 +61,4 @@ public:
 
     ~VkPipelineDepthStencilStateCreateInfoAccessor();
 };
-
 #endif // VKPIPELINEDEPTHSTENCILSTATECREATEINFOACCESSOR_H

@@ -30,9 +30,28 @@ annotation class VkPointer
 @Retention(AnnotationRetention.RUNTIME)
 annotation class VkConstArray(val arraySize: String = "")
 
-@Target(AnnotationTarget.FIELD)
+@Target(
+    AnnotationTarget.FIELD,
+    AnnotationTarget.PROPERTY,
+    AnnotationTarget.VALUE_PARAMETER,
+    AnnotationTarget.TYPE
+)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class VkHandleRef(val name: String)
+
+@Retention(AnnotationRetention.RUNTIME)
+annotation class VkReturnType(val name: String)
+
+annotation class NativeSurfaceWindow
+
+/**
+ *
+ *         auto pfnDestroyDebugUtilsMessengerEXT =
+ *                 (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(
+ *                         instance, "vkDestroyDebugUtilsMessengerEXT");
+ *
+ */
+annotation class VkSingleton
 
 
 /**

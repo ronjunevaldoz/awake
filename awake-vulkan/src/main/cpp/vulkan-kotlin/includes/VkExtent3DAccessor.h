@@ -7,7 +7,7 @@
 #define VKEXTENT3DACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -31,5 +31,4 @@ public:
     uint32_t getheight();
     ~VkExtent3DAccessor();
 };
-
 #endif // VKEXTENT3DACCESSOR_H

@@ -7,11 +7,11 @@
 #define VKSUBPASSDESCRIPTIONACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkAttachmentReferenceAccessor.h>
+#include <includes/VkAttachmentReferenceAccessor.h>
 
 class VkSubpassDescriptionAccessor {
 private:
@@ -46,5 +46,4 @@ public:
 
     ~VkSubpassDescriptionAccessor();
 };
-
 #endif // VKSUBPASSDESCRIPTIONACCESSOR_H

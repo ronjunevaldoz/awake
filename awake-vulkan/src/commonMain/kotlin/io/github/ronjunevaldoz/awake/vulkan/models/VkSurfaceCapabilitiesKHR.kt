@@ -17,14 +17,13 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain
+package io.github.ronjunevaldoz.awake.vulkan.models
 
-import io.github.ronjunevaldoz.awake.vulkan.VkFlags
 import io.github.ronjunevaldoz.awake.vulkan.VkMutator
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkCompositeAlphaFlagsKHR
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkImageUsageFlags
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSurfaceTransformFlagBitsKHR
-import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent2D
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkSurfaceTransformFlagsKHR
 
 @VkMutator
 data class VkSurfaceCapabilitiesKHR(
@@ -39,8 +38,3 @@ data class VkSurfaceCapabilitiesKHR(
     val supportedCompositeAlpha: VkCompositeAlphaFlagsKHR = 0,
     val supportedUsageFlags: VkImageUsageFlags = 0
 )
-
-
-typealias VkSurfaceTransformFlagsKHR = VkFlags
-
-

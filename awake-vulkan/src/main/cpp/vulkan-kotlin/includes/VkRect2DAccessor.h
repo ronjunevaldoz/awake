@@ -7,12 +7,12 @@
 #define VKRECT2DACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkOffset2DAccessor.h>
-#include <VkExtent2DAccessor.h>
+#include <includes/VkOffset2DAccessor.h>
+#include <includes/VkExtent2DAccessor.h>
 
 class VkRect2DAccessor {
 private:
@@ -32,5 +32,4 @@ public:
 
     ~VkRect2DAccessor();
 };
-
 #endif // VKRECT2DACCESSOR_H

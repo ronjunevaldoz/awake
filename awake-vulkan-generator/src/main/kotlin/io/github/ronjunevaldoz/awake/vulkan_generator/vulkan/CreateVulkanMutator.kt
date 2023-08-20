@@ -149,11 +149,11 @@ fun CppFunctionBodyBuilder.processMutatorObject(
         child("auto $objName = env->NewStringUTF(source.$objName);")
     } else if (javaMember.type.simpleName.startsWith("vk", true)) {
         if (javaMember.type.isArray) {
-            import("<${javaMember.type.componentType.simpleName}Mutator.h>")
+            import("<includes/${javaMember.type.componentType.simpleName}Mutator.h>")
             child("${javaMember.type.componentType.simpleName}Mutator ${objName}Mutator(env);")
             child("auto $objName = ${objName}Mutator.toObject(source.$objName);")
         } else {
-            import("<${javaMember.type.simpleName}Mutator.h>")
+            import("<includes/${javaMember.type.simpleName}Mutator.h>")
             child("${javaMember.type.simpleName}Mutator ${javaMember.name}Mutator(env);")
             child("auto $objName = ${objName}Mutator.toObject(source.$objName);")
         }
@@ -212,7 +212,7 @@ fun CppFunctionBodyBuilder.processMutatorArray(
         if (javaArray != null) {
             val vulkanArrayName = "${javaMember.name}Array"
 
-            import("<${javaMember.type.componentType.simpleName}Mutator.h>")
+            import("<includes/${javaMember.type.componentType.simpleName}Mutator.h>")
             child(
                 "jclass ${javaMember.name}Clazz = env->FindClass(\"${
                     javaMember.type.componentType.name.replace(

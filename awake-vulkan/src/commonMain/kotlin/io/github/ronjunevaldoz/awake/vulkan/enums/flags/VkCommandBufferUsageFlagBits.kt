@@ -17,14 +17,15 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain
+package io.github.ronjunevaldoz.awake.vulkan.enums.flags
 
-import io.github.ronjunevaldoz.awake.vulkan.VkMutator
-import io.github.ronjunevaldoz.awake.vulkan.enums.VkColorSpaceKHR
-import io.github.ronjunevaldoz.awake.vulkan.enums.VkFormat
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkEnum
 
-@VkMutator
-data class VkSurfaceFormatKHR(
-    val format: VkFormat = VkFormat.VK_FORMAT_UNDEFINED,
-    val colorSpace: VkColorSpaceKHR = VkColorSpaceKHR.VK_COLORSPACE_SRGB_NONLINEAR_KHR
-)
+enum class VkCommandBufferUsageFlagBits(override val value: Int) : VkEnum {
+    VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT(0x00000001),
+    VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT(0x00000002),
+    VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT(0x00000004),
+    VK_COMMAND_BUFFER_USAGE_FLAG_BITS_MAX_ENUM(0x7FFFFFFF)
+}
+
+typealias VkCommandBufferUsageFlags = Int

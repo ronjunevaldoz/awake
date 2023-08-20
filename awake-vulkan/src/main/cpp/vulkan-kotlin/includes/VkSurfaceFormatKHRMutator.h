@@ -24,5 +24,4 @@ public:
     jobject toObject(VkSurfaceFormatKHR source);
     ~VkSurfaceFormatKHRMutator();
 };
-
 #endif // VKSURFACEFORMATKHRMUTATOR_H

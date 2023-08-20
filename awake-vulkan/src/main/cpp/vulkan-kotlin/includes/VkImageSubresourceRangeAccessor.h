@@ -7,7 +7,7 @@
 #define VKIMAGESUBRESOURCERANGEACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -36,5 +36,4 @@ public:
     uint32_t getaspectMask();
     ~VkImageSubresourceRangeAccessor();
 };
-
 #endif // VKIMAGESUBRESOURCERANGEACCESSOR_H

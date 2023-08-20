@@ -54,6 +54,7 @@ VkSubpassDescriptionAccessor::getpInputAttachments(VkSubpassDescription &clazzIn
     auto inputAttachmentCount = static_cast<uint32_t>(pInputAttachments.size());
     clazzInfo.inputAttachmentCount = inputAttachmentCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkAttachmentReference[size];
     std::copy(pInputAttachments.begin(), pInputAttachments.end(), copy);
     clazzInfo.pInputAttachments = copy;
@@ -85,6 +86,7 @@ VkSubpassDescriptionAccessor::getpColorAttachments(VkSubpassDescription &clazzIn
     auto colorAttachmentCount = static_cast<uint32_t>(pColorAttachments.size());
     clazzInfo.colorAttachmentCount = colorAttachmentCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkAttachmentReference[size];
     std::copy(pColorAttachments.begin(), pColorAttachments.end(), copy);
     clazzInfo.pColorAttachments = copy;
@@ -123,6 +125,7 @@ VkSubpassDescriptionAccessor::getpResolveAttachments(VkSubpassDescription &clazz
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkAttachmentReference[size];
     std::copy(pResolveAttachments.begin(), pResolveAttachments.end(), copy);
     clazzInfo.pResolveAttachments = copy;
@@ -159,6 +162,7 @@ VkSubpassDescriptionAccessor::getpPreserveAttachments(VkSubpassDescription &claz
     auto preserveAttachmentCount = static_cast<uint32_t>(pPreserveAttachments.size());
     clazzInfo.preserveAttachmentCount = preserveAttachmentCount;
     // Make a copy of the object to ensure proper memory management;
+    // jintArray
     auto copy = new uint32_t[size];
     std::copy(pPreserveAttachments.begin(), pPreserveAttachments.end(), copy);
     clazzInfo.pPreserveAttachments = copy;
@@ -188,6 +192,7 @@ VkSubpassDescriptionAccessor::getpDepthStencilAttachment(VkSubpassDescription &c
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkAttachmentReference[size];
     std::copy(pDepthStencilAttachment.begin(), pDepthStencilAttachment.end(), copy);
     clazzInfo.pDepthStencilAttachment = copy;

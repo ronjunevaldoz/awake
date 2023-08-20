@@ -19,7 +19,12 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.models
 
+import io.github.ronjunevaldoz.awake.vulkan.VkConstArray
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
+
+@VkMutator
 data class VkExtensionProperties(
-    val extensionName: String,
-    val specVersion: Int
-);
+    @VkConstArray("VK_MAX_EXTENSION_NAME_SIZE")
+    val extensionName: String = "",
+    val specVersion: Int = 0
+)

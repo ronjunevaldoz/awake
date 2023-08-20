@@ -7,12 +7,12 @@
 #define VKDEBUGUTILSMESSENGERCALLBACKDATAEXTACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkDebugUtilsLabelEXTAccessor.h>
-#include <VkDebugUtilsObjectNameInfoEXTAccessor.h>
+#include <includes/VkDebugUtilsLabelEXTAccessor.h>
+#include <includes/VkDebugUtilsObjectNameInfoEXTAccessor.h>
 
 class VkDebugUtilsMessengerCallbackDataEXTAccessor {
 private:
@@ -53,5 +53,4 @@ public:
 
     ~VkDebugUtilsMessengerCallbackDataEXTAccessor();
 };
-
 #endif // VKDEBUGUTILSMESSENGERCALLBACKDATAEXTACCESSOR_H

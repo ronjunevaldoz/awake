@@ -66,6 +66,7 @@ VkPipelineColorBlendStateCreateInfoAccessor::getpAttachments(
     auto attachmentCount = static_cast<uint32_t>(pAttachments.size());
     clazzInfo.attachmentCount = attachmentCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkPipelineColorBlendAttachmentState[size];
     std::copy(pAttachments.begin(), pAttachments.end(), copy);
     clazzInfo.pAttachments = copy;

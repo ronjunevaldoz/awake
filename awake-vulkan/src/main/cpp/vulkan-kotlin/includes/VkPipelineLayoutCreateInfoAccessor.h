@@ -7,11 +7,11 @@
 #define VKPIPELINELAYOUTCREATEINFOACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkPushConstantRangeAccessor.h>
+#include <includes/VkPushConstantRangeAccessor.h>
 
 class VkPipelineLayoutCreateInfoAccessor {
 private:
@@ -21,7 +21,6 @@ private:
     jfieldID sTypeField;
     jfieldID pNextField;
     jfieldID flagsField;
-    jfieldID setLayoutCountField;
     jfieldID pSetLayoutsField;
     jfieldID pushConstantRangeCountField;
     jfieldID pPushConstantRangesField;
@@ -40,11 +39,8 @@ public:
 
     void getpNext(VkPipelineLayoutCreateInfo &clazzInfo);
 
-    uint32_t getsetLayoutCount();
-
     void getpSetLayouts(VkPipelineLayoutCreateInfo &clazzInfo);
 
     ~VkPipelineLayoutCreateInfoAccessor();
 };
-
 #endif // VKPIPELINELAYOUTCREATEINFOACCESSOR_H

@@ -4,7 +4,6 @@ set(VULKAN_KOTLIN_SOURCES
         VkAttachmentDescriptionAccessor.cpp
         VkExtent2DMutator.cpp
         VkDeviceQueueCreateInfoAccessor.cpp
-        vulkan_utils.cpp
         VkDebugUtilsLabelEXTMutator.cpp
         VkPhysicalDeviceSparsePropertiesMutator.cpp
         VkOffset2DAccessor.cpp
@@ -18,22 +17,29 @@ set(VULKAN_KOTLIN_SOURCES
         VkPhysicalDeviceSparsePropertiesAccessor.cpp
         VkDebugUtilsMessengerCallbackDataEXTMutator.cpp
         VkSurfaceFormatKHRAccessor.cpp
+        VkCommandBufferInheritanceInfoAccessor.cpp
+        VkCommandBufferBeginInfoAccessor.cpp
         VkSpecializationMapEntryAccessor.cpp
+        VkAndroidSurfaceCreateInfoKHRAccessor.cpp
         VkPipelineColorBlendAttachmentStateAccessor.cpp
         VkDebugUtilsObjectNameInfoEXTAccessor.cpp
         VkInstanceCreateInfoAccessor.cpp
         VkDebugUtilsLabelEXTAccessor.cpp
+        VkExtensionPropertiesAccessor.cpp
         VkSubpassDependencyAccessor.cpp
+        VkLayerPropertiesAccessor.cpp
         VkPipelineColorBlendStateCreateInfoAccessor.cpp
         VkPhysicalDeviceFeaturesAccessor.cpp
         VkPipelineTessellationStateCreateInfoAccessor.cpp
         VkDebugUtilsMessengerCallbackDataEXTAccessor.cpp
         enum_utils.cpp
+        VulkanUtils.cpp
         VkSubpassDescriptionAccessor.cpp
         VkPhysicalDeviceLimitsAccessor.cpp
         VkDebugUtilsMessengerCreateInfoEXTAccessor.cpp
         VkPhysicalDeviceLimitsMutator.cpp
         VkPipelineLayoutCreateInfoAccessor.cpp
+        VkCommandBufferAllocateInfoAccessor.cpp
         VkShaderModuleCreateInfoAccessor.cpp
         VkPipelineInputAssemblyStateCreateInfoAccessor.cpp
         VkSwapchainCreateInfoKHRAccessor.cpp
@@ -45,9 +51,11 @@ set(VULKAN_KOTLIN_SOURCES
         VkVertexInputAttributeDescriptionAccessor.cpp
         VkPipelineShaderStageCreateInfoAccessor.cpp
         VkPipelineViewportStateCreateInfoAccessor.cpp
+        VkCommandPoolCreateInfoAccessor.cpp
         VkPipelineDepthStencilStateCreateInfoAccessor.cpp
         VkExtent3DMutator.cpp
         VkPipelineCacheCreateInfoAccessor.cpp
+        VkLayerPropertiesMutator.cpp
         VkPipelineDynamicStateCreateInfoAccessor.cpp
         VkApplicationInfoAccessor.cpp
         VkVertexInputBindingDescriptionAccessor.cpp
@@ -59,6 +67,7 @@ set(VULKAN_KOTLIN_SOURCES
         VkQueueFamilyPropertiesMutator.cpp
         VkViewportAccessor.cpp
         VkExtent3DAccessor.cpp
+        VkExtensionPropertiesMutator.cpp
         VkPipelineRasterizationStateCreateInfoAccessor.cpp
         VkPipelineMultisampleStateCreateInfoAccessor.cpp
         VkFramebufferCreateInfoAccessor.cpp

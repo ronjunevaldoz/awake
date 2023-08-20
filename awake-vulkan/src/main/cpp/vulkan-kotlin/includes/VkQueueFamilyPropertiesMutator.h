@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkExtent3DMutator.h>
+#include <includes/VkExtent3DMutator.h>
 
 class VkQueueFamilyPropertiesMutator {
 private:
@@ -27,5 +27,4 @@ public:
     jobject toObject(VkQueueFamilyProperties source);
     ~VkQueueFamilyPropertiesMutator();
 };
-
 #endif // VKQUEUEFAMILYPROPERTIESMUTATOR_H

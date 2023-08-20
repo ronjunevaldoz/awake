@@ -71,6 +71,7 @@ VkSwapchainCreateInfoKHRAccessor::getpQueueFamilyIndices(VkSwapchainCreateInfoKH
                            reinterpret_cast<jint *>(pQueueFamilyIndices.data()));
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jintArray
     auto copy = new uint32_t[size];
     std::copy(pQueueFamilyIndices.begin(), pQueueFamilyIndices.end(), copy);
     clazzInfo.pQueueFamilyIndices = copy;

@@ -13,7 +13,6 @@ VkPipelineLayoutCreateInfoAccessor::VkPipelineLayoutCreateInfoAccessor(JNIEnv *e
                                  "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType;");
     pNextField = env->GetFieldID(clazz, "pNext", "Ljava/lang/Object;");
     flagsField = env->GetFieldID(clazz, "flags", "I");
-    setLayoutCountField = env->GetFieldID(clazz, "setLayoutCount", "I");
     pSetLayoutsField = env->GetFieldID(clazz, "pSetLayouts", "[Ljava/lang/Long;");
     pushConstantRangeCountField = env->GetFieldID(clazz, "pushConstantRangeCount", "I");
     pPushConstantRangesField = env->GetFieldID(clazz, "pPushConstantRanges",
@@ -61,6 +60,7 @@ VkPipelineLayoutCreateInfoAccessor::getpPushConstantRanges(VkPipelineLayoutCreat
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkPushConstantRange[size];
     std::copy(pPushConstantRanges.begin(), pPushConstantRanges.end(), copy);
     clazzInfo.pPushConstantRanges = copy;
@@ -72,7 +72,6 @@ VkPipelineLayoutCreateInfoAccessor::fromObject(VkPipelineLayoutCreateInfo &clazz
     clazzInfo.sType = getsType(); // Enum VkStructureType
     getpNext(clazzInfo); // Other void*
     clazzInfo.flags = getflags(); // Primitive uint32_t
-    clazzInfo.setLayoutCount = getsetLayoutCount(); // Primitive uint32_t
     getpSetLayouts(clazzInfo);  // Long Object Array
     clazzInfo.pushConstantRangeCount = getpushConstantRangeCount(); // Primitive uint32_t
     getpPushConstantRanges(clazzInfo);  // VkPushConstantRange Object Array
@@ -84,15 +83,11 @@ VkPipelineLayoutCreateInfoAccessor::getpNext(VkPipelineLayoutCreateInfo &clazzIn
     clazzInfo.pNext = ref;
 }
 
-uint32_t
-VkPipelineLayoutCreateInfoAccessor::getsetLayoutCount() {
-    return (uint32_t) (jint) env->GetIntField(obj, setLayoutCountField); // primitive
-}
-
 void
 VkPipelineLayoutCreateInfoAccessor::getpSetLayouts(VkPipelineLayoutCreateInfo &clazzInfo) {
     auto pSetLayoutsArray = (jobjectArray) env->GetObjectField(obj, pSetLayoutsField);
     if (pSetLayoutsArray == nullptr) {
+        clazzInfo.setLayoutCount = 0;
         clazzInfo.pSetLayouts = nullptr;
         env->DeleteLocalRef(pSetLayoutsArray); // release null reference
         return;
@@ -109,7 +104,10 @@ VkPipelineLayoutCreateInfoAccessor::getpSetLayouts(VkPipelineLayoutCreateInfo &c
         env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
+    auto setLayoutCount = static_cast<uint32_t>(pSetLayouts.size());
+    clazzInfo.setLayoutCount = setLayoutCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkDescriptorSetLayout[size];
     std::copy(pSetLayouts.begin(), pSetLayouts.end(), copy);
     clazzInfo.pSetLayouts = copy;

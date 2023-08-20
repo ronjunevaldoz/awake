@@ -19,10 +19,19 @@
 
 package io.github.ronjunevaldoz.awake.vulkan
 
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkPipelineBindPoint
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPresentModeKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtensionProperties
-import io.github.ronjunevaldoz.awake.vulkan.models.VkImage
 import io.github.ronjunevaldoz.awake.vulkan.models.VkLayerProperties
+import io.github.ronjunevaldoz.awake.vulkan.models.VkQueueFamilyProperties
+import io.github.ronjunevaldoz.awake.vulkan.models.VkRect2D
+import io.github.ronjunevaldoz.awake.vulkan.models.VkSurfaceCapabilitiesKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.VkSurfaceFormatKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.VkViewport
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkAndroidSurfaceCreateInfoKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandBufferAllocateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandBufferBeginInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandPoolCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkFramebufferCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
@@ -34,12 +43,8 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.VkDebugUtilsMessengerCreateInfoEXT
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayoutCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
-import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceProperties
-import io.github.ronjunevaldoz.awake.vulkan.presentation.VkAndroidSurfaceCreateInfoKHR
-import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceCapabilitiesKHR
-import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceFormatKHR
-import io.github.ronjunevaldoz.awake.vulkan.queuefamily.VkQueueFamilyProperties
+import io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice.VkPhysicalDeviceFeatures
+import io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice.VkPhysicalDeviceProperties
 
 actual object Vulkan {
     init {
@@ -67,7 +72,7 @@ actual object Vulkan {
     actual external fun vkGetPhysicalDeviceProperties(physicalDevice: Long): VkPhysicalDeviceProperties
     actual external fun vkGetPhysicalDeviceFeatures(physicalDevice: Long): VkPhysicalDeviceFeatures
     actual external fun vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice: Long): Array<VkQueueFamilyProperties>
-    actual external fun vkGetSwapchainImagesKHR(device: Long, swapchain: Long): Array<VkImage>
+    actual external fun vkGetSwapchainImagesKHR(device: Long, swapchain: Long): LongArray
 
     actual external fun vkCreateDevice(physicalDevice: Long, deviceInfo: VkDeviceCreateInfo): Long
     actual external fun vkDestroyDevice(device: Long)
@@ -85,7 +90,7 @@ actual object Vulkan {
         surface: Long
     ): Boolean
 
-    actual external fun vkDestroySurface(instance: Long, surface: Long)
+    actual external fun vkDestroySurfaceKHR(instance: Long, surface: Long)
 
     actual external fun vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
         physicalDevice: Long,
@@ -112,12 +117,12 @@ actual object Vulkan {
         swapchainKHR: Long
     )
 
-    actual external fun createDebugUtilsMessenger(
+    actual external fun vkCreateDebugUtilsMessengerEXT(
         instance: Long,
         createInfo: VkDebugUtilsMessengerCreateInfoEXT
     ): Long
 
-    actual external fun destroyDebugUtilsMessenger(instance: Long, debugUtilsMessenger: Long)
+    actual external fun vkDestroyDebugUtilsMessengerEXT(instance: Long, debugUtilsMessenger: Long)
     actual external fun vkCreateImageView(
         device: Long,
         createInfo: VkImageViewCreateInfo
@@ -140,7 +145,7 @@ actual object Vulkan {
         pipelineCache: Long
     )
 
-    actual external fun vkCreateGraphicsPipeline(
+    actual external fun vkCreateGraphicsPipelines(
         device: Long,
         pipelineCache: Long,
         createInfos: Array<VkGraphicsPipelineCreateInfo>
@@ -165,4 +170,49 @@ actual object Vulkan {
     ): Long
 
     actual external fun vkDestroyFramebuffer(device: Long, framebuffer: Long)
+    actual external fun vkAllocateCommandBuffers(
+        device: Long,
+        createInfo: VkCommandBufferAllocateInfo
+    ): Long
+
+    actual external fun vkBeginCommandBuffer(
+        commandBuffer: Long,
+        beginInfo: VkCommandBufferBeginInfo
+    )
+
+    actual external fun vkCreateCommandPool(
+        device: Long,
+        createInfo: VkCommandPoolCreateInfo
+    ): Long
+
+    actual external fun vkDestroyCommandPool(device: Long, commandPool: Long)
+    actual external fun vkCmdBindPipeline(
+        commandBuffer: Long,
+        pipelineBindPoint: VkPipelineBindPoint,
+        graphicsPipeline: Long
+    )
+
+    actual external fun vkCmdSetViewport(
+        commandBuffer: Long,
+        firstViewport: Int,
+        viewports: Array<VkViewport>
+    )
+
+    actual external fun vkCmdSetScissor(
+        commandBuffer: Long,
+        firstScissor: Int,
+        scissors: Array<VkRect2D>
+    )
+
+    actual external fun vkCmdDraw(
+        commandBuffer: Long,
+        vertexCount: Int,
+        instanceCount: Int,
+        firstVertex: Int,
+        firstInstance: Int
+    )
+
+    actual external fun vkCmdEndRenderPass(commandBuffer: Long)
+
+    actual external fun vkEndCommandBuffer(commandBuffer: Long)
 }

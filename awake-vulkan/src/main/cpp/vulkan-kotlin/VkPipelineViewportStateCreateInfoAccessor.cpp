@@ -75,6 +75,7 @@ VkPipelineViewportStateCreateInfoAccessor::getpViewports(
     auto viewportCount = static_cast<uint32_t>(pViewports.size());
     clazzInfo.viewportCount = viewportCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkViewport[size];
     std::copy(pViewports.begin(), pViewports.end(), copy);
     clazzInfo.pViewports = copy;
@@ -107,6 +108,7 @@ VkPipelineViewportStateCreateInfoAccessor::getpScissors(
     auto scissorCount = static_cast<uint32_t>(pScissors.size());
     clazzInfo.scissorCount = scissorCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkRect2D[size];
     std::copy(pScissors.begin(), pScissors.end(), copy);
     clazzInfo.pScissors = copy;

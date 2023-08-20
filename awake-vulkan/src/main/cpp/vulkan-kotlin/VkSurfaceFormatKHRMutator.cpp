@@ -7,8 +7,7 @@
 
 VkSurfaceFormatKHRMutator::VkSurfaceFormatKHRMutator(JNIEnv *env) {
     this->env = env;
-    clazz = env->FindClass(
-            "io/github/ronjunevaldoz/awake/vulkan/presentation/swapchain/VkSurfaceFormatKHR");
+    clazz = env->FindClass("io/github/ronjunevaldoz/awake/vulkan/models/VkSurfaceFormatKHR");
     formatField = env->GetFieldID(clazz, "format",
                                   "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkFormat;");
     colorSpaceField = env->GetFieldID(clazz, "colorSpace",

@@ -7,7 +7,7 @@
 #define VKAPPLICATIONINFOACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
@@ -45,5 +45,4 @@ public:
 
     ~VkApplicationInfoAccessor();
 };
-
 #endif // VKAPPLICATIONINFOACCESSOR_H

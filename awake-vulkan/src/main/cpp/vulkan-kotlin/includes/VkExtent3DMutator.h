@@ -25,5 +25,4 @@ public:
     jobject toObject(VkExtent3D source);
     ~VkExtent3DMutator();
 };
-
 #endif // VKEXTENT3DMUTATOR_H

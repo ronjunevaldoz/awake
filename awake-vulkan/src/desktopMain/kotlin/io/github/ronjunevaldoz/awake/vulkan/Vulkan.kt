@@ -19,10 +19,19 @@
 
 package io.github.ronjunevaldoz.awake.vulkan
 
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkPipelineBindPoint
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPresentModeKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtensionProperties
-import io.github.ronjunevaldoz.awake.vulkan.models.VkImage
 import io.github.ronjunevaldoz.awake.vulkan.models.VkLayerProperties
+import io.github.ronjunevaldoz.awake.vulkan.models.VkQueueFamilyProperties
+import io.github.ronjunevaldoz.awake.vulkan.models.VkRect2D
+import io.github.ronjunevaldoz.awake.vulkan.models.VkSurfaceCapabilitiesKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.VkSurfaceFormatKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.VkViewport
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkAndroidSurfaceCreateInfoKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandBufferAllocateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandBufferBeginInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandPoolCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkFramebufferCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
@@ -34,12 +43,8 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.VkDebugUtilsMessengerCreateInfoEXT
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayoutCreateInfo
-import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceFeatures
-import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDeviceProperties
-import io.github.ronjunevaldoz.awake.vulkan.presentation.VkAndroidSurfaceCreateInfoKHR
-import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceCapabilitiesKHR
-import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceFormatKHR
-import io.github.ronjunevaldoz.awake.vulkan.queuefamily.VkQueueFamilyProperties
+import io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice.VkPhysicalDeviceFeatures
+import io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice.VkPhysicalDeviceProperties
 
 actual object Vulkan {
     /**
@@ -48,6 +53,7 @@ actual object Vulkan {
      * @param createInfo The VkInstanceCreateInfo containing the application-specific information.
      * @return The handle to the created Vulkan instance.
      */
+    @VkReturnType("VkInstance")
     actual fun vkCreateInstance(createInfo: VkInstanceCreateInfo): Long {
         TODO("Not yet implemented")
     }
@@ -57,7 +63,7 @@ actual object Vulkan {
      *
      * @param instance The handle to the Vulkan instance to be destroyed.
      */
-    actual fun vkDestroyInstance(instance: Long) {
+    actual fun vkDestroyInstance(@VkHandleRef("VkInstance") instance: Long) {
     }
 
     /**
@@ -85,7 +91,7 @@ actual object Vulkan {
      * @return An array of VkExtensionProperties representing the available device extensions.
      */
     actual fun vkEnumerateDeviceExtensionProperties(
-        physicalDevice: Long,
+        @VkHandleRef("VkPhysicalDevice") physicalDevice: Long,
         layerName: String?
     ): Array<VkExtensionProperties> {
         TODO("Not yet implemented")
@@ -97,7 +103,8 @@ actual object Vulkan {
      * @param instance The handle to the Vulkan instance.
      * @return An array of VkPhysicalDevice handle in a form of type Long
      */
-    actual fun vkEnumeratePhysicalDevices(instance: Long): LongArray {
+    @VkReturnType("VkPhysicalDevice")
+    actual fun vkEnumeratePhysicalDevices(@VkHandleRef("VkInstance") instance: Long): LongArray {
         TODO("Not yet implemented")
     }
 
@@ -107,7 +114,7 @@ actual object Vulkan {
      * @param physicalDevice The handle to the Vulkan physical device.
      * @return The VkPhysicalDeviceProperties representing the properties of the physical device.
      */
-    actual fun vkGetPhysicalDeviceProperties(physicalDevice: Long): VkPhysicalDeviceProperties {
+    actual fun vkGetPhysicalDeviceProperties(@VkHandleRef("VkPhysicalDevice") physicalDevice: Long): VkPhysicalDeviceProperties {
         TODO("Not yet implemented")
     }
 
@@ -117,7 +124,7 @@ actual object Vulkan {
      * @param physicalDevice The handle to the Vulkan physical device.
      * @return The VkPhysicalDeviceFeatures representing the features of the physical device.
      */
-    actual fun vkGetPhysicalDeviceFeatures(physicalDevice: Long): VkPhysicalDeviceFeatures {
+    actual fun vkGetPhysicalDeviceFeatures(@VkHandleRef("VkPhysicalDevice") physicalDevice: Long): VkPhysicalDeviceFeatures {
         TODO("Not yet implemented")
     }
 
@@ -127,7 +134,7 @@ actual object Vulkan {
      * @param physicalDevice The handle to the Vulkan physical device.
      * @return An array of VkQueueFamilyProperties representing the properties of queue families.
      */
-    actual fun vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice: Long): Array<VkQueueFamilyProperties> {
+    actual fun vkGetPhysicalDeviceQueueFamilyProperties(@VkHandleRef("VkPhysicalDevice") physicalDevice: Long): Array<VkQueueFamilyProperties> {
         TODO("Not yet implemented")
     }
 
@@ -138,10 +145,11 @@ actual object Vulkan {
      * @param swapchain The handle to the Vulkan swapchain.
      * @return An array of VkImage representing the images in the swapchain.
      */
+    @VkReturnType("VkImage")
     actual fun vkGetSwapchainImagesKHR(
-        device: Long,
-        swapchain: Long
-    ): Array<VkImage> {
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkSwapchainKHR") swapchain: Long
+    ): LongArray {
         TODO("Not yet implemented")
     }
 
@@ -152,8 +160,9 @@ actual object Vulkan {
      * @param deviceInfo The configuration settings for the logical device, encapsulated in VkDeviceCreateInfo.
      * @return A handle to the newly created VkDevice object.
      */
+    @VkReturnType("VkDevice")
     actual fun vkCreateDevice(
-        physicalDevice: Long,
+        @VkHandleRef("VkPhysicalDevice") physicalDevice: Long,
         deviceInfo: VkDeviceCreateInfo
     ): Long {
         TODO("Not yet implemented")
@@ -164,7 +173,7 @@ actual object Vulkan {
      *
      * @param device The handle to the logical device that will be destroyed.
      */
-    actual fun vkDestroyDevice(device: Long) {
+    actual fun vkDestroyDevice(@VkHandleRef("VkDevice") device: Long) {
     }
 
     /**
@@ -175,8 +184,9 @@ actual object Vulkan {
      * @param queueIndex The index of the queue within the queue family.
      * @return The VkQueue associated with the specified parameters.
      */
+    @VkReturnType("VkQueue")
     actual fun vkGetDeviceQueue(
-        device: Long,
+        @VkHandleRef("VkDevice") device: Long,
         queueFamilyIndex: Int,
         queueIndex: Int
     ): Long {
@@ -190,8 +200,9 @@ actual object Vulkan {
      * @param surfaceInfo Information required to create the Android surface.
      * @return The handle to the created Android surface.
      */
+    @VkReturnType("VkSurfaceKHR")
     actual fun vkCreateAndroidSurfaceKHR(
-        instance: Long,
+        @VkHandleRef("VkInstance") instance: Long,
         surfaceInfo: VkAndroidSurfaceCreateInfoKHR
     ): Long {
         TODO("Not yet implemented")
@@ -206,9 +217,9 @@ actual object Vulkan {
      * @return `true` if presentation is supported, `false` otherwise.
      */
     actual fun vkGetPhysicalDeviceSurfaceSupportKHR(
-        physicalDevice: Long,
+        @VkHandleRef("VkPhysicalDevice") physicalDevice: Long,
         queueFamilyIndex: Int,
-        surface: Long
+        @VkHandleRef("VkSurfaceKHR") surface: Long
     ): Boolean {
         TODO("Not yet implemented")
     }
@@ -219,7 +230,10 @@ actual object Vulkan {
      * @param instance The handle to the Vulkan instance.
      * @param surface The handle to the surface to be destroyed.
      */
-    actual fun vkDestroySurface(instance: Long, surface: Long) {
+    actual fun vkDestroySurfaceKHR(
+        @VkHandleRef("VkInstance") instance: Long,
+        @VkHandleRef("VkSurfaceKHR") surface: Long
+    ) {
     }
 
     /**
@@ -230,8 +244,8 @@ actual object Vulkan {
      * @return The capabilities of the specified surface.
      */
     actual fun vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
-        physicalDevice: Long,
-        surface: Long
+        @VkHandleRef("VkPhysicalDevice") physicalDevice: Long,
+        @VkHandleRef("VkSurfaceKHR") surface: Long
     ): VkSurfaceCapabilitiesKHR {
         TODO("Not yet implemented")
     }
@@ -244,8 +258,8 @@ actual object Vulkan {
      * @return An array of surface formats supported by the specified surface.
      */
     actual fun vkGetPhysicalDeviceSurfaceFormatsKHR(
-        physicalDevice: Long,
-        surface: Long
+        @VkHandleRef("VkPhysicalDevice") physicalDevice: Long,
+        @VkHandleRef("VkSurfaceKHR") surface: Long
     ): Array<VkSurfaceFormatKHR> {
         TODO("Not yet implemented")
     }
@@ -258,8 +272,8 @@ actual object Vulkan {
      * @return An array of supported presentation modes for the specified surface.
      */
     actual fun vkGetPhysicalDeviceSurfacePresentModesKHR(
-        physicalDevice: Long,
-        surface: Long
+        @VkHandleRef("VkPhysicalDevice") physicalDevice: Long,
+        @VkHandleRef("VkSurfaceKHR") surface: Long
     ): Array<VkPresentModeKHR> {
         TODO("Not yet implemented")
     }
@@ -271,8 +285,9 @@ actual object Vulkan {
      * @param createInfoKHR The structure containing swapchain creation information.
      * @return The handle to the created Vulkan swapchain.
      */
+    @VkReturnType("VkSwapchainKHR")
     actual fun vkCreateSwapchainKHR(
-        device: Long,
+        @VkHandleRef("VkDevice") device: Long,
         createInfoKHR: VkSwapchainCreateInfoKHR
     ): Long {
         TODO("Not yet implemented")
@@ -284,87 +299,188 @@ actual object Vulkan {
      * @param device The handle to the Vulkan logical device.
      * @param swapchainKHR The handle to the swapchain to be destroyed.
      */
-    actual fun vkDestroySwapchainKHR(device: Long, swapchainKHR: Long) {
+    actual fun vkDestroySwapchainKHR(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkSwapchainKHR") swapchainKHR: Long
+    ) {
     }
 
+    @VkReturnType("VkImageView")
     actual fun vkCreateImageView(
-        device: Long,
+        @VkHandleRef("VkDevice") device: Long,
         createInfo: VkImageViewCreateInfo
     ): Long {
         TODO("Not yet implemented")
     }
 
-    actual fun vkDestroyImageView(device: Long, imageView: Long) {
+    actual fun vkDestroyImageView(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkImageView") imageView: Long
+    ) {
     }
 
+    @VkReturnType("VkShaderModule")
     actual fun vkCreateShaderModule(
-        device: Long,
+        @VkHandleRef("VkDevice") device: Long,
         createInfo: VkShaderModuleCreateInfo
     ): Long {
         TODO("Not yet implemented")
     }
 
-    actual fun vkDestroyShaderModule(device: Long, shaderModule: Long) {
+    actual fun vkDestroyShaderModule(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkShaderModule") shaderModule: Long
+    ) {
     }
 
+    @VkReturnType("VkPipelineCache")
     actual fun vkCreatePipelineCache(
-        device: Long,
+        @VkHandleRef("VkDevice") device: Long,
         createInfo: VkPipelineCacheCreateInfo
     ): Long {
         TODO("Not yet implemented")
     }
 
-    actual fun vkDestroyPipelineCache(device: Long, pipelineCache: Long) {
+    actual fun vkDestroyPipelineCache(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkPipelineCache") pipelineCache: Long
+    ) {
     }
 
+    @VkReturnType("VkPipelineLayout")
     actual fun vkCreatePipelineLayout(
-        device: Long,
+        @VkHandleRef("VkDevice") device: Long,
         createInfo: VkPipelineLayoutCreateInfo
     ): Long {
         TODO("Not yet implemented")
     }
 
-    actual fun vkDestroyPipelineLayout(device: Long, pipelineLayout: Long) {
+    actual fun vkDestroyPipelineLayout(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkPipelineLayout") pipelineLayout: Long
+    ) {
     }
 
-    actual fun vkCreateGraphicsPipeline(
-        device: Long,
-        pipelineCache: Long,
+    @VkReturnType("VkPipeline")
+    actual fun vkCreateGraphicsPipelines(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkPipelineCache") pipelineCache: Long,
         createInfos: Array<VkGraphicsPipelineCreateInfo>
     ): LongArray {
         TODO("Not yet implemented")
     }
 
-    actual fun vkDestroyPipeline(device: Long, pipeline: Long) {
+    actual fun vkDestroyPipeline(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkPipeline") pipeline: Long
+    ) {
     }
 
+    @VkReturnType("VkRenderPass")
     actual fun vkCreateRenderPass(
-        device: Long,
+        @VkHandleRef("VkDevice") device: Long,
         createInfo: VkRenderPassCreateInfo
     ): Long {
         TODO("Not yet implemented")
     }
 
-    actual fun vkDestroyRenderPass(device: Long, renderPass: Long) {
+    actual fun vkDestroyRenderPass(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkRenderPass") renderPass: Long
+    ) {
     }
 
+    @VkReturnType("VkFramebuffer")
     actual fun vkCreateFramebuffer(
-        device: Long,
+        @VkHandleRef("VkDevice") device: Long,
         framebufferInfo: VkFramebufferCreateInfo
     ): Long {
         TODO("Not yet implemented")
     }
 
-    actual fun vkDestroyFramebuffer(device: Long, framebuffer: Long) {
+    actual fun vkDestroyFramebuffer(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkFramebuffer") framebuffer: Long
+    ) {
     }
 
-    actual fun createDebugUtilsMessenger(
-        instance: Long,
+    @VkReturnType("VkCommandBuffer")
+    actual fun vkAllocateCommandBuffers(
+        @VkHandleRef("VkDevice") device: Long,
+        createInfo: VkCommandBufferAllocateInfo
+    ): Long {
+        TODO("Not yet implemented")
+    }
+
+    actual fun vkBeginCommandBuffer(
+        @VkHandleRef("VkCommandBuffer") commandBuffer: Long,
+        beginInfo: VkCommandBufferBeginInfo
+    ) {
+    }
+
+    @VkReturnType("VkCommandPool")
+    actual fun vkCreateCommandPool(
+        @VkHandleRef("VkDevice") device: Long,
+        createInfo: VkCommandPoolCreateInfo
+    ): Long {
+        TODO("Not yet implemented")
+    }
+
+    actual fun vkDestroyCommandPool(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkCommandPool") commandPool: Long
+    ) {
+    }
+
+    actual fun vkCmdBindPipeline(
+        @VkHandleRef("VkCommandBuffer") commandBuffer: Long,
+        pipelineBindPoint: VkPipelineBindPoint,
+        @VkHandleRef("VkPipeline") graphicsPipeline: Long
+    ) {
+    }
+
+    actual fun vkCmdSetViewport(
+        @VkHandleRef("VkCommandBuffer") commandBuffer: Long,
+        firstViewport: Int,
+        viewports: Array<VkViewport>
+    ) {
+    }
+
+    actual fun vkCmdSetScissor(
+        @VkHandleRef("VkCommandBuffer") commandBuffer: Long,
+        firstScissor: Int,
+        scissors: Array<VkRect2D>
+    ) {
+    }
+
+    actual fun vkCmdDraw(
+        @VkHandleRef("VkCommandBuffer") commandBuffer: Long,
+        vertexCount: Int,
+        instanceCount: Int,
+        firstVertex: Int,
+        firstInstance: Int
+    ) {
+    }
+
+    actual fun vkCmdEndRenderPass(@VkHandleRef("VkCommandBuffer") commandBuffer: Long) {
+    }
+
+    actual fun vkEndCommandBuffer(@VkHandleRef("VkCommandBuffer") commandBuffer: Long) {
+    }
+
+    @VkReturnType("VkDebugUtilsMessengerEXT")
+    @VkSingleton
+    actual fun vkCreateDebugUtilsMessengerEXT(
+        @VkHandleRef("VkInstance") instance: Long,
         createInfo: VkDebugUtilsMessengerCreateInfoEXT
     ): Long {
         TODO("Not yet implemented")
     }
 
-    actual fun destroyDebugUtilsMessenger(instance: Long, debugUtilsMessenger: Long) {
+    @VkSingleton
+    actual fun vkDestroyDebugUtilsMessengerEXT(
+        @VkHandleRef("VkInstance") instance: Long,
+        @VkHandleRef("VkDebugUtilsMessengerEXT") debugUtilsMessenger: Long
+    ) {
     }
 }

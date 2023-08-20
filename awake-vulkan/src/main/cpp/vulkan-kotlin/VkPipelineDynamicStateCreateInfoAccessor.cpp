@@ -59,6 +59,7 @@ VkPipelineDynamicStateCreateInfoAccessor::getpDynamicStates(
     auto dynamicStateCount = static_cast<uint32_t>(pDynamicStates.size());
     clazzInfo.dynamicStateCount = dynamicStateCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkDynamicState[size];
     std::copy(pDynamicStates.begin(), pDynamicStates.end(), copy);
     clazzInfo.pDynamicStates = copy;

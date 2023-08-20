@@ -8,7 +8,7 @@
 VkPhysicalDeviceFeaturesMutator::VkPhysicalDeviceFeaturesMutator(JNIEnv *env) {
     this->env = env;
     clazz = env->FindClass(
-            "io/github/ronjunevaldoz/awake/vulkan/physicaldevice/VkPhysicalDeviceFeatures");
+            "io/github/ronjunevaldoz/awake/vulkan/models/physicaldevice/VkPhysicalDeviceFeatures");
     robustBufferAccessField = env->GetFieldID(clazz, "robustBufferAccess", "Z");
     fullDrawIndexUint32Field = env->GetFieldID(clazz, "fullDrawIndexUint32", "Z");
     imageCubeArrayField = env->GetFieldID(clazz, "imageCubeArray", "Z");

@@ -19,6 +19,7 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline
 
+import io.github.ronjunevaldoz.awake.vulkan.VkArray
 import io.github.ronjunevaldoz.awake.vulkan.VkFlags
 import io.github.ronjunevaldoz.awake.vulkan.VkHandle
 import io.github.ronjunevaldoz.awake.vulkan.VkHandleRef
@@ -37,8 +38,8 @@ class VkPipelineLayoutCreateInfo(
     val sType: VkStructureType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
     val pNext: Any? = null,
     val flags: VkPipelineLayoutCreateFlags = 0,
-    val setLayoutCount: Int = 0, // Optional
     @field:VkHandleRef("VkDescriptorSetLayout")
+    @VkArray(sizeAlias = "setLayoutCount")
     val pSetLayouts: Array<VkDescriptorSetLayout>? = null, // Optional
     val pushConstantRangeCount: Int = 0, // Optional
     val pPushConstantRanges: Array<VkPushConstantRange>? = null, // Optional

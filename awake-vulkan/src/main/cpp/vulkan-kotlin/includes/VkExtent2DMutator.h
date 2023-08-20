@@ -24,5 +24,4 @@ public:
     jobject toObject(VkExtent2D source);
     ~VkExtent2DMutator();
 };
-
 #endif // VKEXTENT2DMUTATOR_H

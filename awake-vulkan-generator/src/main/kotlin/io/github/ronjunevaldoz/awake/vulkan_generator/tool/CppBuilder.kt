@@ -24,9 +24,11 @@ import io.github.ronjunevaldoz.awake.vulkan_generator.tool.builder.CppClassBuild
 fun cppClass(
     className: String,
     fileDescription: String,
+    namespace: String? = null,
+    disableClass: Boolean = false,
     block: CppClassBuilder.() -> Unit
 ): Pair<String, String> {
-    val builder = CppClassBuilder(className, fileDescription)
+    val builder = CppClassBuilder(className, fileDescription, namespace, disableClass)
     builder.block()
     return Pair(builder.buildInterface(), builder.buildClass())
 }

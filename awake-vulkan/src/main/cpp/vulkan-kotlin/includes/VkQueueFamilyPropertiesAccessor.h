@@ -7,11 +7,11 @@
 #define VKQUEUEFAMILYPROPERTIESACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkExtent3DAccessor.h>
+#include <includes/VkExtent3DAccessor.h>
 
 class VkQueueFamilyPropertiesAccessor {
 private:
@@ -36,5 +36,4 @@ public:
     uint32_t gettimestampValidBits();
     ~VkQueueFamilyPropertiesAccessor();
 };
-
 #endif // VKQUEUEFAMILYPROPERTIESACCESSOR_H

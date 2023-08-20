@@ -17,16 +17,14 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan.presentation
+package io.github.ronjunevaldoz.awake.vulkan.models
 
-import io.github.ronjunevaldoz.awake.vulkan.VkFlags
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkColorSpaceKHR
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkFormat
 
-data class VkAndroidSurfaceCreateInfoKHR(
-    val sType: Int = 0,
-    val pNext: Long = 0,
-    val flags: VkAndroidSurfaceCreateFlagsKHR = 0,
-    val window: Any? = null
+@VkMutator
+data class VkSurfaceFormatKHR(
+    val format: VkFormat = VkFormat.VK_FORMAT_UNDEFINED,
+    val colorSpace: VkColorSpaceKHR = VkColorSpaceKHR.VK_COLORSPACE_SRGB_NONLINEAR_KHR
 )
-
-// You can define the VkAndroidSurfaceCreateFlagsKHR as a typealias or enum class
-typealias VkAndroidSurfaceCreateFlagsKHR = VkFlags

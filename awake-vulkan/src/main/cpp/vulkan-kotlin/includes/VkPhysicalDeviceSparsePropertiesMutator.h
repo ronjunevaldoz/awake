@@ -27,5 +27,4 @@ public:
     jobject toObject(VkPhysicalDeviceSparseProperties source);
     ~VkPhysicalDeviceSparsePropertiesMutator();
 };
-
 #endif // VKPHYSICALDEVICESPARSEPROPERTIESMUTATOR_H

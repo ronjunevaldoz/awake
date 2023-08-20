@@ -19,6 +19,7 @@
 
 package io.github.ronjunevaldoz.awake.vulkan_generator.vulkan
 
+import io.github.ronjunevaldoz.awake.vulkan.NativeSurfaceWindow
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.JNIType
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.builder.CppClassBuilder
@@ -30,6 +31,7 @@ import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getArrayRegion
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getJavaValue
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getObjectJavaValue
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getVkArray
+import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getVkConstArray
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.getVkHandle
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.isVkConstArray
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.isVkHandle
@@ -46,7 +48,7 @@ fun createVulkanAccessor(clazz: Class<*>) {
     val cppClassCode =
         cppClass(clazz.simpleName + "Accessor", "Vulkan accessor for ${clazz.simpleName}") {
             import("<jni.h>")
-            import("<vulkan/vulkan_core.h>")
+            import("<vulkan/vulkan.h>")
             import("<string>")
             import("<vector>")
             import("<enum_utils.h>")
@@ -260,7 +262,7 @@ fun CppFunctionBodyBuilder.processArrayAccessor(
             };"
         )
         if (returnType !in listOf("void*", "std::vector<void*>")) {
-            import("<$accessor.h>")
+            import("<includes/$accessor.h>")
             child("    // experimental optimize accessor")
             child("    $accessor accessor(env, element);") // TODO fix hardcoded
             if (void) {
@@ -372,18 +374,20 @@ fun CppFunctionBodyBuilder.processArrayAccessor(
         } else {
 //                        child("$clazzInfo.${arrayName} = $arrayName.data(); // object $comment")
             child("// Make a copy of the object to ensure proper memory management;")
-            val newData = if (javaMember.toJavaType() == JNIType.JString) {
-                "const char*"
-            } else if (!javaMember.type.componentType.simpleName.startsWith("vk", true)
-                && javaMember.toJavaType() == JNIType.JObject
-            ) {
-                "const void*"
-            } else if (javaMember.toJavaType() == JNIType.JLong && javaMember.isVkHandle()) {
-                javaMember.getVkHandle().name
-            } else if (javaMember.toJavaType() == JNIType.JInt) {
-                "uint32_t"
-            } else {
-                javaMember.type.componentType.simpleName
+            child("// $javaType")
+            val newData = when {
+                javaType == JNIType.JString || javaType == JNIType.JStringArray -> "const char*"
+                !javaMember.type.componentType.simpleName.startsWith(
+                    "vk",
+                    true
+                ) && javaType == JNIType.JObject -> "const void*"
+
+                (javaType == JNIType.JLong || javaType == JNIType.JLongArray) && javaMember.isVkHandle() -> javaMember.getVkHandle().name
+                javaType == JNIType.JInt || javaType == JNIType.JIntArray -> "uint32_t"
+                javaType == JNIType.JObjectArray && javaMember.isVkHandle() -> javaMember.getVkHandle().name
+                javaType == JNIType.JObjectArray && javaMember.type.componentType == String::class.java -> "const char*"
+                javaType == JNIType.JObjectArray && javaMember.type.componentType == Any::class.java -> "const void*"
+                else -> javaMember.type.componentType.simpleName
             }
             child("auto copy = new ${newData}[size];")
             child("std::copy(${arrayName}.begin(), ${arrayName}.end(), copy);")
@@ -445,7 +449,12 @@ fun CppFunctionBodyBuilder.processObjectAccessor(
         child("auto str = ($returnType) env->GetStringUTFChars($localVariable, nullptr);")
         child("auto result = strdup(str); // Allocate memory and copy the string")
         child("env->ReleaseStringUTFChars($localVariable, str); // Release the local string reference")
-        child("clazzInfo.${javaMember.name} = result;")
+        if (javaMember.isVkConstArray()) {
+            val javaConst = javaMember.getVkConstArray()
+            child("strncpy(clazzInfo.${javaMember.name}, result, ${javaConst?.arraySize});")
+        } else {
+            child("clazzInfo.${javaMember.name} = result;")
+        }
     } else {
         if (javaMember.isVkHandle()) {
             child("return reinterpret_cast<$returnType>($javaValue); // VkHandle from object??")
@@ -455,7 +464,7 @@ fun CppFunctionBodyBuilder.processObjectAccessor(
             // should be accessed by an accessor
             val accessor =
                 "${javaMember.type.simpleName}Accessor"  // TODO fix hardcoded
-            import("<$accessor.cpp>") // TODO move to .h
+            import("<includes/$accessor.h>") // TODO move to .h
             child("auto $localVariable = ($javaType) $javaValue;")
             child("if($localVariable == nullptr) {")
             child("    env->DeleteLocalRef($localVariable); // Delete null object reference")
@@ -477,8 +486,14 @@ fun CppFunctionBodyBuilder.processObjectAccessor(
             }
         } else {
             if (void) {
-                child("auto ref = (${returnType}) ($javaType) $javaValue; // Any Object")
-                child("clazzInfo.${javaMember.name} = ref;")
+                if (!javaMember.isAnnotationPresent(NativeSurfaceWindow::class.java)) {
+                    child("auto ref = (${returnType}) ($javaType) $javaValue; // Any Object")
+                    child("clazzInfo.${javaMember.name} = ref;")
+                } else {
+                    import("<android/native_window_jni.h>")
+                    child("auto windowObj = $javaValue; // Native surface window")
+                    child("clazzInfo.${javaMember.name} = ANativeWindow_fromSurface(env, windowObj);")
+                }
             } else {
                 child("return (${returnType}) ($javaType) $javaValue; // Any Object")
             }

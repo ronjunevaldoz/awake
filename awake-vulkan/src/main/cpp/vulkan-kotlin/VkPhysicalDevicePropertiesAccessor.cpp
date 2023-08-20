@@ -18,9 +18,9 @@ VkPhysicalDevicePropertiesAccessor::VkPhysicalDevicePropertiesAccessor(JNIEnv *e
     deviceNameField = env->GetFieldID(clazz, "deviceName", "[C");
     pipelineCacheUUIDField = env->GetFieldID(clazz, "pipelineCacheUUID", "[B");
     limitsField = env->GetFieldID(clazz, "limits",
-                                  "Lio/github/ronjunevaldoz/awake/vulkan/physicaldevice/VkPhysicalDeviceLimits;");
+                                  "Lio/github/ronjunevaldoz/awake/vulkan/models/physicaldevice/VkPhysicalDeviceLimits;");
     sparsePropertiesField = env->GetFieldID(clazz, "sparseProperties",
-                                            "Lio/github/ronjunevaldoz/awake/vulkan/physicaldevice/VkPhysicalDeviceSparseProperties;");
+                                            "Lio/github/ronjunevaldoz/awake/vulkan/models/physicaldevice/VkPhysicalDeviceSparseProperties;");
 }
 
 void

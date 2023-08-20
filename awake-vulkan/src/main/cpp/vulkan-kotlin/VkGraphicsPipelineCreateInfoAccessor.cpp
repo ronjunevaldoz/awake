@@ -64,6 +64,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpStages(VkGraphicsPipelineCreateInfo &c
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkPipelineShaderStageCreateInfo[size];
     std::copy(pStages.begin(), pStages.end(), copy);
     clazzInfo.pStages = copy;
@@ -102,6 +103,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpTessellationState(
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkPipelineTessellationStateCreateInfo[size];
     std::copy(pTessellationState.begin(), pTessellationState.end(), copy);
     clazzInfo.pTessellationState = copy;
@@ -132,6 +134,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpRasterizationState(
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkPipelineRasterizationStateCreateInfo[size];
     std::copy(pRasterizationState.begin(), pRasterizationState.end(), copy);
     clazzInfo.pRasterizationState = copy;
@@ -161,6 +164,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpDepthStencilState(
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkPipelineDepthStencilStateCreateInfo[size];
     std::copy(pDepthStencilState.begin(), pDepthStencilState.end(), copy);
     clazzInfo.pDepthStencilState = copy;
@@ -226,6 +230,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpViewportState(VkGraphicsPipelineCreate
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkPipelineViewportStateCreateInfo[size];
     std::copy(pViewportState.begin(), pViewportState.end(), copy);
     clazzInfo.pViewportState = copy;
@@ -256,6 +261,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpInputAssemblyState(
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkPipelineInputAssemblyStateCreateInfo[size];
     std::copy(pInputAssemblyState.begin(), pInputAssemblyState.end(), copy);
     clazzInfo.pInputAssemblyState = copy;
@@ -284,6 +290,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpColorBlendState(VkGraphicsPipelineCrea
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkPipelineColorBlendStateCreateInfo[size];
     std::copy(pColorBlendState.begin(), pColorBlendState.end(), copy);
     clazzInfo.pColorBlendState = copy;
@@ -351,6 +358,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpVertexInputState(
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkPipelineVertexInputStateCreateInfo[size];
     std::copy(pVertexInputState.begin(), pVertexInputState.end(), copy);
     clazzInfo.pVertexInputState = copy;
@@ -379,6 +387,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpDynamicState(VkGraphicsPipelineCreateI
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkPipelineDynamicStateCreateInfo[size];
     std::copy(pDynamicState.begin(), pDynamicState.end(), copy);
     clazzInfo.pDynamicState = copy;
@@ -408,6 +417,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpMultisampleState(
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkPipelineMultisampleStateCreateInfo[size];
     std::copy(pMultisampleState.begin(), pMultisampleState.end(), copy);
     clazzInfo.pMultisampleState = copy;

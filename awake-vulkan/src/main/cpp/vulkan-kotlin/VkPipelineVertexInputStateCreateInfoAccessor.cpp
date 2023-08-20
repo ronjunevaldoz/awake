@@ -77,6 +77,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexAttributeDescriptions(
     auto vertexAttributeDescriptionCount = static_cast<uint32_t>(pVertexAttributeDescriptions.size());
     clazzInfo.vertexAttributeDescriptionCount = vertexAttributeDescriptionCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkVertexInputAttributeDescription[size];
     std::copy(pVertexAttributeDescriptions.begin(), pVertexAttributeDescriptions.end(), copy);
     clazzInfo.pVertexAttributeDescriptions = copy;
@@ -110,6 +111,7 @@ VkPipelineVertexInputStateCreateInfoAccessor::getpVertexBindingDescriptions(
     auto vertexBindingDescriptionCount = static_cast<uint32_t>(pVertexBindingDescriptions.size());
     clazzInfo.vertexBindingDescriptionCount = vertexBindingDescriptionCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkVertexInputBindingDescription[size];
     std::copy(pVertexBindingDescriptions.begin(), pVertexBindingDescriptions.end(), copy);
     clazzInfo.pVertexBindingDescriptions = copy;

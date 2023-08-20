@@ -7,12 +7,12 @@
 #define VKPHYSICALDEVICEPROPERTIESACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkPhysicalDeviceLimitsAccessor.h>
-#include <VkPhysicalDeviceSparsePropertiesAccessor.h>
+#include <includes/VkPhysicalDeviceLimitsAccessor.h>
+#include <includes/VkPhysicalDeviceSparsePropertiesAccessor.h>
 
 class VkPhysicalDevicePropertiesAccessor {
 private:
@@ -53,5 +53,4 @@ public:
 
     ~VkPhysicalDevicePropertiesAccessor();
 };
-
 #endif // VKPHYSICALDEVICEPROPERTIESACCESSOR_H

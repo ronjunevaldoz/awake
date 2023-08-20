@@ -19,7 +19,7 @@ VkDeviceCreateInfoAccessor::VkDeviceCreateInfoAccessor(JNIEnv *env, jobject obj)
     ppEnabledExtensionNamesField = env->GetFieldID(clazz, "ppEnabledExtensionNames",
                                                    "[Ljava/lang/String;");
     pEnabledFeaturesField = env->GetFieldID(clazz, "pEnabledFeatures",
-                                            "[Lio/github/ronjunevaldoz/awake/vulkan/physicaldevice/VkPhysicalDeviceFeatures;");
+                                            "[Lio/github/ronjunevaldoz/awake/vulkan/models/physicaldevice/VkPhysicalDeviceFeatures;");
 }
 
 VkStructureType
@@ -76,6 +76,7 @@ VkDeviceCreateInfoAccessor::getppEnabledLayerNames(VkDeviceCreateInfo &clazzInfo
     auto enabledLayerCount = static_cast<uint32_t>(ppEnabledLayerNames.size());
     clazzInfo.enabledLayerCount = enabledLayerCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new const char *[size];
     std::copy(ppEnabledLayerNames.begin(), ppEnabledLayerNames.end(), copy);
     clazzInfo.ppEnabledLayerNames = copy;
@@ -106,6 +107,7 @@ VkDeviceCreateInfoAccessor::getppEnabledExtensionNames(VkDeviceCreateInfo &clazz
     auto enabledExtensionCount = static_cast<uint32_t>(ppEnabledExtensionNames.size());
     clazzInfo.enabledExtensionCount = enabledExtensionCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new const char *[size];
     std::copy(ppEnabledExtensionNames.begin(), ppEnabledExtensionNames.end(), copy);
     clazzInfo.ppEnabledExtensionNames = copy;
@@ -135,6 +137,7 @@ VkDeviceCreateInfoAccessor::getpEnabledFeatures(VkDeviceCreateInfo &clazzInfo) {
     // processing array data
     // no array size generated
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkPhysicalDeviceFeatures[size];
     std::copy(pEnabledFeatures.begin(), pEnabledFeatures.end(), copy);
     clazzInfo.pEnabledFeatures = copy;
@@ -166,6 +169,7 @@ VkDeviceCreateInfoAccessor::getpQueueCreateInfos(VkDeviceCreateInfo &clazzInfo) 
     auto queueCreateInfoCount = static_cast<uint32_t>(pQueueCreateInfos.size());
     clazzInfo.queueCreateInfoCount = queueCreateInfoCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkDeviceQueueCreateInfo[size];
     std::copy(pQueueCreateInfos.begin(), pQueueCreateInfos.end(), copy);
     clazzInfo.pQueueCreateInfos = copy;

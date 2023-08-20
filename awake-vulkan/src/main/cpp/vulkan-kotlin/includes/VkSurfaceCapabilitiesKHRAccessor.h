@@ -7,11 +7,11 @@
 #define VKSURFACECAPABILITIESKHRACCESSOR_H
 
 #include <jni.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
 #include <enum_utils.h>
-#include <VkExtent2DAccessor.h>
+#include <includes/VkExtent2DAccessor.h>
 
 class VkSurfaceCapabilitiesKHRAccessor {
 private:
@@ -55,5 +55,4 @@ public:
 
     ~VkSurfaceCapabilitiesKHRAccessor();
 };
-
 #endif // VKSURFACECAPABILITIESKHRACCESSOR_H

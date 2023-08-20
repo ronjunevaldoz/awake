@@ -26,6 +26,8 @@ import io.github.ronjunevaldoz.awake.vulkan_generator.tool.dsl.CppClassDSL
 class CppClassBuilder(
     val className: String,
     val fileDescription: String,
+    val namespace: String? = null,
+    private val disableClass: Boolean = false,
     private val withInterface: Boolean = true
 ) {
 
@@ -74,7 +76,8 @@ class CppClassBuilder(
         parameters: List<Pair<String, String>> = emptyList(),
         block: CppFunctionBuilder.() -> Unit
     ) {
-        val functionBuilder = CppFunctionBuilder(returnType, indent, className, withInterface)
+        val functionBuilder =
+            CppFunctionBuilder(returnType, indent, className, disableClass, withInterface)
         functionBuilder.parameters(parameters)
         functionBuilder.block()
         functions[functionBuilder.buildInterface(name)] = functionBuilder.build(name)
@@ -142,6 +145,10 @@ class CppClassBuilder(
 
             append("#include <includes/$className.h>\n\n")
 
+            if (namespace != null) {
+                append("namespace $namespace {\n")
+            }
+
             for (constructor in constructors) {
                 append(constructor.value)
                 append("\n")
@@ -153,6 +160,10 @@ class CppClassBuilder(
             for (destructor in destructors) {
                 append(destructor.value)
                 append("\n")
+            }
+
+            if (namespace != null) {
+                append("}\n")
             }
         }
     }
@@ -177,8 +188,14 @@ class CppClassBuilder(
                 append("\n")
             }
 
-            append("class $className")
-            append(" {\n")
+            if (namespace != null) {
+                append("namespace $namespace {\n")
+            }
+
+            if (!disableClass) {
+                append("class $className")
+                append(" {\n")
+            }
 
             members.groupBy { it.accessModifier }
                 .forEach {
@@ -188,8 +205,10 @@ class CppClassBuilder(
                     }
                 }
 
-            // by default all functions are public
-            append("public:\n")
+            if (!disableClass) {
+                // by default all functions are public
+                append("public:\n")
+            }
             for (constructor in constructors) {
                 append(constructor.key)
                 append("\n")
@@ -202,11 +221,17 @@ class CppClassBuilder(
                 append(destructor.key)
                 append("\n")
             }
-            // end of class
-            append("};\n\n")
+            if (!disableClass) {
+                // end of class
+                append("};\n")
+            }
+            if (namespace != null) {
+                append("}\n")
+            }
             append("#endif // $header")
         }
     }
+
     companion object {
         inline fun <reified T : Any> kotlinTypeToCppType(): String {
             return when (T::class) {

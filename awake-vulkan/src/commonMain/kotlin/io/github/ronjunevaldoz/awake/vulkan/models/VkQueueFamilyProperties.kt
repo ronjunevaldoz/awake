@@ -17,16 +17,15 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan.physicaldevice
+package io.github.ronjunevaldoz.awake.vulkan.models
 
-import io.github.ronjunevaldoz.awake.vulkan.VkBool32
 import io.github.ronjunevaldoz.awake.vulkan.VkMutator
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkQueueFlags
 
 @VkMutator
-data class VkPhysicalDeviceSparseProperties(
-    val residencyStandard2DBlockShape: VkBool32 = false,
-    val residencyStandard2DMultisampleBlockShape: VkBool32 = false,
-    val residencyStandard3DBlockShape: VkBool32 = false,
-    val residencyAlignedMipSize: VkBool32 = false,
-    val residencyNonResidentStrict: VkBool32 = false,
+data class VkQueueFamilyProperties(
+    val queueFlags: VkQueueFlags = 0,
+    val queueCount: UInt = 0u,
+    val timestampValidBits: UInt = 0u,
+    val minImageTransferGranularity: VkExtent3D = VkExtent3D()
 )

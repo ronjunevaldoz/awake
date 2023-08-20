@@ -58,6 +58,7 @@ VkPipelineCacheCreateInfoAccessor::getpInitialData(VkPipelineCacheCreateInfo &cl
     auto initialDataSize = static_cast<uint32_t>(pInitialData.size());
     clazzInfo.initialDataSize = initialDataSize;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new const void *[size];
     std::copy(pInitialData.begin(), pInitialData.end(), copy);
     clazzInfo.pInitialData = copy;

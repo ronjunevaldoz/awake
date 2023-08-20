@@ -28,6 +28,7 @@ import io.github.ronjunevaldoz.awake.vulkan.Version
 import io.github.ronjunevaldoz.awake.vulkan.Version.Companion.vkVersion
 import io.github.ronjunevaldoz.awake.vulkan.Vulkan
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkColorSpaceKHR
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkCommandBufferLevel
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkCompositeAlphaFlagBitsKHR
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkDynamicState
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkFormat
@@ -43,15 +44,22 @@ import io.github.ronjunevaldoz.awake.vulkan.enums.VkShaderStageFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSharingMode
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSurfaceTransformFlagBitsKHR
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkVertexInputRate
+import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkCommandPoolCreateFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.has
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentReference
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkOffset2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkRect2D
+import io.github.ronjunevaldoz.awake.vulkan.models.VkSurfaceCapabilitiesKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.VkSurfaceFormatKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.VkSurfaceKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.VkViewport
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkAndroidSurfaceCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandBufferAllocateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandBufferBeginInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandPoolCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkFramebufferCreateInfo
@@ -76,10 +84,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineVerte
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineViewportStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputAttributeDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkVertexInputBindingDescription
-import io.github.ronjunevaldoz.awake.vulkan.physicaldevice.VkPhysicalDevice
-import io.github.ronjunevaldoz.awake.vulkan.presentation.VkAndroidSurfaceCreateInfoKHR
-import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceCapabilitiesKHR
-import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceFormatKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice.VkPhysicalDevice
 import io.github.ronjunevaldoz.awake.vulkan.utils.findQueueFamilies
 import io.github.ronjunevaldoz.awake.vulkan.utils.getAppExtProps
 import io.github.ronjunevaldoz.awake.vulkan.utils.getAppLayerProps
@@ -108,6 +113,8 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
     var pipelineLayout: Long = 0
     var graphicsPipeline: LongArray = longArrayOf()
     var swapChainFrameBuffers: List<Long> = emptyList()
+    var commandPool: Long = 0
+    var commandBuffer: Long = 0
 
     init {
         Vulkan
@@ -150,9 +157,23 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         createFramebuffers()
         createCommandPool()
         createCommandBuffer()
+
+        recordCommandBuffer(commandBuffer, 0)
+    }
+
+    private fun recordCommandBuffer(commandBuffer: Long, imageIndex: Int) {
+        val beginInfo = VkCommandBufferBeginInfo()
+        Vulkan.vkBeginCommandBuffer(commandBuffer, beginInfo)
     }
 
     private fun createCommandBuffer() {
+        val allocInfo = VkCommandBufferAllocateInfo(
+            commandPool = commandPool,
+            level = VkCommandBufferLevel.VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+            commandBufferCount = 1
+        )
+
+        commandBuffer = Vulkan.vkAllocateCommandBuffers(device, allocInfo)
 //        VkRenderPassBeginInfo(
 //            framebuffer = swapChainFrameBuffers[imageIndex],
 //            renderArea = VkRect2D(
@@ -165,10 +186,12 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
     private fun createCommandPool() {
         val (graphicsFamily, presentFamily) = findQueueFamilies(physicalDevice, surface)
 
-//        VkCommandPoolCreateInfo(
-//            flags = VkCommandPoolCreateFlagBits.VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT.value,
-//            queueFamilyIndex = graphicsFamily!!
-//        )
+        val poolInfo = VkCommandPoolCreateInfo(
+            flags = VkCommandPoolCreateFlagBits.VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT.value,
+            queueFamilyIndex = graphicsFamily!!
+        )
+
+        commandPool = Vulkan.vkCreateCommandPool(device, poolInfo)
     }
 
     private fun createFramebuffers() {
@@ -313,7 +336,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             },
             pUserData = null
         )
-        debugUtilsMessenger = Vulkan.createDebugUtilsMessenger(instance, createInfo)
+        debugUtilsMessenger = Vulkan.vkCreateDebugUtilsMessengerEXT(instance, createInfo)
     }
 
     private fun swapChain() {
@@ -384,7 +407,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         val swapChainImages = Vulkan.vkGetSwapchainImagesKHR(device, swapChain)
         swapChainImageViews = swapChainImages.map { swapChainImage ->
             val createInfo = VkImageViewCreateInfo(
-                image = swapChainImage.image,
+                image = swapChainImage,
                 viewType = VkImageViewType.VK_IMAGE_VIEW_TYPE_2D,
                 format = swapChainImageFormat,
                 subresourceRange = VkImageSubresourceRange(
@@ -505,7 +528,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
                 )
             )
             pipelineCache = Vulkan.vkCreatePipelineCache(device, VkPipelineCacheCreateInfo())
-            graphicsPipeline = Vulkan.vkCreateGraphicsPipeline(
+            graphicsPipeline = Vulkan.vkCreateGraphicsPipelines(
                 device, pipelineCache, createInfos
             )
 
@@ -577,9 +600,9 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         }
 
         Vulkan.vkDestroySwapchainKHR(device, swapChain)
-        Vulkan.vkDestroySurface(instance, surface)
+        Vulkan.vkDestroySurfaceKHR(instance, surface)
         Vulkan.vkDestroyDevice(device)
-        Vulkan.destroyDebugUtilsMessenger(instance, debugUtilsMessenger)
+        Vulkan.vkDestroyDebugUtilsMessengerEXT(instance, debugUtilsMessenger)
         Vulkan.vkDestroyInstance(instance)
     }
 }

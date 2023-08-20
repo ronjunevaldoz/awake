@@ -22,8 +22,8 @@ package io.github.ronjunevaldoz.awake.vulkan.utils
 import io.github.ronjunevaldoz.awake.vulkan.Vulkan
 import io.github.ronjunevaldoz.awake.vulkan.VulkanExtension
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPresentModeKHR
-import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceCapabilitiesKHR
-import io.github.ronjunevaldoz.awake.vulkan.presentation.swapchain.VkSurfaceFormatKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.VkSurfaceCapabilitiesKHR
+import io.github.ronjunevaldoz.awake.vulkan.models.VkSurfaceFormatKHR
 
 
 data class SwapChainSupportDetails(

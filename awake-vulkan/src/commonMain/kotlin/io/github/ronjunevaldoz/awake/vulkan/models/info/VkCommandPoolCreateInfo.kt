@@ -17,16 +17,14 @@
  * limitations under the License.
  */
 
-package io.github.ronjunevaldoz.awake.vulkan.queuefamily
+package io.github.ronjunevaldoz.awake.vulkan.models.info
 
-import io.github.ronjunevaldoz.awake.vulkan.VkMutator
-import io.github.ronjunevaldoz.awake.vulkan.enums.VkQueueFlags
-import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent3D
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkStructureType
+import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkCommandPoolCreateFlags
 
-@VkMutator
-data class VkQueueFamilyProperties(
-    val queueFlags: VkQueueFlags = 0,
-    val queueCount: UInt = 0u,
-    val timestampValidBits: UInt = 0u,
-    val minImageTransferGranularity: VkExtent3D = VkExtent3D()
+data class VkCommandPoolCreateInfo(
+    val sType: VkStructureType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+    val pNext: Any? = null,
+    val flags: VkCommandPoolCreateFlags = 0,
+    val queueFamilyIndex: Int = 0
 )

@@ -27,5 +27,4 @@ public:
     jobject toObject(VkDebugUtilsObjectNameInfoEXT source);
     ~VkDebugUtilsObjectNameInfoEXTMutator();
 };
-
 #endif // VKDEBUGUTILSOBJECTNAMEINFOEXTMUTATOR_H

@@ -27,6 +27,7 @@ class CppFunctionBuilder(
     private val returnType: String,
     private val indent: Int = 1,
     private val className: String,
+    private val disableClass: Boolean,
     private val withInterface: Boolean
 ) {
     private var parameters: List<Pair<String, String>> = emptyList()
@@ -50,7 +51,11 @@ class CppFunctionBuilder(
         val cppParameters =
             parameters.joinToString(", ") { "${it.second} ${it.first}" }
         val function = if (withInterface) {
-            "$returnType\n$className::$name($cppParameters)"
+            if (disableClass) {
+                "$returnType\n$name($cppParameters)"
+            } else {
+                "$returnType\n$className::$name($cppParameters)"
+            }
         } else {
             "$indentation$returnType $name($cppParameters)"
         }

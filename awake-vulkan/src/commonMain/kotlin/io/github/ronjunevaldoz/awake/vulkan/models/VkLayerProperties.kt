@@ -19,9 +19,15 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.models
 
+import io.github.ronjunevaldoz.awake.vulkan.VkConstArray
+import io.github.ronjunevaldoz.awake.vulkan.VkMutator
+
+@VkMutator
 data class VkLayerProperties(
-    val layerName: String = "", // VK_MAX_EXTENSION_NAME_SIZE
+    @VkConstArray("VK_MAX_EXTENSION_NAME_SIZE")
+    val layerName: String = "",
     val specVersion: Int = 0,
     val implementationVersion: Int = 0,
-    val description: String = "" // VK_MAX_DESCRIPTION_SIZE
+    @VkConstArray("VK_MAX_DESCRIPTION_SIZE")
+    val description: String = ""
 )

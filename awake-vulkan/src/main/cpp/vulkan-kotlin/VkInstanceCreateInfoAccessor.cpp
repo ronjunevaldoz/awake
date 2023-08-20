@@ -57,6 +57,7 @@ VkInstanceCreateInfoAccessor::getppEnabledExtensionNames(VkInstanceCreateInfo &c
     auto enabledExtensionCount = static_cast<uint32_t>(ppEnabledExtensionNames.size());
     clazzInfo.enabledExtensionCount = enabledExtensionCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new const char *[size];
     std::copy(ppEnabledExtensionNames.begin(), ppEnabledExtensionNames.end(), copy);
     clazzInfo.ppEnabledExtensionNames = copy;
@@ -101,6 +102,7 @@ VkInstanceCreateInfoAccessor::getpApplicationInfo(VkInstanceCreateInfo &clazzInf
     }
     // processing array data
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new VkApplicationInfo[size];
     std::copy(pApplicationInfo.begin(), pApplicationInfo.end(), copy);
     clazzInfo.pApplicationInfo = copy;
@@ -131,6 +133,7 @@ VkInstanceCreateInfoAccessor::getppEnabledLayerNames(VkInstanceCreateInfo &clazz
     auto enabledLayerCount = static_cast<uint32_t>(ppEnabledLayerNames.size());
     clazzInfo.enabledLayerCount = enabledLayerCount;
     // Make a copy of the object to ensure proper memory management;
+    // jobjectArray
     auto copy = new const char *[size];
     std::copy(ppEnabledLayerNames.begin(), ppEnabledLayerNames.end(), copy);
     clazzInfo.ppEnabledLayerNames = copy;
