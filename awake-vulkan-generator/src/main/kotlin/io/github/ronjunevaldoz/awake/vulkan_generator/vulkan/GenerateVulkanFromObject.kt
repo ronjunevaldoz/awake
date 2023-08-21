@@ -102,7 +102,7 @@ fun CppClassBuilder.generateVulkanFromObject(
         1,
         if (hasArrayField) "void" else clazz.simpleName,
         "fromObject",
-        if (hasArrayField) listOf(Pair(clazzInfo, clazz.simpleName + "&")) else emptyList()
+        if (hasArrayField) listOf(Pair(clazzInfo, getParentClassName(clazz) + "&")) else emptyList()
     ) {
         body(2) {
             createBody(void = hasArrayField)

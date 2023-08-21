@@ -20,6 +20,7 @@
 package io.github.ronjunevaldoz.awake.vulkan_generator.vulkan
 
 import io.github.ronjunevaldoz.awake.vulkan.NativeSurfaceWindow
+import io.github.ronjunevaldoz.awake.vulkan.VkUnionMember
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.FileWriter
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.JNIType
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.builder.CppClassBuilder
@@ -42,64 +43,102 @@ import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toJavaType
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toJavaTypeArray
 import io.github.ronjunevaldoz.awake.vulkan_generator.tool.toVulkanType
 import java.lang.reflect.Field
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.superclasses
 
 fun createVulkanAccessor(clazz: Class<*>) {
-    val declareMembers = clazz.declaredFields
     val cppClassCode =
-        cppClass(clazz.simpleName + "Accessor", "Vulkan accessor for ${clazz.simpleName}") {
-            import("<jni.h>")
-            import("<vulkan/vulkan.h>")
-            import("<string>")
-            import("<vector>")
-            import("<enum_utils.h>")
+        if (clazz.kotlin.isSealed) {
+            cppClass(clazz.simpleName + "Accessor", "") {
+                import("<jni.h>")
+                member("private", "JNIEnv*", "env")
+                member("private", "jobject", "obj")
 
-            member("private", "JNIEnv*", "env")
-            member("private", "jobject", "obj")
-            member("private", "jclass", "clazz")
-            declareMembers.forEach { member ->
-                member("private", "jfieldID", member.name + "Field")
-            }
-
-            destructor {
-                // default destructor
-                body(2) {
-                    child("env->DeleteGlobalRef(obj);")
-                    child("env->DeleteGlobalRef(clazz);")
+                constructor(
+                    indent = 1,
+                    parameters = listOf(Pair("env", "JNIEnv*"), Pair("obj", "jobject"))
+                ) {
+                    body(2) {
+                        child("this->env = env;")
+                        child("this->obj = env->NewGlobalRef(obj);")
+                    }
                 }
-            }
-
-            constructor(
-                false,
-                1, listOf(
-                    Pair("env", "JNIEnv*"),
-                    Pair("obj", "jobject"),
-                )
-            ) {
-                body(2) {
-                    child("this->env = env;")
-                    child("this->obj = env->NewGlobalRef(obj);")
-                    members.forEach { member ->
-                        if (member.type == "jfieldID") {
-                            val javaField =
-                                declareMembers.find { it.name + "Field" == member.name }!!
-                            val javaSig = "\"${javaField.toJavaSignature()}\""
-                            val sourceClass = "clazz"
-                            val fieldName = "\"${javaField.name}\""
-                            child("${member.name} = env->GetFieldID($sourceClass, $fieldName, $javaSig);")
-                        } else if (member.type == "jclass") {
-                            child("${member.name} = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));")
+                function(1, "void", "fromObject", listOf(Pair("info", "${clazz.simpleName}&"))) {
+                    body(2) {
+                        clazz.kotlin.sealedSubclasses.forEach { subClass ->
+                            import("<includes/${subClass.simpleName}Accessor.h>")
+                            val classSig = subClass.qualifiedName?.replace(".", "/")?.replace(
+                                "/" + subClass.simpleName.toString(),
+                                "$" + subClass.simpleName.toString()
+                            )
+                            child("auto ${subClass.simpleName} = env->FindClass(\"${classSig}\");")
+                            child("if(env->IsInstanceOf(obj, ${subClass.simpleName})) {")
+                            child("    ${subClass.simpleName}Accessor(env, obj).fromObject(info);")
+                            child("}")
+                            child("env->DeleteLocalRef(${subClass.simpleName});")
                         }
                     }
                 }
             }
+        } else {
+            val declareMembers = clazz.declaredFields
+            val className = clazz.simpleName
+            cppClass(className + "Accessor", "Vulkan accessor for ${clazz.simpleName}") {
+                import("<jni.h>")
+                import("<vulkan/vulkan.h>")
+                import("<string>")
+                import("<vector>")
+                import("<enum_utils.h>")
 
-            val hasArrayField = true
+                member("private", "JNIEnv*", "env")
+                member("private", "jobject", "obj")
+                member("private", "jclass", "clazz")
 
-            // generate getters
-            generateVulkanGetters(clazz, declareMembers)
+                declareMembers.forEach { member ->
+                    member("private", "jfieldID", member.name + "Field")
+                }
+
+                destructor {
+                    // default destructor
+                    body(2) {
+                        child("env->DeleteGlobalRef(obj);")
+                        child("env->DeleteGlobalRef(clazz);")
+                    }
+                }
+
+                constructor(
+                    false,
+                    1, listOf(
+                        Pair("env", "JNIEnv*"),
+                        Pair("obj", "jobject"),
+                    )
+                ) {
+                    body(2) {
+                        child("this->env = env;")
+                        child("this->obj = env->NewGlobalRef(obj);")
+                        members.forEach { member ->
+                            if (member.type == "jfieldID") {
+                                val javaField =
+                                    declareMembers.find { it.name + "Field" == member.name }!!
+                                val javaSig = "\"${javaField.toJavaSignature()}\""
+                                val sourceClass = "clazz"
+                                val fieldName = "\"${javaField.name}\""
+                                child("${member.name} = env->GetFieldID($sourceClass, $fieldName, $javaSig);")
+                            } else if (member.type == "jclass") {
+                                child("${member.name} = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));")
+                            }
+                        }
+                    }
+                }
+
+                val hasArrayField = true
+
+                // generate getters
+                generateVulkanGetters(clazz, declareMembers)
 
 
-            generateVulkanFromObject(clazz, declareMembers, hasArrayField)
+                generateVulkanFromObject(clazz, declareMembers, hasArrayField)
+            }
         }
 
     val awakeVulkanCpp = "awake-vulkan/src/main/cpp/vulkan-kotlin"
@@ -113,6 +152,28 @@ fun createVulkanAccessor(clazz: Class<*>) {
     )
 }
 
+private fun getMergedClassName(clazz: Class<*>): String {
+    var className = clazz.simpleName
+    if (clazz.kotlin.superclasses.any { it.isSealed }) {
+        val parent = clazz.kotlin.superclasses.first()
+        className = parent.simpleName + clazz.simpleName
+    }
+    return className
+}
+
+fun getParentClassName(clazz: Class<*>): String {
+    var className = clazz.simpleName
+    if (clazz.kotlin.superclasses.any { it.isSealed }) {
+        val parent = clazz.kotlin.superclasses.first()
+        if (clazz.isAnnotationPresent(VkUnionMember::class.java)) {
+            val unionMember = clazz.getDeclaredAnnotation(VkUnionMember::class.java)
+            if (unionMember != null && unionMember.saveToParent) {
+                className = parent.simpleName.toString()
+            }
+        }
+    }
+    return className
+}
 
 private fun CppClassBuilder.generateVulkanGetters(
     clazz: Class<*>,
@@ -151,20 +212,32 @@ private fun CppClassBuilder.generateVulkanGetters(
             return when {
                 type.isEnum -> emptyList()
                 type.isPrimitive -> when {
-                    javaMember.isVkPointer() -> listOf(Pair("clazzInfo", "${clazz.simpleName}&"))
+                    javaMember.isVkPointer() -> listOf(
+                        Pair(
+                            "clazzInfo",
+                            "${getParentClassName(clazz)}&"
+                        )
+                    )
+
                     else -> emptyList()
                 }
 
                 type.isArray -> when {
-                    type.componentType.isEnum -> listOf(Pair("clazzInfo", "${clazz.simpleName}&"))
+                    type.componentType.isEnum -> listOf(
+                        Pair(
+                            "clazzInfo",
+                            "${getParentClassName(clazz)}&"
+                        )
+                    )
+
                     else -> when (javaMember.getArrayElementJavaType()) {
                         JNIType.JString -> getParameter(type.componentType)
                         JNIType.JObject -> getParameter(type.componentType)
-                        else -> listOf(Pair("clazzInfo", "${clazz.simpleName}&"))
+                        else -> listOf(Pair("clazzInfo", "${getParentClassName(clazz)}&"))
                     }
                 }
 
-                else -> listOf(Pair("clazzInfo", "${clazz.simpleName}&"))
+                else -> listOf(Pair("clazzInfo", "${getParentClassName(clazz)}&"))
             }
         }
 
@@ -175,6 +248,7 @@ private fun CppClassBuilder.generateVulkanGetters(
                 javaMember.type.isPrimitive -> processPrimitiveAccessor(javaMember, returnType)
                 javaMember.type.isArray -> processArrayAccessor(
                     void,
+                    clazz,
                     javaMember,
                     returnType,
                     import = { import(it) })
@@ -197,6 +271,7 @@ private fun CppClassBuilder.generateVulkanGetters(
 
 fun CppFunctionBodyBuilder.processArrayAccessor(
     void: Boolean,
+    clazz: Class<*>,
     javaMember: Field,
     returnType: String,
     import: (dependency: String) -> Unit
@@ -223,6 +298,9 @@ fun CppFunctionBodyBuilder.processArrayAccessor(
         } else if (javaMember.isVkConstArray()) {
             child("    // const array")
             child("    // clazzInfo.$arrayName = nullptr;")
+        } else if (clazz.isAnnotationPresent(VkUnionMember::class.java)) {
+            val unionMember = clazz.getDeclaredAnnotation(VkUnionMember::class.java)
+            child("    // ${unionMember.alias} no need to release;")
         } else {
             child("    clazzInfo.$arrayName = nullptr;")
         }
@@ -262,15 +340,53 @@ fun CppFunctionBodyBuilder.processArrayAccessor(
             };"
         )
         if (returnType !in listOf("void*", "std::vector<void*>")) {
-            import("<includes/$accessor.h>")
-            child("    // experimental optimize accessor")
-            child("    $accessor accessor(env, element);") // TODO fix hardcoded
-            if (void) {
-                child("    ${javaMember.type.componentType.simpleName} ref{};")
-                child("    accessor.fromObject(ref);")
-                child("    $arrayName.push_back(ref);")
+
+            val kotlinElement = javaMember.type.componentType.kotlin
+            if (kotlinElement.isSealed) {
+                child("    // sealed class")
+                kotlinElement.sealedSubclasses.forEach { subClass ->
+                    val subClassName = "${subClass.simpleName?.decapitalize()}Class"
+                    child(
+                        "   auto $subClassName = env->FindClass(\"${
+                            subClass.qualifiedName?.replace(
+                                ".",
+                                "/"
+                            )
+                        }\");"
+                    )
+                    child("   if(env->IsInstanceOf(element, $subClassName)) {")
+                    val subClassAccessor = subClass.simpleName + "Accessor"
+                    import("<includes/$subClassAccessor.h>")
+                    child("        $subClassAccessor accessor(env, element);") // TODO fix hardcoded
+                    if (void) {
+                        child("        ${subClass.simpleName} ref{};")
+                        child("        accessor.fromObject(ref);")
+                        val unionMember = subClass.findAnnotation<VkUnionMember>()
+                        if (unionMember != null) {
+                            child("        ${kotlinElement.simpleName} value = {.${unionMember.alias} {ref}};")
+                            child("        $arrayName.push_back(value);")
+                        } else {
+                            child("         // not a union member??")
+                            child("        $arrayName.push_back(ref);")
+                        }
+                    } else {
+                        child("        $arrayName.push_back(accessor.fromObject());")
+                    }
+                    child("        env->DeleteLocalRef($subClassName);")
+                    child("        continue;")
+                    child("   }")
+                }
             } else {
-                child("    $arrayName.push_back(accessor.fromObject());")
+                import("<includes/$accessor.h>")
+                child("   // experimental optimize accessor")
+                child("    $accessor accessor(env, element);") // TODO fix hardcoded
+                if (void) {
+                    child("    ${javaMember.type.componentType.simpleName} ref{};")
+                    child("    accessor.fromObject(ref);")
+                    child("    $arrayName.push_back(ref);")
+                } else {
+                    child("    $arrayName.push_back(accessor.fromObject());")
+                }
             }
         } else {
             // possible type is Any or Null??
@@ -359,6 +475,9 @@ fun CppFunctionBodyBuilder.processArrayAccessor(
             if (javaMember.isVkConstArray()) {
                 // fixed size array
                 child("std::copy(${arrayName}.begin(), ${arrayName}.end(), $clazzInfo.${arrayName}); // fixed array size")
+            } else if (clazz.isAnnotationPresent(VkUnionMember::class.java)) {
+                val unionMember = clazz.getDeclaredAnnotation(VkUnionMember::class.java)
+                child("std::copy(${arrayName}.begin(), ${arrayName}.end(), $clazzInfo.${unionMember.alias}); // union member")
             } else {
                 child("// Make a copy of the primitive to ensure proper memory management;")
                 val newData = if (javaMember.toJavaTypeArray() == JNIType.JIntArray) {

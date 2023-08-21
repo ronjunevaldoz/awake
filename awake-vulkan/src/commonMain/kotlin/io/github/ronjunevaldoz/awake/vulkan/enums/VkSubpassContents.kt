@@ -1,6 +1,6 @@
 /*
  * Awake
- * Awake.awake-vulkan-generator
+ * Awake.awake-vulkan.commonMain
  *
  * Copyright (c) ronjunevaldoz 2023.
  *
@@ -17,20 +17,10 @@
  * limitations under the License.
  */
 
-plugins {
-    kotlin("jvm")
-    application
+package io.github.ronjunevaldoz.awake.vulkan.enums
+
+enum class VkSubpassContents(override val value: Int) : VkEnum {
+    VK_SUBPASS_CONTENTS_INLINE(0),
+    VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS(1),
+    VK_SUBPASS_CONTENTS_MAX_ENUM(0x7FFFFFFF)
 }
-
-sourceSets["main"].kotlin.srcDir("src/main/kotlin")
-sourceSets["main"].resources.srcDir("awake-vulkan/src/main/cpp/vulkan-kotlin/")
-
-application { // Specify the main class using the application plugin
-    mainClass.set("io.github.ronjunevaldoz.awake.vulkan_generator.MainKt")
-}
-
-dependencies {
-    implementation(project(":awake-vulkan"))
-    implementation(kotlin("reflect"))
-}
-

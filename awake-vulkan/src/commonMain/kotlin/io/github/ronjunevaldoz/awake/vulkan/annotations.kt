@@ -52,6 +52,7 @@ annotation class NativeSurfaceWindow
  *
  */
 annotation class VkSingleton
+annotation class VkUnionMember(val alias: String, val saveToParent: Boolean = false)
 
 
 /**

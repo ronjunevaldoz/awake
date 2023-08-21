@@ -24,8 +24,6 @@ public:
     VkLayerPropertiesMutator(JNIEnv *env);
 
     jobject toObject(VkLayerProperties source);
-
     ~VkLayerPropertiesMutator();
 };
-
 #endif // VKLAYERPROPERTIESMUTATOR_H

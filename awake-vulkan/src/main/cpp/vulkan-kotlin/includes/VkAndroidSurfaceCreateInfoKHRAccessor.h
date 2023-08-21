@@ -37,5 +37,4 @@ public:
 
     ~VkAndroidSurfaceCreateInfoKHRAccessor();
 };
-
 #endif // VKANDROIDSURFACECREATEINFOKHRACCESSOR_H

@@ -11,9 +11,11 @@ set(VULKAN_KOTLIN_SOURCES
         VkPhysicalDeviceFeaturesMutator.cpp
         VkImageSubresourceRangeAccessor.cpp
         VkDebugUtilsObjectNameInfoEXTMutator.cpp
+        VkClearDepthStencilValueAccessor.cpp
         VkPhysicalDevicePropertiesAccessor.cpp
         VkRect2DAccessor.cpp
         VkDeviceCreateInfoAccessor.cpp
+        VkRenderPassBeginInfoAccessor.cpp
         VkPhysicalDeviceSparsePropertiesAccessor.cpp
         VkDebugUtilsMessengerCallbackDataEXTMutator.cpp
         VkSurfaceFormatKHRAccessor.cpp
@@ -34,6 +36,7 @@ set(VULKAN_KOTLIN_SOURCES
         VkDebugUtilsMessengerCallbackDataEXTAccessor.cpp
         enum_utils.cpp
         VulkanUtils.cpp
+        Int32Accessor.cpp
         VkSubpassDescriptionAccessor.cpp
         VkPhysicalDeviceLimitsAccessor.cpp
         VkDebugUtilsMessengerCreateInfoEXTAccessor.cpp
@@ -48,6 +51,7 @@ set(VULKAN_KOTLIN_SOURCES
         VkPushConstantRangeAccessor.cpp
         VkAttachmentReferenceAccessor.cpp
         VkSpecializationInfoAccessor.cpp
+        Float32Accessor.cpp
         VkVertexInputAttributeDescriptionAccessor.cpp
         VkPipelineShaderStageCreateInfoAccessor.cpp
         VkPipelineViewportStateCreateInfoAccessor.cpp
@@ -59,10 +63,12 @@ set(VULKAN_KOTLIN_SOURCES
         VkPipelineDynamicStateCreateInfoAccessor.cpp
         VkApplicationInfoAccessor.cpp
         VkVertexInputBindingDescriptionAccessor.cpp
+        VkClearColorValueAccessor.cpp
         VkExtent2DAccessor.cpp
         VkPipelineVertexInputStateCreateInfoAccessor.cpp
         VkQueueFamilyPropertiesAccessor.cpp
         VkSurfaceCapabilitiesKHRAccessor.cpp
+        UInt32Accessor.cpp
         VkSurfaceCapabilitiesKHRMutator.cpp
         VkQueueFamilyPropertiesMutator.cpp
         VkViewportAccessor.cpp

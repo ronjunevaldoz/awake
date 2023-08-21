@@ -42,12 +42,14 @@ import io.github.ronjunevaldoz.awake.vulkan.enums.VkPresentModeKHR
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPrimitiveTopology
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkShaderStageFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSharingMode
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkSubpassContents
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSurfaceTransformFlagBitsKHR
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkVertexInputRate
 import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkCommandPoolCreateFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.has
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentReference
+import io.github.ronjunevaldoz.awake.vulkan.models.VkClearColorValue
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkOffset2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkRect2D
@@ -67,6 +69,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreate
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageSubresourceRange
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkInstanceCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassBeginInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSubpassDescription
@@ -158,12 +161,50 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         createCommandPool()
         createCommandBuffer()
 
-        recordCommandBuffer(commandBuffer, 0)
+        swapChainFrameBuffers.forEach { frameBuffer ->
+            recordCommandBuffer(commandBuffer, frameBuffer)
+        }
     }
 
-    private fun recordCommandBuffer(commandBuffer: Long, imageIndex: Int) {
-        val beginInfo = VkCommandBufferBeginInfo()
+    private fun recordCommandBuffer(commandBuffer: Long, frameBuffer: Long) {
+        val beginInfo = VkCommandBufferBeginInfo(
+            flags = 0 // VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT.value
+        )
         Vulkan.vkBeginCommandBuffer(commandBuffer, beginInfo)
+
+        // start render pass
+        val renderPassInfo = VkRenderPassBeginInfo(
+            renderPass = renderPass,
+            framebuffer = frameBuffer,// swapChainFrameBuffers[imageIndex],
+            renderArea = VkRect2D(
+                extent = swapChainExtent
+            ),
+            pClearValues = arrayOf(VkClearColorValue.rgba(0f, 0f, 0f, 1f))
+        )
+        Vulkan.vkCmdBeginRenderPass(
+            commandBuffer,
+            renderPassInfo,
+            VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE
+        )
+
+        // basic drawing
+        Vulkan.vkCmdBindPipeline(
+            commandBuffer,
+            VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline[0]
+        )
+        val viewport = VkViewport(
+            width = swapChainExtent.width.toFloat(),
+            height = swapChainExtent.height.toFloat(),
+        )
+        Vulkan.vkCmdSetViewport(commandBuffer, 0, arrayOf(viewport))
+        val scissor = VkRect2D(
+            extent = swapChainExtent
+        )
+        Vulkan.vkCmdSetScissor(commandBuffer, 0, arrayOf(scissor))
+        Vulkan.vkCmdDraw(commandBuffer, 3, 1, 0, 0)
+        Vulkan.vkCmdEndRenderPass(commandBuffer)
+
+        Vulkan.vkEndCommandBuffer(commandBuffer)
     }
 
     private fun createCommandBuffer() {
@@ -174,13 +215,6 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         )
 
         commandBuffer = Vulkan.vkAllocateCommandBuffers(device, allocInfo)
-//        VkRenderPassBeginInfo(
-//            framebuffer = swapChainFrameBuffers[imageIndex],
-//            renderArea = VkRect2D(
-//                extent = swapChainExtent
-//            ),
-//            pClearValues = arrayOf(VkClearColorValue.rgba(0f, 0f, 0f, 1f))
-//        )
     }
 
     private fun createCommandPool() {

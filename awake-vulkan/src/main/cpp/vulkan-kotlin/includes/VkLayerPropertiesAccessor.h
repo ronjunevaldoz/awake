@@ -36,5 +36,4 @@ public:
 
     ~VkLayerPropertiesAccessor();
 };
-
 #endif // VKLAYERPROPERTIESACCESSOR_H

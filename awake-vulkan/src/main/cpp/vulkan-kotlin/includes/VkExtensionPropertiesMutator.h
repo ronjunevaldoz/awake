@@ -22,8 +22,6 @@ public:
     VkExtensionPropertiesMutator(JNIEnv *env);
 
     jobject toObject(VkExtensionProperties source);
-
     ~VkExtensionPropertiesMutator();
 };
-
 #endif // VKEXTENSIONPROPERTIESMUTATOR_H

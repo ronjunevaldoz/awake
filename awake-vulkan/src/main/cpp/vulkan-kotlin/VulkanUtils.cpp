@@ -6,23 +6,23 @@
 #include <includes/VulkanUtils.h>
 
 namespace awake {
-    jobjectArray
-    getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
-        auto physicalDevice = reinterpret_cast<VkPhysicalDevice>(arg0);
-        uint32_t count;
-        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, nullptr);
-        std::vector<VkQueueFamilyProperties> vkArray(count);
-        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, vkArray.data());
-        jclass clazz = env->FindClass(
-                "io/github/ronjunevaldoz/awake/vulkan/models/VkQueueFamilyProperties");
-        auto jArray = env->NewObjectArray(static_cast<jsize>(count), clazz, nullptr);
-        for (int i = 0; i < count; ++i) {
-            jobject obj = VkQueueFamilyPropertiesMutator(env).toObject(vkArray[i]);
-            env->SetObjectArrayElement(jArray, (jint) i, obj);
-            env->DeleteLocalRef(obj);
-        }
-        return jArray;
+jobjectArray
+getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
+    auto physicalDevice = reinterpret_cast<VkPhysicalDevice>(arg0);
+    uint32_t count;
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, nullptr);
+    std::vector<VkQueueFamilyProperties> vkArray(count);
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, vkArray.data());
+    jclass clazz = env->FindClass(
+            "io/github/ronjunevaldoz/awake/vulkan/models/VkQueueFamilyProperties");
+    auto jArray = env->NewObjectArray(static_cast<jsize>(count), clazz, nullptr);
+    for (int i = 0; i < count; ++i) {
+        jobject obj = VkQueueFamilyPropertiesMutator(env).toObject(vkArray[i]);
+        env->SetObjectArrayElement(jArray, (jint) i, obj);
+        env->DeleteLocalRef(obj);
     }
+    return jArray;
+}
 
     void
     destroyFramebuffer(jlong arg0, jlong arg1) {
@@ -94,6 +94,18 @@ namespace awake {
     cmdEndRenderPass(JNIEnv *env, jlong arg0) {
         auto commandBuffer = reinterpret_cast<VkCommandBuffer>(arg0);
         vkCmdEndRenderPass(commandBuffer);
+        // void
+    }
+
+    void
+    cmdBeginRenderPass(JNIEnv *env, jlong arg0, jobject arg1, jobject arg2) {
+        auto commandBuffer = reinterpret_cast<VkCommandBuffer>(arg0);
+        // object accessor?
+        VkRenderPassBeginInfo info{};
+        VkRenderPassBeginInfoAccessor(env, arg1).fromObject(info);
+        // enum
+        auto vkarg2 = enum_utils::getEnumFromObject(env, arg2);
+        vkCmdBeginRenderPass(commandBuffer, &info, static_cast<VkSubpassContents>(vkarg2));
         // void
     }
 
@@ -183,20 +195,6 @@ namespace awake {
         return VkSurfaceCapabilitiesKHRMutator(env).toObject(handle);
     }
 
-    jlong
-    createInstance(JNIEnv *env, jobject arg0) {
-        // object accessor?
-        VkInstanceCreateInfo info{};
-        VkInstanceCreateInfoAccessor(env, arg0).fromObject(info);
-        // handle
-        VkInstance handle;
-        VkResult result = vkCreateInstance(&info, nullptr, &handle);
-        if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreateInstance");
-        }
-        return reinterpret_cast<jlong>(handle);
-    }
-
     jobjectArray
     enumerateInstanceLayerProperties(JNIEnv *env) {
         uint32_t count;
@@ -212,6 +210,20 @@ namespace awake {
             env->DeleteLocalRef(obj);
         }
         return jArray;
+    }
+
+    jlong
+    createInstance(JNIEnv *env, jobject arg0) {
+        // object accessor?
+        VkInstanceCreateInfo info{};
+        VkInstanceCreateInfoAccessor(env, arg0).fromObject(info);
+        // handle
+        VkInstance handle;
+        VkResult result = vkCreateInstance(&info, nullptr, &handle);
+        if (result != VK_SUCCESS) {
+            throw std::runtime_error("There was a problem executing vkCreateInstance");
+        }
+        return reinterpret_cast<jlong>(handle);
     }
 
     jobject
@@ -260,24 +272,6 @@ namespace awake {
         // void
     }
 
-    void
-    destroyPipelineLayout(jlong arg0, jlong arg1) {
-        auto device = reinterpret_cast<VkDevice>(arg0);
-        auto pipelineLayout = reinterpret_cast<VkPipelineLayout>(arg1);
-        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-        // void
-    }
-
-    void
-    beginCommandBuffer(JNIEnv *env, jlong arg0, jobject arg1) {
-        auto commandBuffer = reinterpret_cast<VkCommandBuffer>(arg0);
-        // object accessor?
-        VkCommandBufferBeginInfo info{};
-        VkCommandBufferBeginInfoAccessor(env, arg1).fromObject(info);
-        vkBeginCommandBuffer(commandBuffer, &info);
-        // void
-    }
-
     jobjectArray
     enumerateDeviceExtensionProperties(JNIEnv *env, jlong arg0, jstring arg1) {
         auto physicalDevice = reinterpret_cast<VkPhysicalDevice>(arg0);
@@ -299,6 +293,24 @@ namespace awake {
             env->DeleteLocalRef(obj);
         }
         return jArray;
+    }
+
+    void
+    destroyPipelineLayout(jlong arg0, jlong arg1) {
+        auto device = reinterpret_cast<VkDevice>(arg0);
+        auto pipelineLayout = reinterpret_cast<VkPipelineLayout>(arg1);
+        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+        // void
+    }
+
+    void
+    beginCommandBuffer(JNIEnv *env, jlong arg0, jobject arg1) {
+        auto commandBuffer = reinterpret_cast<VkCommandBuffer>(arg0);
+        // object accessor?
+        VkCommandBufferBeginInfo info{};
+        VkCommandBufferBeginInfoAccessor(env, arg1).fromObject(info);
+        vkBeginCommandBuffer(commandBuffer, &info);
+        // void
     }
 
     jobject

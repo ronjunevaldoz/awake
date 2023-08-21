@@ -333,3 +333,11 @@ Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkEndCommandBuffer(JNIEnv *env,
                                                                     jlong command_buffer) {
     awake::endCommandBuffer(env, command_buffer);
 }
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkCmdBeginRenderPass(JNIEnv *env, jobject thiz,
+                                                                      jlong command_buffer,
+                                                                      jobject render_pass_info,
+                                                                      jobject contents) {
+    awake::cmdBeginRenderPass(env, command_buffer, render_pass_info, contents);
+}

@@ -30,5 +30,4 @@ public:
 
     ~VkExtensionPropertiesAccessor();
 };
-
 #endif // VKEXTENSIONPROPERTIESACCESSOR_H

@@ -22,6 +22,8 @@ package io.github.ronjunevaldoz.awake.vulkan_generator
 import io.github.ronjunevaldoz.awake.vulkan.Vulkan
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.VkAttachmentReference
+import io.github.ronjunevaldoz.awake.vulkan.models.VkClearColorValue
+import io.github.ronjunevaldoz.awake.vulkan.models.VkClearDepthStencilValue
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtensionProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent2D
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtent3D
@@ -48,6 +50,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreate
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageSubresourceRange
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkInstanceCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassBeginInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSubpassDescription
@@ -160,6 +163,14 @@ fun main(args: Array<String>) {
     generateJavaToVulkanCpp<VkCommandBufferBeginInfo>()
     generateJavaToVulkanCpp<VkCommandPoolCreateInfo>()
     generateJavaToVulkanCpp<VkCommandBufferInheritanceInfo>()
+
+    generateJavaToVulkanCpp<VkClearColorValue.Float32>()
+    generateJavaToVulkanCpp<VkClearColorValue.Int32>()
+    generateJavaToVulkanCpp<VkClearColorValue.UInt32>()
+    generateJavaToVulkanCpp<VkClearDepthStencilValue>()
+    generateJavaToVulkanCpp<VkClearColorValue>()
+//    generateJavaToVulkanCpp<VkClearValue>()
+    generateJavaToVulkanCpp<VkRenderPassBeginInfo>()
 
 
     // props

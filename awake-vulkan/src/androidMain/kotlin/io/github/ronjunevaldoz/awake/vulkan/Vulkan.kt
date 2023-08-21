@@ -21,6 +21,7 @@ package io.github.ronjunevaldoz.awake.vulkan
 
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPipelineBindPoint
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPresentModeKHR
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkSubpassContents
 import io.github.ronjunevaldoz.awake.vulkan.models.VkExtensionProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.VkLayerProperties
 import io.github.ronjunevaldoz.awake.vulkan.models.VkQueueFamilyProperties
@@ -37,6 +38,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkFramebufferCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkInstanceCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassBeginInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
@@ -212,7 +214,14 @@ actual object Vulkan {
         firstInstance: Int
     )
 
+    actual external fun vkCmdBeginRenderPass(
+        @VkHandleRef("VkCommandBuffer") commandBuffer: Long,
+        renderPassBeginInfo: VkRenderPassBeginInfo,
+        contents: VkSubpassContents
+    )
+
     actual external fun vkCmdEndRenderPass(commandBuffer: Long)
 
     actual external fun vkEndCommandBuffer(commandBuffer: Long)
+
 }

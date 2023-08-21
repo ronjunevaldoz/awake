@@ -36,8 +36,6 @@ public:
     void getpNext(VkCommandBufferAllocateInfo &clazzInfo);
 
     uint32_t getcommandBufferCount();
-
     ~VkCommandBufferAllocateInfoAccessor();
 };
-
 #endif // VKCOMMANDBUFFERALLOCATEINFOACCESSOR_H

@@ -33,7 +33,6 @@ public:
     void getpNext(VkCommandBufferInheritanceInfo &clazzInfo);
 
     uint32_t getqueryFlags();
-
     VkFramebuffer getframebuffer();
 
     VkBool32 getocclusionQueryEnable();
@@ -41,12 +40,8 @@ public:
     void fromObject(VkCommandBufferInheritanceInfo &clazzInfo);
 
     uint32_t getsubpass();
-
     VkRenderPass getrenderPass();
-
     uint32_t getpipelineStatistics();
-
     ~VkCommandBufferInheritanceInfoAccessor();
 };
-
 #endif // VKCOMMANDBUFFERINHERITANCEINFOACCESSOR_H

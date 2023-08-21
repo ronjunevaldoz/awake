@@ -37,5 +37,4 @@ public:
 
     ~VkCommandBufferBeginInfoAccessor();
 };
-
 #endif // VKCOMMANDBUFFERBEGININFOACCESSOR_H

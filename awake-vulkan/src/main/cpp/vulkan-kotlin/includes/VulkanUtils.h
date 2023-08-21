@@ -11,6 +11,14 @@
 #include <stdexcept>
 #include <vector>
 #include <enum_utils.h>
+#include <includes/VkLayerPropertiesMutator.h>
+#include <includes/VkExtensionPropertiesMutator.h>
+#include <includes/VkPhysicalDevicePropertiesMutator.h>
+#include <includes/VkPhysicalDeviceFeaturesMutator.h>
+#include <includes/VkQueueFamilyPropertiesMutator.h>
+#include <includes/VkSurfaceCapabilitiesKHRMutator.h>
+#include <includes/VkSurfaceFormatKHRMutator.h>
+#include <includes/VkDebugUtilsMessengerCreateInfoEXTAccessor.h>
 #include <includes/VkInstanceCreateInfoAccessor.h>
 #include <includes/VkDeviceCreateInfoAccessor.h>
 #include <includes/VkAndroidSurfaceCreateInfoKHRAccessor.h>
@@ -27,14 +35,7 @@
 #include <includes/VkCommandPoolCreateInfoAccessor.h>
 #include <includes/VkViewportAccessor.h>
 #include <includes/VkRect2DAccessor.h>
-#include <includes/VkLayerPropertiesMutator.h>
-#include <includes/VkExtensionPropertiesMutator.h>
-#include <includes/VkPhysicalDevicePropertiesMutator.h>
-#include <includes/VkPhysicalDeviceFeaturesMutator.h>
-#include <includes/VkQueueFamilyPropertiesMutator.h>
-#include <includes/VkSurfaceCapabilitiesKHRMutator.h>
-#include <includes/VkSurfaceFormatKHRMutator.h>
-#include <includes/VkDebugUtilsMessengerCreateInfoEXTAccessor.h>
+#include <includes/VkRenderPassBeginInfoAccessor.h>
 
 namespace awake {
     jobjectArray getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0);
@@ -48,6 +49,8 @@ namespace awake {
     jlong createDebugUtilsMessengerEXT(JNIEnv *env, jlong arg0, jobject arg1);
 
     void cmdEndRenderPass(JNIEnv *env, jlong arg0);
+
+    void cmdBeginRenderPass(JNIEnv *env, jlong arg0, jobject arg1, jobject arg2);
 
     jlongArray getSwapchainImagesKHR(JNIEnv *env, jlong arg0, jlong arg1);
 
@@ -63,9 +66,9 @@ namespace awake {
 
     jobject getPhysicalDeviceSurfaceCapabilitiesKHR(JNIEnv *env, jlong arg0, jlong arg1);
 
-    jlong createInstance(JNIEnv *env, jobject arg0);
-
     jobjectArray enumerateInstanceLayerProperties(JNIEnv *env);
+
+    jlong createInstance(JNIEnv *env, jobject arg0);
 
     jobject getPhysicalDeviceProperties(JNIEnv *env, jlong arg0);
 
@@ -75,11 +78,11 @@ namespace awake {
 
     void cmdSetScissor(JNIEnv *env, jlong arg0, jint arg1, jobjectArray arg2);
 
+    jobjectArray enumerateDeviceExtensionProperties(JNIEnv *env, jlong arg0, jstring arg1);
+
     void destroyPipelineLayout(jlong arg0, jlong arg1);
 
     void beginCommandBuffer(JNIEnv *env, jlong arg0, jobject arg1);
-
-    jobjectArray enumerateDeviceExtensionProperties(JNIEnv *env, jlong arg0, jstring arg1);
 
     jobject getPhysicalDeviceFeatures(JNIEnv *env, jlong arg0);
 

@@ -36,5 +36,4 @@ public:
 
     ~VkCommandPoolCreateInfoAccessor();
 };
-
 #endif // VKCOMMANDPOOLCREATEINFOACCESSOR_H
