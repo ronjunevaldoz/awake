@@ -21,6 +21,7 @@ package io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline
 
 import io.github.ronjunevaldoz.awake.vulkan.VkBool32
 import io.github.ronjunevaldoz.awake.vulkan.VkFlags
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkCullModeFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkCullModeFlags
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkFrontFace
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPolygonMode
@@ -33,7 +34,7 @@ class VkPipelineRasterizationStateCreateInfo(
     val depthClampEnable: VkBool32 = false,
     val rasterizerDiscardEnable: VkBool32 = false,
     val polygonMode: VkPolygonMode = VkPolygonMode.VK_POLYGON_MODE_FILL,
-    val cullMode: VkCullModeFlags = 0,
+    val cullMode: VkCullModeFlags = VkCullModeFlagBits.VK_CULL_MODE_BACK_BIT.value,
     val frontFace: VkFrontFace = VkFrontFace.VK_FRONT_FACE_COUNTER_CLOCKWISE,
     val depthBiasEnable: VkBool32 = false,
     val depthBiasConstantFactor: Float = 0.0f,
