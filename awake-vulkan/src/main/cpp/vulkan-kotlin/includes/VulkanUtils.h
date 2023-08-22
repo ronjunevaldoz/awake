@@ -12,14 +12,6 @@
 #include <vector>
 #include <enum_utils.h>
 #include <exception_utils.h>
-#include <includes/VkLayerPropertiesMutator.h>
-#include <includes/VkExtensionPropertiesMutator.h>
-#include <includes/VkPhysicalDevicePropertiesMutator.h>
-#include <includes/VkPhysicalDeviceFeaturesMutator.h>
-#include <includes/VkQueueFamilyPropertiesMutator.h>
-#include <includes/VkSurfaceCapabilitiesKHRMutator.h>
-#include <includes/VkSurfaceFormatKHRMutator.h>
-#include <includes/VkDebugUtilsMessengerCreateInfoEXTAccessor.h>
 #include <includes/VkInstanceCreateInfoAccessor.h>
 #include <includes/VkDeviceCreateInfoAccessor.h>
 #include <includes/VkAndroidSurfaceCreateInfoKHRAccessor.h>
@@ -41,6 +33,14 @@
 #include <includes/VkFenceCreateInfoAccessor.h>
 #include <includes/VkSubmitInfoAccessor.h>
 #include <includes/VkPresentInfoKHRAccessor.h>
+#include <includes/VkLayerPropertiesMutator.h>
+#include <includes/VkExtensionPropertiesMutator.h>
+#include <includes/VkPhysicalDevicePropertiesMutator.h>
+#include <includes/VkPhysicalDeviceFeaturesMutator.h>
+#include <includes/VkQueueFamilyPropertiesMutator.h>
+#include <includes/VkSurfaceCapabilitiesKHRMutator.h>
+#include <includes/VkSurfaceFormatKHRMutator.h>
+#include <includes/VkDebugUtilsMessengerCreateInfoEXTAccessor.h>
 
 namespace awake {
     jobjectArray getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0);
@@ -69,15 +69,15 @@ namespace awake {
 
     void cmdBindPipeline(JNIEnv *env, jlong arg0, jobject arg1, jlong arg2);
 
-    jobjectArray enumerateDeviceExtensionProperties(JNIEnv *env, jlong arg0, jstring arg1);
-
     void destroyPipelineLayout(jlong arg0, jlong arg1);
 
-    jobject getPhysicalDeviceFeatures(JNIEnv *env, jlong arg0);
+    jobjectArray enumerateDeviceExtensionProperties(JNIEnv *env, jlong arg0, jstring arg1);
 
     void destroySemaphore(jlong arg0, jlong arg1);
 
     void queuePresentKHR(JNIEnv *env, jlong arg0, jobject arg1);
+
+    jobject getPhysicalDeviceFeatures(JNIEnv *env, jlong arg0);
 
     void destroyImageView(jlong arg0, jlong arg1);
 
@@ -123,9 +123,9 @@ namespace awake {
 
     jlong createAndroidSurfaceKHR(JNIEnv *env, jlong arg0, jobject arg1);
 
-    jobjectArray enumerateInstanceLayerProperties(JNIEnv *env);
-
     jlong createInstance(JNIEnv *env, jobject arg0);
+
+    jobjectArray enumerateInstanceLayerProperties(JNIEnv *env);
 
     void waitForFences(JNIEnv *env, jlong arg0, jlongArray arg1, jboolean arg2, jlong arg3);
 

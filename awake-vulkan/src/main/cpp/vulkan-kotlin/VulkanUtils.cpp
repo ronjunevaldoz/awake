@@ -132,9 +132,13 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         // object accessor?
         VkCommandBufferAllocateInfo info{};
         VkCommandBufferAllocateInfoAccessor(env, arg1).fromObject(info);
-        // process allocate??
+        // process default??
         VkCommandBuffer handle;
-        vkAllocateCommandBuffers(device, &info, &handle);
+        VkResult result = vkAllocateCommandBuffers(device, &info, &handle);
+        if (result != VK_SUCCESS) {
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkAllocateCommandBuffers");
+        }
         return reinterpret_cast<jlong>(handle);
     }
 
@@ -195,6 +199,16 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         // unable to process void
     }
 
+    void
+    destroyPipelineLayout(jlong arg0, jlong arg1) {
+        // process parameter??
+        auto device = reinterpret_cast<VkDevice>(arg0);
+        auto pipelineLayout = reinterpret_cast<VkPipelineLayout>(arg1);
+        // process destroy??
+        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+        // unable to process void
+    }
+
     jobjectArray
     enumerateDeviceExtensionProperties(JNIEnv *env, jlong arg0, jstring arg1) {
         // process parameter??
@@ -222,26 +236,6 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
     }
 
     void
-    destroyPipelineLayout(jlong arg0, jlong arg1) {
-        // process parameter??
-        auto device = reinterpret_cast<VkDevice>(arg0);
-        auto pipelineLayout = reinterpret_cast<VkPipelineLayout>(arg1);
-        // process destroy??
-        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-        // unable to process void
-    }
-
-    jobject
-    getPhysicalDeviceFeatures(JNIEnv *env, jlong arg0) {
-        // process parameter??
-        auto physicalDevice = reinterpret_cast<VkPhysicalDevice>(arg0);
-        // process get??
-        VkPhysicalDeviceFeatures handle;
-        vkGetPhysicalDeviceFeatures(physicalDevice, &handle);
-        return VkPhysicalDeviceFeaturesMutator(env).toObject(handle);
-    }
-
-    void
     destroySemaphore(jlong arg0, jlong arg1) {
         // process parameter??
         auto device = reinterpret_cast<VkDevice>(arg0);
@@ -265,6 +259,16 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
                                              "There was a problem executing vkQueuePresentKHR");
         }
         // unable to process void
+    }
+
+    jobject
+    getPhysicalDeviceFeatures(JNIEnv *env, jlong arg0) {
+        // process parameter??
+        auto physicalDevice = reinterpret_cast<VkPhysicalDevice>(arg0);
+        // process get??
+        VkPhysicalDeviceFeatures handle;
+        vkGetPhysicalDeviceFeatures(physicalDevice, &handle);
+        return VkPhysicalDeviceFeaturesMutator(env).toObject(handle);
     }
 
     void
@@ -448,8 +452,12 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
     endCommandBuffer(JNIEnv *env, jlong arg0) {
         // process parameter??
         auto commandBuffer = reinterpret_cast<VkCommandBuffer>(arg0);
-        // process cmd??
-        vkEndCommandBuffer(commandBuffer);
+        // process default??
+        VkResult result = vkEndCommandBuffer(commandBuffer);
+        if (result != VK_SUCCESS) {
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkEndCommandBuffer");
+        }
         // unable to process void
     }
 
@@ -623,6 +631,23 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         return reinterpret_cast<jlong>(handle);
     }
 
+    jlong
+    createInstance(JNIEnv *env, jobject arg0) {
+        // process parameter??
+        // object accessor?
+        VkInstanceCreateInfo info{};
+        VkInstanceCreateInfoAccessor(env, arg0).fromObject(info);
+        // process create??
+        // process handle
+        VkInstance handle;
+        VkResult result = vkCreateInstance(&info, nullptr, &handle);
+        if (result != VK_SUCCESS) {
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateInstance");
+        }
+        return reinterpret_cast<jlong>(handle);
+    }
+
     jobjectArray
     enumerateInstanceLayerProperties(JNIEnv *env) {
         // process parameter??
@@ -641,23 +666,6 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
             env->DeleteLocalRef(obj);
         }
         return jArray;
-    }
-
-    jlong
-    createInstance(JNIEnv *env, jobject arg0) {
-        // process parameter??
-        // object accessor?
-        VkInstanceCreateInfo info{};
-        VkInstanceCreateInfoAccessor(env, arg0).fromObject(info);
-        // process create??
-        // process handle
-        VkInstance handle;
-        VkResult result = vkCreateInstance(&info, nullptr, &handle);
-        if (result != VK_SUCCESS) {
-            exception_utils::resultException(env, result,
-                                             "There was a problem executing vkCreateInstance");
-        }
-        return reinterpret_cast<jlong>(handle);
     }
 
     void
@@ -722,8 +730,12 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         // object accessor?
         VkCommandBufferBeginInfo info{};
         VkCommandBufferBeginInfoAccessor(env, arg1).fromObject(info);
-        // process cmd??
-        vkBeginCommandBuffer(commandBuffer, &info);
+        // process default??
+        VkResult result = vkBeginCommandBuffer(commandBuffer, &info);
+        if (result != VK_SUCCESS) {
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkBeginCommandBuffer");
+        }
         // unable to process void
     }
 

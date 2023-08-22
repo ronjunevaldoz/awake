@@ -94,16 +94,9 @@ fun createVulkanUtils(clazz: Class<*>) {
                                 vkMethodParams
                             )
 
-                            method.name.startsWith("vkAllocate") -> processVkAllocate(
-                                method,
-                                vkMethodName,
-                                vkMethodParams
-                            )
-
                             method.name.contains("reset", true) ||
                                     method.name.contains("wait", true) ||
-                                    method.name.startsWith("vkCmd") ||
-                                    method.name.contains("command", true)
+                                    method.name.startsWith("vkCmd")
                             -> processVkCmd(
                                 vkMethodName,
                                 vkMethodParams
@@ -423,7 +416,12 @@ private fun CppFunctionBodyBuilder.processVkDefault(
     if (method.returnType == Void.TYPE) {
         child("VkResult result = ${methodName}(${methodParams});")
     } else {
-        child("${method.returnType.toVulkanType()} handle;")
+        val handleReturnType = method.getDeclaredAnnotation(VkReturnType::class.java)
+        if (handleReturnType != null) {
+            child("${handleReturnType.name} handle;")
+        } else {
+            child("${method.returnType.toVulkanType()} handle;")
+        }
         child("VkResult result = ${methodName}(${methodParams}, &handle);")
     }
     child("if(result != VK_SUCCESS){")
