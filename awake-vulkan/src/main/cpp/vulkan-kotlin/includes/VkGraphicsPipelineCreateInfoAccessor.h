@@ -45,7 +45,6 @@ private:
     jfieldID subpassField;
     jfieldID basePipelineHandleField;
     jfieldID basePipelineIndexField;
-    jfieldID stageCountField;
 public:
     VkGraphicsPipelineCreateInfoAccessor(JNIEnv *env, jobject obj);
 
@@ -64,8 +63,6 @@ public:
     VkRenderPass getrenderPass();
 
     uint32_t getbasePipelineIndex();
-
-    uint32_t getstageCount();
 
     VkStructureType getsType();
 

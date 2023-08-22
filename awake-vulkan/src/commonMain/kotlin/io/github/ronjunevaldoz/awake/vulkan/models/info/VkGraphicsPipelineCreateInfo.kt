@@ -19,6 +19,7 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.models.info
 
+import io.github.ronjunevaldoz.awake.vulkan.VkArray
 import io.github.ronjunevaldoz.awake.vulkan.VkHandle
 import io.github.ronjunevaldoz.awake.vulkan.VkHandleRef
 import io.github.ronjunevaldoz.awake.vulkan.VkPointer
@@ -39,6 +40,7 @@ class VkGraphicsPipelineCreateInfo(
     val sType: VkStructureType = VkStructureType.VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
     val pNext: Any? = null,
     val flags: VkPipelineCreateFlags = 0,
+    @field:VkArray("stageCount")
     val pStages: Array<VkPipelineShaderStageCreateInfo> = emptyArray(),
     @VkPointer
     val pVertexInputState: Array<VkPipelineVertexInputStateCreateInfo> = arrayOf(
@@ -82,6 +84,4 @@ class VkGraphicsPipelineCreateInfo(
     @field:VkHandleRef("VkPipeline")
     val basePipelineHandle: VkHandle = 0, // VkPipeline handle
     val basePipelineIndex: Int = -1
-) {
-    val stageCount: Int = pStages.size
-}
+)

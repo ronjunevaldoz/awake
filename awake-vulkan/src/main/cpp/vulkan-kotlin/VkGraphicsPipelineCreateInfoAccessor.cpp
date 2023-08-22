@@ -37,13 +37,13 @@ VkGraphicsPipelineCreateInfoAccessor::VkGraphicsPipelineCreateInfoAccessor(JNIEn
     subpassField = env->GetFieldID(clazz, "subpass", "I");
     basePipelineHandleField = env->GetFieldID(clazz, "basePipelineHandle", "J");
     basePipelineIndexField = env->GetFieldID(clazz, "basePipelineIndex", "I");
-    stageCountField = env->GetFieldID(clazz, "stageCount", "I");
 }
 
 void
 VkGraphicsPipelineCreateInfoAccessor::getpStages(VkGraphicsPipelineCreateInfo &clazzInfo) {
     auto pStagesArray = (jobjectArray) env->GetObjectField(obj, pStagesField);
     if (pStagesArray == nullptr) {
+        clazzInfo.stageCount = 0;
         clazzInfo.pStages = nullptr;
         env->DeleteLocalRef(pStagesArray); // release null reference
         return;
@@ -61,6 +61,8 @@ VkGraphicsPipelineCreateInfoAccessor::getpStages(VkGraphicsPipelineCreateInfo &c
         env->DeleteLocalRef(element); // release element reference
     }
     // processing array data
+    auto stageCount = static_cast<uint32_t>(pStages.size());
+    clazzInfo.stageCount = stageCount;
     // Make a copy of the object to ensure proper memory management;
     // jobjectArray
     auto copy = new VkPipelineShaderStageCreateInfo[size];
@@ -104,7 +106,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpTessellationState(
     // jobjectArray
     auto copy = new VkPipelineTessellationStateCreateInfo[size];
     std::copy(pTessellationState.begin(), pTessellationState.end(), copy);
-    clazzInfo.pTessellationState = copy;
+    clazzInfo.pTessellationState = &copy[0];
     env->DeleteLocalRef(pTessellationStateArray); // release reference
 }
 
@@ -135,7 +137,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpRasterizationState(
     // jobjectArray
     auto copy = new VkPipelineRasterizationStateCreateInfo[size];
     std::copy(pRasterizationState.begin(), pRasterizationState.end(), copy);
-    clazzInfo.pRasterizationState = copy;
+    clazzInfo.pRasterizationState = &copy[0];
     env->DeleteLocalRef(pRasterizationStateArray); // release reference
 }
 
@@ -165,7 +167,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpDepthStencilState(
     // jobjectArray
     auto copy = new VkPipelineDepthStencilStateCreateInfo[size];
     std::copy(pDepthStencilState.begin(), pDepthStencilState.end(), copy);
-    clazzInfo.pDepthStencilState = copy;
+    clazzInfo.pDepthStencilState = &copy[0];
     env->DeleteLocalRef(pDepthStencilStateArray); // release reference
 }
 
@@ -186,11 +188,6 @@ VkGraphicsPipelineCreateInfoAccessor::getrenderPass() {
 uint32_t
 VkGraphicsPipelineCreateInfoAccessor::getbasePipelineIndex() {
     return (uint32_t) (jint) env->GetIntField(obj, basePipelineIndexField); // primitive
-}
-
-uint32_t
-VkGraphicsPipelineCreateInfoAccessor::getstageCount() {
-    return (uint32_t) (jint) env->GetIntField(obj, stageCountField); // primitive
 }
 
 VkStructureType
@@ -231,7 +228,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpViewportState(VkGraphicsPipelineCreate
     // jobjectArray
     auto copy = new VkPipelineViewportStateCreateInfo[size];
     std::copy(pViewportState.begin(), pViewportState.end(), copy);
-    clazzInfo.pViewportState = copy;
+    clazzInfo.pViewportState = &copy[0];
     env->DeleteLocalRef(pViewportStateArray); // release reference
 }
 
@@ -262,7 +259,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpInputAssemblyState(
     // jobjectArray
     auto copy = new VkPipelineInputAssemblyStateCreateInfo[size];
     std::copy(pInputAssemblyState.begin(), pInputAssemblyState.end(), copy);
-    clazzInfo.pInputAssemblyState = copy;
+    clazzInfo.pInputAssemblyState = &copy[0];
     env->DeleteLocalRef(pInputAssemblyStateArray); // release reference
 }
 
@@ -291,7 +288,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpColorBlendState(VkGraphicsPipelineCrea
     // jobjectArray
     auto copy = new VkPipelineColorBlendStateCreateInfo[size];
     std::copy(pColorBlendState.begin(), pColorBlendState.end(), copy);
-    clazzInfo.pColorBlendState = copy;
+    clazzInfo.pColorBlendState = &copy[0];
     env->DeleteLocalRef(pColorBlendStateArray); // release reference
 }
 
@@ -329,8 +326,7 @@ VkGraphicsPipelineCreateInfoAccessor::fromObject(VkGraphicsPipelineCreateInfo &c
     clazzInfo.renderPass = getrenderPass(); // VkHandle
     clazzInfo.subpass = getsubpass(); // Primitive uint32_t
     clazzInfo.basePipelineHandle = getbasePipelineHandle(); // VkHandle
-    clazzInfo.basePipelineIndex = getbasePipelineIndex(); // Primitive uint32_t
-    clazzInfo.stageCount = getstageCount(); // Primitive uint32_t
+    clazzInfo.basePipelineIndex = (int32_t) getbasePipelineIndex(); // Primitive uint32_t
 }
 
 void
