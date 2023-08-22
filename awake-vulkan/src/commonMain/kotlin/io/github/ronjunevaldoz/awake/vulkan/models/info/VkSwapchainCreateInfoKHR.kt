@@ -19,6 +19,7 @@
 
 package io.github.ronjunevaldoz.awake.vulkan.models.info
 
+import io.github.ronjunevaldoz.awake.vulkan.VkArray
 import io.github.ronjunevaldoz.awake.vulkan.VkBool32
 import io.github.ronjunevaldoz.awake.vulkan.VkHandle
 import io.github.ronjunevaldoz.awake.vulkan.VkHandleRef
@@ -45,6 +46,7 @@ class VkSwapchainCreateInfoKHR(
     val imageArrayLayers: Int = 0,
     val imageUsage: VkImageUsageFlags = 0,
     val imageSharingMode: VkSharingMode = VkSharingMode.VK_SHARING_MODE_EXCLUSIVE,
+    @field:VkArray("queueFamilyIndexCount")
     val pQueueFamilyIndices: Array<Int>? = null, // Set it to null if it's optional
     val preTransform: VkSurfaceTransformFlagBitsKHR = VkSurfaceTransformFlagBitsKHR.VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
     val compositeAlpha: VkCompositeAlphaFlagBitsKHR = VkCompositeAlphaFlagBitsKHR.VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,

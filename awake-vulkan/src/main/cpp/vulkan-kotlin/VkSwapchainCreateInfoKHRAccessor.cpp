@@ -59,6 +59,7 @@ void
 VkSwapchainCreateInfoKHRAccessor::getpQueueFamilyIndices(VkSwapchainCreateInfoKHR &clazzInfo) {
     auto pQueueFamilyIndicesArray = (jintArray) env->GetObjectField(obj, pQueueFamilyIndicesField);
     if (pQueueFamilyIndicesArray == nullptr) {
+        clazzInfo.queueFamilyIndexCount = 0;
         clazzInfo.pQueueFamilyIndices = nullptr;
         env->DeleteLocalRef(pQueueFamilyIndicesArray); // release null reference
         return;
@@ -69,6 +70,8 @@ VkSwapchainCreateInfoKHRAccessor::getpQueueFamilyIndices(VkSwapchainCreateInfoKH
     env->GetIntArrayRegion(pQueueFamilyIndicesArray, 0, size,
                            reinterpret_cast<jint *>(pQueueFamilyIndices.data()));
     // processing array data
+    auto queueFamilyIndexCount = static_cast<uint32_t>(pQueueFamilyIndices.size());
+    clazzInfo.queueFamilyIndexCount = queueFamilyIndexCount;
     // Make a copy of the object to ensure proper memory management;
     // jintArray
     auto copy = new uint32_t[size];

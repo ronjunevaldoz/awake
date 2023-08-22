@@ -106,7 +106,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpTessellationState(
     // jobjectArray
     auto copy = new VkPipelineTessellationStateCreateInfo[size];
     std::copy(pTessellationState.begin(), pTessellationState.end(), copy);
-    clazzInfo.pTessellationState = &copy[0];
+    clazzInfo.pTessellationState = copy;
     env->DeleteLocalRef(pTessellationStateArray); // release reference
 }
 
@@ -137,7 +137,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpRasterizationState(
     // jobjectArray
     auto copy = new VkPipelineRasterizationStateCreateInfo[size];
     std::copy(pRasterizationState.begin(), pRasterizationState.end(), copy);
-    clazzInfo.pRasterizationState = &copy[0];
+    clazzInfo.pRasterizationState = copy;
     env->DeleteLocalRef(pRasterizationStateArray); // release reference
 }
 
@@ -167,7 +167,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpDepthStencilState(
     // jobjectArray
     auto copy = new VkPipelineDepthStencilStateCreateInfo[size];
     std::copy(pDepthStencilState.begin(), pDepthStencilState.end(), copy);
-    clazzInfo.pDepthStencilState = &copy[0];
+    clazzInfo.pDepthStencilState = copy;
     env->DeleteLocalRef(pDepthStencilStateArray); // release reference
 }
 
@@ -228,7 +228,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpViewportState(VkGraphicsPipelineCreate
     // jobjectArray
     auto copy = new VkPipelineViewportStateCreateInfo[size];
     std::copy(pViewportState.begin(), pViewportState.end(), copy);
-    clazzInfo.pViewportState = &copy[0];
+    clazzInfo.pViewportState = copy;
     env->DeleteLocalRef(pViewportStateArray); // release reference
 }
 
@@ -259,7 +259,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpInputAssemblyState(
     // jobjectArray
     auto copy = new VkPipelineInputAssemblyStateCreateInfo[size];
     std::copy(pInputAssemblyState.begin(), pInputAssemblyState.end(), copy);
-    clazzInfo.pInputAssemblyState = &copy[0];
+    clazzInfo.pInputAssemblyState = copy;
     env->DeleteLocalRef(pInputAssemblyStateArray); // release reference
 }
 
@@ -288,7 +288,7 @@ VkGraphicsPipelineCreateInfoAccessor::getpColorBlendState(VkGraphicsPipelineCrea
     // jobjectArray
     auto copy = new VkPipelineColorBlendStateCreateInfo[size];
     std::copy(pColorBlendState.begin(), pColorBlendState.end(), copy);
-    clazzInfo.pColorBlendState = &copy[0];
+    clazzInfo.pColorBlendState = copy;
     env->DeleteLocalRef(pColorBlendStateArray); // release reference
 }
 
@@ -326,7 +326,7 @@ VkGraphicsPipelineCreateInfoAccessor::fromObject(VkGraphicsPipelineCreateInfo &c
     clazzInfo.renderPass = getrenderPass(); // VkHandle
     clazzInfo.subpass = getsubpass(); // Primitive uint32_t
     clazzInfo.basePipelineHandle = getbasePipelineHandle(); // VkHandle
-    clazzInfo.basePipelineIndex = (int32_t) getbasePipelineIndex(); // Primitive uint32_t
+    clazzInfo.basePipelineIndex = getbasePipelineIndex(); // Primitive uint32_t
 }
 
 void

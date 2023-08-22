@@ -91,7 +91,10 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColor
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineDynamicStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineInputAssemblyStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayoutCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineMultisampleStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineRasterizationStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineShaderStageCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineVertexInputStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineViewportStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice.VkPhysicalDevice
 import io.github.ronjunevaldoz.awake.vulkan.utils.VkResultException
@@ -600,45 +603,67 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             )
             val shaderStages = arrayOf(fragShaderStageInfo, vertShaderStageInfo)
 
+            val vertexInputInfo = arrayOf(
+                VkPipelineVertexInputStateCreateInfo()
+            )
+
+            val dynamicInfo = arrayOf(
+                VkPipelineDynamicStateCreateInfo(
+                    pDynamicStates = arrayOf(
+                        VkDynamicState.VK_DYNAMIC_STATE_VIEWPORT,
+                        VkDynamicState.VK_DYNAMIC_STATE_SCISSOR,
+                    )
+                )
+            )
+            val inputAssemblyInfo = arrayOf(
+                VkPipelineInputAssemblyStateCreateInfo(
+                    topology = VkPrimitiveTopology.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+                    primitiveRestartEnable = false
+                )
+            )
+
+            val viewportInfo = arrayOf(
+                VkPipelineViewportStateCreateInfo(
+                    pViewports = arrayOf(
+                        VkViewport(
+                            width = swapChainExtent.width.toFloat(),
+                            height = swapChainExtent.height.toFloat(),
+                        )
+                    ),
+                    pScissors = arrayOf(
+                        VkRect2D(
+                            offset = VkOffset2D(),
+                            extent = swapChainExtent
+                        )
+                    )
+                )
+            )
+
+            val colorBlendInfo = arrayOf(
+                VkPipelineColorBlendStateCreateInfo(
+                    pAttachments = arrayOf(VkPipelineColorBlendAttachmentState())
+                )
+            )
+
+            val multisamplingInfo = arrayOf(
+                VkPipelineMultisampleStateCreateInfo()
+            )
+            val rasterizationInfo = arrayOf(
+                VkPipelineRasterizationStateCreateInfo()
+            )
+
             pipelineLayout = Vulkan.vkCreatePipelineLayout(device, VkPipelineLayoutCreateInfo())
+
             val createInfos = arrayOf(
                 VkGraphicsPipelineCreateInfo(
                     pStages = shaderStages,
-                    pDynamicState = arrayOf(
-                        VkPipelineDynamicStateCreateInfo(
-                            pDynamicStates = arrayOf(
-                                VkDynamicState.VK_DYNAMIC_STATE_VIEWPORT,
-                                VkDynamicState.VK_DYNAMIC_STATE_SCISSOR,
-                            )
-                        )
-                    ),
-                    pInputAssemblyState = arrayOf(
-                        VkPipelineInputAssemblyStateCreateInfo(
-                            topology = VkPrimitiveTopology.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-                            primitiveRestartEnable = false
-                        )
-                    ),
-                    pViewportState = arrayOf(
-                        VkPipelineViewportStateCreateInfo(
-                            pViewports = arrayOf(
-                                VkViewport(
-                                    width = swapChainExtent.width.toFloat(),
-                                    height = swapChainExtent.height.toFloat(),
-                                )
-                            ),
-                            pScissors = arrayOf(
-                                VkRect2D(
-                                    offset = VkOffset2D(),
-                                    extent = swapChainExtent
-                                )
-                            )
-                        )
-                    ),
-                    pColorBlendState = arrayOf(
-                        VkPipelineColorBlendStateCreateInfo(
-                            pAttachments = arrayOf(VkPipelineColorBlendAttachmentState())
-                        )
-                    ),
+                    pVertexInputState = vertexInputInfo,
+                    pInputAssemblyState = inputAssemblyInfo,
+                    pViewportState = viewportInfo,
+                    pRasterizationState = rasterizationInfo,
+                    pMultisampleState = multisamplingInfo,
+                    pColorBlendState = colorBlendInfo,
+                    pDynamicState = dynamicInfo,
                     layout = pipelineLayout,
                     renderPass = renderPass,
                     subpass = 0,
