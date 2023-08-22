@@ -42,5 +42,4 @@ public:
 
     ~VkPresentInfoKHRAccessor();
 };
-
 #endif // VKPRESENTINFOKHRACCESSOR_H

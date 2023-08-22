@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <vector>
 #include <enum_utils.h>
+#include <exception_utils.h>
 #include <includes/VkLayerPropertiesMutator.h>
 #include <includes/VkExtensionPropertiesMutator.h>
 #include <includes/VkPhysicalDevicePropertiesMutator.h>

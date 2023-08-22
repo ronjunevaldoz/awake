@@ -69,7 +69,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
                                                     static_cast<uint32_t>(vkArray.size()),
                                                     vkArray.data(), nullptr, handle.data());
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreateGraphicsPipelines");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateGraphicsPipelines");
         }
         auto jArray = env->NewLongArray(static_cast<jsize>(vkArray.size()));
         for (int i = 0; i < size; ++i) {
@@ -95,8 +96,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
                 instance, "vkCreateDebugUtilsMessengerEXT");
         VkResult result = pfnvkCreateDebugUtilsMessengerEXT(instance, &info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error(
-                    "There was a problem executing vkCreateDebugUtilsMessengerEXT");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateDebugUtilsMessengerEXT");
         }
         return reinterpret_cast<jlong>(handle);
     }
@@ -260,7 +261,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         // process default??
         VkResult result = vkQueuePresentKHR(queue, &info);
         if (result != VK_SUCCESS) {
-//        throw std::runtime_error("There was a problem executing vkQueuePresentKHR");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkQueuePresentKHR");
         }
         // unable to process void
     }
@@ -287,7 +289,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkSemaphore handle;
         VkResult result = vkCreateSemaphore(device, &info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreateSemaphore");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateSemaphore");
         }
         return reinterpret_cast<jlong>(handle);
     }
@@ -311,7 +314,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkResult result = vkQueueSubmit(queue, static_cast<uint32_t>(vkArray.size()),
                                         vkArray.data(), fence);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkQueueSubmit");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkQueueSubmit");
         }
         // unable to process void
     }
@@ -328,7 +332,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkFramebuffer handle;
         VkResult result = vkCreateFramebuffer(device, &info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreateFramebuffer");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateFramebuffer");
         }
         return reinterpret_cast<jlong>(handle);
     }
@@ -345,7 +350,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkRenderPass handle;
         VkResult result = vkCreateRenderPass(device, &info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreateRenderPass");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateRenderPass");
         }
         return reinterpret_cast<jlong>(handle);
     }
@@ -379,7 +385,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkDevice handle;
         VkResult result = vkCreateDevice(physicalDevice, &info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreateDevice");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateDevice");
         }
         return reinterpret_cast<jlong>(handle);
     }
@@ -431,7 +438,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkSwapchainKHR handle;
         VkResult result = vkCreateSwapchainKHR(device, &info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreateSwapchainKHR");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateSwapchainKHR");
         }
         return reinterpret_cast<jlong>(handle);
     }
@@ -509,7 +517,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkImageView handle;
         VkResult result = vkCreateImageView(device, &info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreateImageView");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateImageView");
         }
         return reinterpret_cast<jlong>(handle);
     }
@@ -572,7 +581,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkPipelineLayout handle;
         VkResult result = vkCreatePipelineLayout(device, &info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreatePipelineLayout");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreatePipelineLayout");
         }
         return reinterpret_cast<jlong>(handle);
     }
@@ -589,7 +599,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkFence handle;
         VkResult result = vkCreateFence(device, &info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreateFence");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateFence");
         }
         return reinterpret_cast<jlong>(handle);
     }
@@ -606,7 +617,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkSurfaceKHR handle;
         VkResult result = vkCreateAndroidSurfaceKHR(instance, &info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreateAndroidSurfaceKHR");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateAndroidSurfaceKHR");
         }
         return reinterpret_cast<jlong>(handle);
     }
@@ -642,7 +654,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkInstance handle;
         VkResult result = vkCreateInstance(&info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreateInstance");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateInstance");
         }
         return reinterpret_cast<jlong>(handle);
     }
@@ -738,7 +751,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkResult result = vkAcquireNextImageKHR(device, swapchainKHR, vkarg2, semaphore, fence,
                                                 &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkAcquireNextImageKHR");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkAcquireNextImageKHR");
         }
         return static_cast<jint>(handle);
     }
@@ -755,7 +769,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkShaderModule handle;
         VkResult result = vkCreateShaderModule(device, &info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreateShaderModule");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateShaderModule");
         }
         return reinterpret_cast<jlong>(handle);
     }
@@ -796,7 +811,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkPipelineCache handle;
         VkResult result = vkCreatePipelineCache(device, &info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreatePipelineCache");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreatePipelineCache");
         }
         return reinterpret_cast<jlong>(handle);
     }
@@ -874,7 +890,8 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         VkCommandPool handle;
         VkResult result = vkCreateCommandPool(device, &info, nullptr, &handle);
         if (result != VK_SUCCESS) {
-            throw std::runtime_error("There was a problem executing vkCreateCommandPool");
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateCommandPool");
         }
         return reinterpret_cast<jlong>(handle);
     }

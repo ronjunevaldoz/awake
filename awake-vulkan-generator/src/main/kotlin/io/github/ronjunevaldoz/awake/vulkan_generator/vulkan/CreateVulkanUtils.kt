@@ -44,6 +44,7 @@ fun createVulkanUtils(clazz: Class<*>) {
             import("<stdexcept>")
             import("<vector>")
             import("<enum_utils.h>")
+            import("<exception_utils.h>")
 
             methods.filterNot { it.name.contains("Default", true) }.forEach { method ->
                 val returnType =
@@ -271,7 +272,8 @@ private fun CppFunctionBodyBuilder.processVkCreate(
             child("std::vector<${handleReturnType.name}> handle(size);")
             child("VkResult result = $methodName(${params}nullptr, handle.data());")
             child("if(result != VK_SUCCESS){")
-            child("    throw std::runtime_error(\"There was a problem executing ${methodName}\");")
+            child("    exception_utils::resultException(env, result, \"There was a problem executing $methodName\");")
+//            child("    throw std::runtime_error(\"There was a problem executing ${methodName}\");")
             child("}")
 
             child("auto jArray = env->NewLongArray(static_cast<jsize>(vkArray.size()));")
@@ -288,7 +290,8 @@ private fun CppFunctionBodyBuilder.processVkCreate(
                 child("VkResult result = $methodName(${params}nullptr, &handle);")
             }
             child("if(result != VK_SUCCESS){")
-            child("    throw std::runtime_error(\"There was a problem executing ${methodName}\");")
+            child("    exception_utils::resultException(env, result, \"There was a problem executing $methodName\");")
+//            child("    throw std::runtime_error(\"There was a problem executing ${methodName}\");")
             child("}")
         }
     } else {
@@ -296,7 +299,8 @@ private fun CppFunctionBodyBuilder.processVkCreate(
         child("$returnTypeVulkan handle;")
         child("VkResult result = $methodName(${params}nullptr, &handle);")
         child("if(result != VK_SUCCESS){")
-        child("    throw std::runtime_error(\"There was a problem executing ${methodName}\");")
+        child("    exception_utils::resultException(env, result, \"There was a problem executing $methodName\");")
+//        child("    throw std::runtime_error(\"There was a problem executing ${methodName}\");")
         child("}")
     }
 }
@@ -423,7 +427,7 @@ private fun CppFunctionBodyBuilder.processVkDefault(
         child("VkResult result = ${methodName}(${methodParams}, &handle);")
     }
     child("if(result != VK_SUCCESS){")
-    child("    throw std::runtime_error(\"There was a problem executing ${methodName}\");")
+    child("    exception_utils::resultException(env, result, \"There was a problem executing $methodName\");")
     child("}")
 }
 

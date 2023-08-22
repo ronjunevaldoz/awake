@@ -180,11 +180,8 @@ public:
     uint32_t getminTexelOffset();
     uint32_t getmaxTexelGatherOffset();
     uint32_t getmaxClipDistances();
-
     uint32_t getmaxTessellationControlTotalOutputComponents();
-
     uint32_t getmaxDrawIndexedIndexValue();
-
     uint32_t getmaxTessellationControlPerVertexInputComponents();
     uint32_t getmaxFragmentOutputAttachments();
     uint32_t getmaxTessellationEvaluationInputComponents();

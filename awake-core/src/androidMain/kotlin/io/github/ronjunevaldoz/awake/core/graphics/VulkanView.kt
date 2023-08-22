@@ -41,6 +41,7 @@ import io.github.ronjunevaldoz.awake.vulkan.enums.VkPhysicalDeviceType
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPipelineBindPoint
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPresentModeKHR
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkPrimitiveTopology
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkResult
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkShaderStageFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSharingMode
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSubpassContents
@@ -93,6 +94,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayou
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineShaderStageCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineViewportStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.physicaldevice.VkPhysicalDevice
+import io.github.ronjunevaldoz.awake.vulkan.utils.VkResultException
 import io.github.ronjunevaldoz.awake.vulkan.utils.findQueueFamilies
 import io.github.ronjunevaldoz.awake.vulkan.utils.getAppExtProps
 import io.github.ronjunevaldoz.awake.vulkan.utils.getAppLayerProps
@@ -230,9 +232,17 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
 
         try {
             Vulkan.vkQueuePresentKHR(presentQueue, presentInfo)
-        } catch (e: Exception) {
-
+        } catch (e: VkResultException) {
+            when (e.result) {
+                VkResult.VK_SUBOPTIMAL_KHR, VkResult.VK_ERROR_OUT_OF_DATE_KHR -> recreateSwapChain()
+                else -> throw e
+            }
         }
+    }
+
+    private fun recreateSwapChain() {
+        // TODO process recreation of swapchain here
+//        Vulkan.vkDeviceWaitIdle(device)
     }
 
     private fun createSyncObjects() {

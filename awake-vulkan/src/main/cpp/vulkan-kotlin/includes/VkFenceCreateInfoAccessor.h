@@ -33,5 +33,4 @@ public:
 
     ~VkFenceCreateInfoAccessor();
 };
-
 #endif // VKFENCECREATEINFOACCESSOR_H

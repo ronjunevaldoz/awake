@@ -12,6 +12,7 @@ set(VULKAN_KOTLIN_SOURCES
         VkImageSubresourceRangeAccessor.cpp
         VkDebugUtilsObjectNameInfoEXTMutator.cpp
         VkClearDepthStencilValueAccessor.cpp
+        exception_utils.cpp
         VkPhysicalDevicePropertiesAccessor.cpp
         VkPresentInfoKHRAccessor.cpp
         VkRect2DAccessor.cpp

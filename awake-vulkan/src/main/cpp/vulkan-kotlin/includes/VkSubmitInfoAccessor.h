@@ -42,5 +42,4 @@ public:
 
     ~VkSubmitInfoAccessor();
 };
-
 #endif // VKSUBMITINFOACCESSOR_H

@@ -33,5 +33,4 @@ public:
 
     ~VkSemaphoreCreateInfoAccessor();
 };
-
 #endif // VKSEMAPHORECREATEINFOACCESSOR_H
