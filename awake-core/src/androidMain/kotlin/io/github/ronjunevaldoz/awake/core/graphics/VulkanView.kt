@@ -136,6 +136,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
     var renderFinishedSemaphore: Long = 0//VkSemaphore? = null
     var inFlightFence: Long = 0 ////VkFence? = null
 
+    val clearColorValue = VkClearColorValue.rgba(0f, 1f, 0f, 1f)
 
     private val mainScope = CoroutineScope(Dispatchers.Main)
 
@@ -148,8 +149,8 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         if (instance == 0L) {
             setupVulkan(holder.surface)
         } else {
-            destroy()
-            setupVulkan(holder.surface)
+//            destroy()
+//            setupVulkan(holder.surface)
         }
     }
 
@@ -183,13 +184,9 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         createSyncObjects()
 
         mainScope.launch {
-            try {
-                while (true) {
-                    drawFrame()
-                    delay(16)
-                }
-            } catch (e: Exception) {
-                Log.e("draw error", e.message.toString())
+            while (true) {
+                drawFrame()
+                delay(16)
             }
         }
     }
@@ -255,7 +252,6 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         renderFinishedSemaphore = Vulkan.vkCreateSemaphore(device, semaphoreInfo)
         inFlightFence = Vulkan.vkCreateFence(device, fenceInfo)
     }
-
     private fun recordCommandBuffer(commandBuffer: Long, aquiredImageIndex: Int) {
         val beginInfo = VkCommandBufferBeginInfo(
             flags = 0 // VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT.value
@@ -269,7 +265,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             renderArea = VkRect2D(
                 extent = swapChainExtent
             ),
-            pClearValues = arrayOf(VkClearColorValue.rgba(0f, 1f, 0f, 1f))
+            pClearValues = arrayOf(clearColorValue)
         )
         Vulkan.vkCmdBeginRenderPass(
             commandBuffer,
@@ -608,25 +604,6 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             val createInfos = arrayOf(
                 VkGraphicsPipelineCreateInfo(
                     pStages = shaderStages,
-//                    pVertexInputState = arrayOf(
-//                        VkPipelineVertexInputStateCreateInfo(
-//                            pVertexBindingDescriptions = arrayOf(
-//                                VkVertexInputBindingDescription(
-//                                    0,  // Index of the binding
-//                                    4, // Size of each vertex data element
-//                                    VkVertexInputRate.VK_VERTEX_INPUT_RATE_VERTEX // Input rate (per vertex)
-//                                )
-//                            ),
-//                            pVertexAttributeDescriptions = arrayOf(
-//                                VkVertexInputAttributeDescription(
-//                                    0, // Which binding this attribute (position) is associated with
-//                                    0, // Corresponds to layout (location = 0) in the shader
-//                                    VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT, // Format of the attribute data
-//                                    0
-//                                )
-//                            )
-//                        )
-//                    ),
                     pDynamicState = arrayOf(
                         VkPipelineDynamicStateCreateInfo(
                             pDynamicStates = arrayOf(
@@ -692,7 +669,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         require(availablePresetModes.isNotEmpty()) { "AvailablePresetModes must not be empty." }
         return availablePresetModes.find { presentMode ->
             presentMode == VkPresentModeKHR.VK_PRESENT_MODE_MAILBOX_KHR
-        } ?: return VkPresentModeKHR.VK_PRESENT_MODE_FIFO_KHR;
+        } ?: return VkPresentModeKHR.VK_PRESENT_MODE_FIFO_KHR
     }
 
     private fun chooseSwapExtent(

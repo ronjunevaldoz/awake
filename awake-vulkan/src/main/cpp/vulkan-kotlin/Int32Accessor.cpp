@@ -5,10 +5,8 @@
 
 #include <includes/Int32Accessor.h>
 
-Int32Accessor::Int32Accessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+Int32Accessor::Int32Accessor(JNIEnv *env, jobject obj) : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     valuesField = env->GetFieldID(clazz, "values", "[I");
 }
 
@@ -35,7 +33,6 @@ Int32Accessor::getvalues(VkClearColorValue &clazzInfo) {
 }
 
 Int32Accessor::~Int32Accessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

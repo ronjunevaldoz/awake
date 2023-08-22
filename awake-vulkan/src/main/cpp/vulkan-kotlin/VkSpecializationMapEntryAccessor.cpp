@@ -5,10 +5,9 @@
 
 #include <includes/VkSpecializationMapEntryAccessor.h>
 
-VkSpecializationMapEntryAccessor::VkSpecializationMapEntryAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkSpecializationMapEntryAccessor::VkSpecializationMapEntryAccessor(JNIEnv *env, jobject obj) : env(
+        env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     constantIDField = env->GetFieldID(clazz, "constantID", "I");
     offsetField = env->GetFieldID(clazz, "offset", "I");
     sizeField = env->GetFieldID(clazz, "size", "J");
@@ -37,7 +36,6 @@ VkSpecializationMapEntryAccessor::getoffset() {
 }
 
 VkSpecializationMapEntryAccessor::~VkSpecializationMapEntryAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

@@ -6,10 +6,9 @@
 #include <includes/VkPhysicalDeviceSparsePropertiesAccessor.h>
 
 VkPhysicalDeviceSparsePropertiesAccessor::VkPhysicalDeviceSparsePropertiesAccessor(JNIEnv *env,
-                                                                                   jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+                                                                                   jobject obj)
+        : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     residencyStandard2DBlockShapeField = env->GetFieldID(clazz, "residencyStandard2DBlockShape",
                                                          "Z");
     residencyStandard2DMultisampleBlockShapeField = env->GetFieldID(clazz,
@@ -61,7 +60,6 @@ VkPhysicalDeviceSparsePropertiesAccessor::fromObject(VkPhysicalDeviceSparsePrope
 }
 
 VkPhysicalDeviceSparsePropertiesAccessor::~VkPhysicalDeviceSparsePropertiesAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

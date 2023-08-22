@@ -5,7 +5,7 @@
 
 #include <includes/VkQueueFamilyPropertiesMutator.h>
 
-VkQueueFamilyPropertiesMutator::VkQueueFamilyPropertiesMutator(JNIEnv *env) {
+VkQueueFamilyPropertiesMutator::VkQueueFamilyPropertiesMutator(JNIEnv *env) : env(env) {
     this->env = env;
     clazz = env->FindClass("io/github/ronjunevaldoz/awake/vulkan/models/VkQueueFamilyProperties");
     queueFlagsField = env->GetFieldID(clazz, "queueFlags", "I");

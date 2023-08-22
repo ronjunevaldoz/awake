@@ -5,7 +5,7 @@
 
 #include <includes/VkLayerPropertiesMutator.h>
 
-VkLayerPropertiesMutator::VkLayerPropertiesMutator(JNIEnv *env) {
+VkLayerPropertiesMutator::VkLayerPropertiesMutator(JNIEnv *env) : env(env) {
     this->env = env;
     clazz = env->FindClass("io/github/ronjunevaldoz/awake/vulkan/models/VkLayerProperties");
     layerNameField = env->GetFieldID(clazz, "layerName", "Ljava/lang/String;");

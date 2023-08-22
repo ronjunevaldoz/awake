@@ -5,10 +5,9 @@
 
 #include <includes/VkExtensionPropertiesAccessor.h>
 
-VkExtensionPropertiesAccessor::VkExtensionPropertiesAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkExtensionPropertiesAccessor::VkExtensionPropertiesAccessor(JNIEnv *env, jobject obj) : env(env),
+                                                                                         obj(obj) {
+    clazz = env->GetObjectClass(obj);
     extensionNameField = env->GetFieldID(clazz, "extensionName", "Ljava/lang/String;");
     specVersionField = env->GetFieldID(clazz, "specVersion", "I");
 }
@@ -34,7 +33,6 @@ VkExtensionPropertiesAccessor::getspecVersion() {
 }
 
 VkExtensionPropertiesAccessor::~VkExtensionPropertiesAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

@@ -5,7 +5,7 @@
 
 #include <includes/VkExtent3DMutator.h>
 
-VkExtent3DMutator::VkExtent3DMutator(JNIEnv *env) {
+VkExtent3DMutator::VkExtent3DMutator(JNIEnv *env) : env(env) {
     this->env = env;
     clazz = env->FindClass("io/github/ronjunevaldoz/awake/vulkan/models/VkExtent3D");
     widthField = env->GetFieldID(clazz, "width", "I");

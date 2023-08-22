@@ -5,10 +5,9 @@
 
 #include <includes/VkSurfaceFormatKHRAccessor.h>
 
-VkSurfaceFormatKHRAccessor::VkSurfaceFormatKHRAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkSurfaceFormatKHRAccessor::VkSurfaceFormatKHRAccessor(JNIEnv *env, jobject obj) : env(env),
+                                                                                   obj(obj) {
+    clazz = env->GetObjectClass(obj);
     formatField = env->GetFieldID(clazz, "format",
                                   "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkFormat;");
     colorSpaceField = env->GetFieldID(clazz, "colorSpace",
@@ -38,7 +37,6 @@ VkSurfaceFormatKHRAccessor::getformat() {
 }
 
 VkSurfaceFormatKHRAccessor::~VkSurfaceFormatKHRAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

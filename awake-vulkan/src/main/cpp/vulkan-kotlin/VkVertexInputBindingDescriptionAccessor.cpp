@@ -6,10 +6,9 @@
 #include <includes/VkVertexInputBindingDescriptionAccessor.h>
 
 VkVertexInputBindingDescriptionAccessor::VkVertexInputBindingDescriptionAccessor(JNIEnv *env,
-                                                                                 jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+                                                                                 jobject obj) : env(
+        env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     bindingField = env->GetFieldID(clazz, "binding", "I");
     strideField = env->GetFieldID(clazz, "stride", "I");
     inputRateField = env->GetFieldID(clazz, "inputRate",
@@ -42,7 +41,6 @@ VkVertexInputBindingDescriptionAccessor::fromObject(VkVertexInputBindingDescript
 }
 
 VkVertexInputBindingDescriptionAccessor::~VkVertexInputBindingDescriptionAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

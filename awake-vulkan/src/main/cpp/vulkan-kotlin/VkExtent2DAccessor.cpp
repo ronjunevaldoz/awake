@@ -5,10 +5,8 @@
 
 #include <includes/VkExtent2DAccessor.h>
 
-VkExtent2DAccessor::VkExtent2DAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkExtent2DAccessor::VkExtent2DAccessor(JNIEnv *env, jobject obj) : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     widthField = env->GetFieldID(clazz, "width", "I");
     heightField = env->GetFieldID(clazz, "height", "I");
 }
@@ -30,7 +28,6 @@ VkExtent2DAccessor::getheight() {
 }
 
 VkExtent2DAccessor::~VkExtent2DAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

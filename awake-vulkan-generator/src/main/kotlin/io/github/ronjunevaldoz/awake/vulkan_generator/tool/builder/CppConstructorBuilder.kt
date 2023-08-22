@@ -46,9 +46,12 @@ class CppConstructorBuilder(
         val indentation = "    ".repeat(if (withInterface) 0 else indent)
         val cppParameters =
             parameters.joinToString(", ") { "${it.second} ${it.first}" }
+        val refParams = parameters.joinToString(",") {
+            "${it.first}(${it.first})"
+        }
         val prefix = if (explicit) "explicit " else ""
         val function = if (withInterface) {
-            "$prefix$className::$className($cppParameters)"
+            "$prefix$className::$className($cppParameters): $refParams"
         } else {
             "$indentation$prefix$className($cppParameters)"
         }

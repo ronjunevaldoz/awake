@@ -6,7 +6,7 @@
 #include <includes/VkDebugUtilsMessengerCallbackDataEXTMutator.h>
 
 VkDebugUtilsMessengerCallbackDataEXTMutator::VkDebugUtilsMessengerCallbackDataEXTMutator(
-        JNIEnv *env) {
+        JNIEnv *env) : env(env) {
     this->env = env;
     clazz = env->FindClass(
             "io/github/ronjunevaldoz/awake/vulkan/models/info/debug/VkDebugUtilsMessengerCallbackDataEXT");

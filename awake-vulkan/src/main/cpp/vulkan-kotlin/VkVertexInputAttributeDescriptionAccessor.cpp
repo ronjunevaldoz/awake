@@ -6,10 +6,9 @@
 #include <includes/VkVertexInputAttributeDescriptionAccessor.h>
 
 VkVertexInputAttributeDescriptionAccessor::VkVertexInputAttributeDescriptionAccessor(JNIEnv *env,
-                                                                                     jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+                                                                                     jobject obj)
+        : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     locationField = env->GetFieldID(clazz, "location", "I");
     bindingField = env->GetFieldID(clazz, "binding", "I");
     formatField = env->GetFieldID(clazz, "format",
@@ -50,7 +49,6 @@ VkVertexInputAttributeDescriptionAccessor::getoffset() {
 }
 
 VkVertexInputAttributeDescriptionAccessor::~VkVertexInputAttributeDescriptionAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

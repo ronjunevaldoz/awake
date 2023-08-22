@@ -5,10 +5,9 @@
 
 #include <includes/VkAttachmentDescriptionAccessor.h>
 
-VkAttachmentDescriptionAccessor::VkAttachmentDescriptionAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkAttachmentDescriptionAccessor::VkAttachmentDescriptionAccessor(JNIEnv *env, jobject obj) : env(
+        env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     flagsField = env->GetFieldID(clazz, "flags", "I");
     formatField = env->GetFieldID(clazz, "format",
                                   "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkFormat;");
@@ -111,7 +110,6 @@ VkAttachmentDescriptionAccessor::fromObject(VkAttachmentDescription &clazzInfo) 
 }
 
 VkAttachmentDescriptionAccessor::~VkAttachmentDescriptionAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

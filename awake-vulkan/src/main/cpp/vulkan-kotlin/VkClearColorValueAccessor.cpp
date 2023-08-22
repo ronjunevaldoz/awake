@@ -5,9 +5,8 @@
 
 #include <includes/VkClearColorValueAccessor.h>
 
-VkClearColorValueAccessor::VkClearColorValueAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
+VkClearColorValueAccessor::VkClearColorValueAccessor(JNIEnv *env, jobject obj) : env(env),
+                                                                                 obj(obj) {
 }
 
 void

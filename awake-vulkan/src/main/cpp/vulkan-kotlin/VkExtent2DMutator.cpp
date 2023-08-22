@@ -5,7 +5,7 @@
 
 #include <includes/VkExtent2DMutator.h>
 
-VkExtent2DMutator::VkExtent2DMutator(JNIEnv *env) {
+VkExtent2DMutator::VkExtent2DMutator(JNIEnv *env) : env(env) {
     this->env = env;
     clazz = env->FindClass("io/github/ronjunevaldoz/awake/vulkan/models/VkExtent2D");
     widthField = env->GetFieldID(clazz, "width", "I");

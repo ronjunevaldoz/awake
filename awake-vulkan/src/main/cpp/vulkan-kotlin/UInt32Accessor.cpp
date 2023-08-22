@@ -5,10 +5,8 @@
 
 #include <includes/UInt32Accessor.h>
 
-UInt32Accessor::UInt32Accessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+UInt32Accessor::UInt32Accessor(JNIEnv *env, jobject obj) : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     valuesField = env->GetFieldID(clazz, "values", "[I");
 }
 
@@ -35,7 +33,6 @@ UInt32Accessor::getvalues(VkClearColorValue &clazzInfo) {
 }
 
 UInt32Accessor::~UInt32Accessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

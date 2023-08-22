@@ -5,10 +5,8 @@
 
 #include <includes/VkViewportAccessor.h>
 
-VkViewportAccessor::VkViewportAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkViewportAccessor::VkViewportAccessor(JNIEnv *env, jobject obj) : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     xField = env->GetFieldID(clazz, "x", "F");
     yField = env->GetFieldID(clazz, "y", "F");
     widthField = env->GetFieldID(clazz, "width", "F");
@@ -58,7 +56,6 @@ VkViewportAccessor::getmaxDepth() {
 }
 
 VkViewportAccessor::~VkViewportAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

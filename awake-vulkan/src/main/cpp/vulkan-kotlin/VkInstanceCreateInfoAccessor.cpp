@@ -5,10 +5,9 @@
 
 #include <includes/VkInstanceCreateInfoAccessor.h>
 
-VkInstanceCreateInfoAccessor::VkInstanceCreateInfoAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkInstanceCreateInfoAccessor::VkInstanceCreateInfoAccessor(JNIEnv *env, jobject obj) : env(env),
+                                                                                       obj(obj) {
+    clazz = env->GetObjectClass(obj);
     sTypeField = env->GetFieldID(clazz, "sType",
                                  "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType;");
     pNextField = env->GetFieldID(clazz, "pNext", "Ljava/lang/Object;");
@@ -141,7 +140,6 @@ VkInstanceCreateInfoAccessor::getppEnabledLayerNames(VkInstanceCreateInfo &clazz
 }
 
 VkInstanceCreateInfoAccessor::~VkInstanceCreateInfoAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

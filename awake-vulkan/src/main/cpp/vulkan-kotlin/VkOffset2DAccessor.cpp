@@ -5,10 +5,8 @@
 
 #include <includes/VkOffset2DAccessor.h>
 
-VkOffset2DAccessor::VkOffset2DAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkOffset2DAccessor::VkOffset2DAccessor(JNIEnv *env, jobject obj) : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     xField = env->GetFieldID(clazz, "x", "I");
     yField = env->GetFieldID(clazz, "y", "I");
 }
@@ -30,7 +28,6 @@ VkOffset2DAccessor::fromObject(VkOffset2D &clazzInfo) {
 }
 
 VkOffset2DAccessor::~VkOffset2DAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

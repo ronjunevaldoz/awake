@@ -6,10 +6,8 @@
 #include <includes/VkPipelineInputAssemblyStateCreateInfoAccessor.h>
 
 VkPipelineInputAssemblyStateCreateInfoAccessor::VkPipelineInputAssemblyStateCreateInfoAccessor(
-        JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+        JNIEnv *env, jobject obj) : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     sTypeField = env->GetFieldID(clazz, "sType",
                                  "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType;");
     pNextField = env->GetFieldID(clazz, "pNext", "Ljava/lang/Object;");
@@ -64,7 +62,6 @@ VkPipelineInputAssemblyStateCreateInfoAccessor::getpNext(
 }
 
 VkPipelineInputAssemblyStateCreateInfoAccessor::~VkPipelineInputAssemblyStateCreateInfoAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

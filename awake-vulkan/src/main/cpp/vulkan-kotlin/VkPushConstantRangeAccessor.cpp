@@ -5,10 +5,9 @@
 
 #include <includes/VkPushConstantRangeAccessor.h>
 
-VkPushConstantRangeAccessor::VkPushConstantRangeAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkPushConstantRangeAccessor::VkPushConstantRangeAccessor(JNIEnv *env, jobject obj) : env(env),
+                                                                                     obj(obj) {
+    clazz = env->GetObjectClass(obj);
     stageFlagsField = env->GetFieldID(clazz, "stageFlags", "I");
     offsetField = env->GetFieldID(clazz, "offset", "I");
     sizeField = env->GetFieldID(clazz, "size", "I");
@@ -37,7 +36,6 @@ VkPushConstantRangeAccessor::getoffset() {
 }
 
 VkPushConstantRangeAccessor::~VkPushConstantRangeAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

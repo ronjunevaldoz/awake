@@ -5,7 +5,7 @@
 
 #include <includes/VkPhysicalDeviceLimitsMutator.h>
 
-VkPhysicalDeviceLimitsMutator::VkPhysicalDeviceLimitsMutator(JNIEnv *env) {
+VkPhysicalDeviceLimitsMutator::VkPhysicalDeviceLimitsMutator(JNIEnv *env) : env(env) {
     this->env = env;
     clazz = env->FindClass(
             "io/github/ronjunevaldoz/awake/vulkan/models/physicaldevice/VkPhysicalDeviceLimits");

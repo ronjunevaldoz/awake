@@ -5,7 +5,7 @@
 
 #include <includes/VkDebugUtilsLabelEXTMutator.h>
 
-VkDebugUtilsLabelEXTMutator::VkDebugUtilsLabelEXTMutator(JNIEnv *env) {
+VkDebugUtilsLabelEXTMutator::VkDebugUtilsLabelEXTMutator(JNIEnv *env) : env(env) {
     this->env = env;
     clazz = env->FindClass(
             "io/github/ronjunevaldoz/awake/vulkan/models/info/debug/VkDebugUtilsLabelEXT");

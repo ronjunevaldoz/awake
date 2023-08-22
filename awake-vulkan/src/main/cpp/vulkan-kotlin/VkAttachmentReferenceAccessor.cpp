@@ -5,10 +5,9 @@
 
 #include <includes/VkAttachmentReferenceAccessor.h>
 
-VkAttachmentReferenceAccessor::VkAttachmentReferenceAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkAttachmentReferenceAccessor::VkAttachmentReferenceAccessor(JNIEnv *env, jobject obj) : env(env),
+                                                                                         obj(obj) {
+    clazz = env->GetObjectClass(obj);
     attachmentField = env->GetFieldID(clazz, "attachment", "I");
     layoutField = env->GetFieldID(clazz, "layout",
                                   "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkImageLayout;");
@@ -34,7 +33,6 @@ VkAttachmentReferenceAccessor::getattachment() {
 }
 
 VkAttachmentReferenceAccessor::~VkAttachmentReferenceAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

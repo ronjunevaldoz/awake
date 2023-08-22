@@ -59,8 +59,8 @@ fun createVulkanAccessor(clazz: Class<*>) {
                     parameters = listOf(Pair("env", "JNIEnv*"), Pair("obj", "jobject"))
                 ) {
                     body(2) {
-                        child("this->env = env;")
-                        child("this->obj = env->NewGlobalRef(obj);")
+//                        child("this->env = env;")
+//                        child("this->obj = env->NewGlobalRef(obj);")
                     }
                 }
                 function(1, "void", "fromObject", listOf(Pair("info", "${clazz.simpleName}&"))) {
@@ -101,8 +101,8 @@ fun createVulkanAccessor(clazz: Class<*>) {
                 destructor {
                     // default destructor
                     body(2) {
-                        child("env->DeleteGlobalRef(obj);")
-                        child("env->DeleteGlobalRef(clazz);")
+//                        child("env->DeleteGlobalRef(obj);")
+                        child("env->DeleteLocalRef(clazz);")
                     }
                 }
 
@@ -114,8 +114,8 @@ fun createVulkanAccessor(clazz: Class<*>) {
                     )
                 ) {
                     body(2) {
-                        child("this->env = env;")
-                        child("this->obj = env->NewGlobalRef(obj);")
+//                        child("this->env = env;")
+//                        child("this->obj = env->NewGlobalRef(obj);")
                         members.forEach { member ->
                             if (member.type == "jfieldID") {
                                 val javaField =
@@ -125,7 +125,7 @@ fun createVulkanAccessor(clazz: Class<*>) {
                                 val fieldName = "\"${javaField.name}\""
                                 child("${member.name} = env->GetFieldID($sourceClass, $fieldName, $javaSig);")
                             } else if (member.type == "jclass") {
-                                child("${member.name} = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));")
+                                child("${member.name} = env->GetObjectClass(obj);")
                             }
                         }
                     }

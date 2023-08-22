@@ -5,7 +5,7 @@
 
 #include <includes/VkDebugUtilsObjectNameInfoEXTMutator.h>
 
-VkDebugUtilsObjectNameInfoEXTMutator::VkDebugUtilsObjectNameInfoEXTMutator(JNIEnv *env) {
+VkDebugUtilsObjectNameInfoEXTMutator::VkDebugUtilsObjectNameInfoEXTMutator(JNIEnv *env) : env(env) {
     this->env = env;
     clazz = env->FindClass(
             "io/github/ronjunevaldoz/awake/vulkan/models/info/debug/VkDebugUtilsObjectNameInfoEXT");

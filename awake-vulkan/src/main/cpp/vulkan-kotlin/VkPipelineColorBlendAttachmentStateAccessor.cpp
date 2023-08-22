@@ -6,10 +6,8 @@
 #include <includes/VkPipelineColorBlendAttachmentStateAccessor.h>
 
 VkPipelineColorBlendAttachmentStateAccessor::VkPipelineColorBlendAttachmentStateAccessor(
-        JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+        JNIEnv *env, jobject obj) : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     blendEnableField = env->GetFieldID(clazz, "blendEnable", "Z");
     srcColorBlendFactorField = env->GetFieldID(clazz, "srcColorBlendFactor",
                                                "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkBlendFactor;");
@@ -98,7 +96,6 @@ VkPipelineColorBlendAttachmentStateAccessor::getdstAlphaBlendFactor() {
 }
 
 VkPipelineColorBlendAttachmentStateAccessor::~VkPipelineColorBlendAttachmentStateAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

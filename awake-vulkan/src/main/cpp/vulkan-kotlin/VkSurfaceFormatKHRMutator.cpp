@@ -5,7 +5,7 @@
 
 #include <includes/VkSurfaceFormatKHRMutator.h>
 
-VkSurfaceFormatKHRMutator::VkSurfaceFormatKHRMutator(JNIEnv *env) {
+VkSurfaceFormatKHRMutator::VkSurfaceFormatKHRMutator(JNIEnv *env) : env(env) {
     this->env = env;
     clazz = env->FindClass("io/github/ronjunevaldoz/awake/vulkan/models/VkSurfaceFormatKHR");
     formatField = env->GetFieldID(clazz, "format",

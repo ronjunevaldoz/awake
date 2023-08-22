@@ -5,10 +5,8 @@
 
 #include <includes/VkRect2DAccessor.h>
 
-VkRect2DAccessor::VkRect2DAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkRect2DAccessor::VkRect2DAccessor(JNIEnv *env, jobject obj) : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     offsetField = env->GetFieldID(clazz, "offset",
                                   "Lio/github/ronjunevaldoz/awake/vulkan/models/VkOffset2D;");
     extentField = env->GetFieldID(clazz, "extent",
@@ -50,7 +48,6 @@ VkRect2DAccessor::getextent(VkRect2D &clazzInfo) {
 }
 
 VkRect2DAccessor::~VkRect2DAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

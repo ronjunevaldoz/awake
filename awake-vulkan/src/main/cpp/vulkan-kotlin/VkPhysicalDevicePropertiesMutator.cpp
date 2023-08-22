@@ -5,7 +5,7 @@
 
 #include <includes/VkPhysicalDevicePropertiesMutator.h>
 
-VkPhysicalDevicePropertiesMutator::VkPhysicalDevicePropertiesMutator(JNIEnv *env) {
+VkPhysicalDevicePropertiesMutator::VkPhysicalDevicePropertiesMutator(JNIEnv *env) : env(env) {
     this->env = env;
     clazz = env->FindClass(
             "io/github/ronjunevaldoz/awake/vulkan/models/physicaldevice/VkPhysicalDeviceProperties");

@@ -5,10 +5,9 @@
 
 #include <includes/VkClearDepthStencilValueAccessor.h>
 
-VkClearDepthStencilValueAccessor::VkClearDepthStencilValueAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkClearDepthStencilValueAccessor::VkClearDepthStencilValueAccessor(JNIEnv *env, jobject obj) : env(
+        env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     depthField = env->GetFieldID(clazz, "depth", "F");
     stencilField = env->GetFieldID(clazz, "stencil", "I");
 }
@@ -30,7 +29,6 @@ VkClearDepthStencilValueAccessor::getdepth() {
 }
 
 VkClearDepthStencilValueAccessor::~VkClearDepthStencilValueAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

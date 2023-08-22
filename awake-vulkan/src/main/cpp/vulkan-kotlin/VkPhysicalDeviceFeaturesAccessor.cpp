@@ -5,10 +5,9 @@
 
 #include <includes/VkPhysicalDeviceFeaturesAccessor.h>
 
-VkPhysicalDeviceFeaturesAccessor::VkPhysicalDeviceFeaturesAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkPhysicalDeviceFeaturesAccessor::VkPhysicalDeviceFeaturesAccessor(JNIEnv *env, jobject obj) : env(
+        env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     robustBufferAccessField = env->GetFieldID(clazz, "robustBufferAccess", "Z");
     fullDrawIndexUint32Field = env->GetFieldID(clazz, "fullDrawIndexUint32", "Z");
     imageCubeArrayField = env->GetFieldID(clazz, "imageCubeArray", "Z");
@@ -444,7 +443,6 @@ VkPhysicalDeviceFeaturesAccessor::getinheritedQueries() {
 }
 
 VkPhysicalDeviceFeaturesAccessor::~VkPhysicalDeviceFeaturesAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

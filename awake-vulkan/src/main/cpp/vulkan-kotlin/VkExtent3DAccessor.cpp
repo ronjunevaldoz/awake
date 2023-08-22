@@ -5,10 +5,8 @@
 
 #include <includes/VkExtent3DAccessor.h>
 
-VkExtent3DAccessor::VkExtent3DAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkExtent3DAccessor::VkExtent3DAccessor(JNIEnv *env, jobject obj) : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     widthField = env->GetFieldID(clazz, "width", "I");
     heightField = env->GetFieldID(clazz, "height", "I");
     depthField = env->GetFieldID(clazz, "depth", "I");
@@ -37,7 +35,6 @@ VkExtent3DAccessor::getheight() {
 }
 
 VkExtent3DAccessor::~VkExtent3DAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

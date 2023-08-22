@@ -5,10 +5,9 @@
 
 #include <includes/VkPhysicalDeviceLimitsAccessor.h>
 
-VkPhysicalDeviceLimitsAccessor::VkPhysicalDeviceLimitsAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkPhysicalDeviceLimitsAccessor::VkPhysicalDeviceLimitsAccessor(JNIEnv *env, jobject obj) : env(env),
+                                                                                           obj(obj) {
+    clazz = env->GetObjectClass(obj);
     maxImageDimension1DField = env->GetFieldID(clazz, "maxImageDimension1D", "I");
     maxImageDimension2DField = env->GetFieldID(clazz, "maxImageDimension2D", "I");
     maxImageDimension3DField = env->GetFieldID(clazz, "maxImageDimension3D", "I");
@@ -942,7 +941,6 @@ VkPhysicalDeviceLimitsAccessor::getstorageImageSampleCounts() {
 }
 
 VkPhysicalDeviceLimitsAccessor::~VkPhysicalDeviceLimitsAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

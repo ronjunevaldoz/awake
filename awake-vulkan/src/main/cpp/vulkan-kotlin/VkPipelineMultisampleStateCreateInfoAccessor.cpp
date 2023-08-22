@@ -6,10 +6,8 @@
 #include <includes/VkPipelineMultisampleStateCreateInfoAccessor.h>
 
 VkPipelineMultisampleStateCreateInfoAccessor::VkPipelineMultisampleStateCreateInfoAccessor(
-        JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+        JNIEnv *env, jobject obj) : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     sTypeField = env->GetFieldID(clazz, "sType",
                                  "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType;");
     pNextField = env->GetFieldID(clazz, "pNext", "Ljava/lang/Object;");
@@ -94,7 +92,6 @@ VkPipelineMultisampleStateCreateInfoAccessor::getpNext(
 }
 
 VkPipelineMultisampleStateCreateInfoAccessor::~VkPipelineMultisampleStateCreateInfoAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

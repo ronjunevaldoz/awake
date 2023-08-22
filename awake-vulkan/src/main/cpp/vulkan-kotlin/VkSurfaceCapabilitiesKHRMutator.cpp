@@ -5,7 +5,7 @@
 
 #include <includes/VkSurfaceCapabilitiesKHRMutator.h>
 
-VkSurfaceCapabilitiesKHRMutator::VkSurfaceCapabilitiesKHRMutator(JNIEnv *env) {
+VkSurfaceCapabilitiesKHRMutator::VkSurfaceCapabilitiesKHRMutator(JNIEnv *env) : env(env) {
     this->env = env;
     clazz = env->FindClass("io/github/ronjunevaldoz/awake/vulkan/models/VkSurfaceCapabilitiesKHR");
     minImageCountField = env->GetFieldID(clazz, "minImageCount", "I");

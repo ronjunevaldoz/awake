@@ -5,10 +5,9 @@
 
 #include <includes/VkImageSubresourceRangeAccessor.h>
 
-VkImageSubresourceRangeAccessor::VkImageSubresourceRangeAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkImageSubresourceRangeAccessor::VkImageSubresourceRangeAccessor(JNIEnv *env, jobject obj) : env(
+        env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     aspectMaskField = env->GetFieldID(clazz, "aspectMask", "I");
     baseMipLevelField = env->GetFieldID(clazz, "baseMipLevel", "I");
     levelCountField = env->GetFieldID(clazz, "levelCount", "I");
@@ -51,7 +50,6 @@ VkImageSubresourceRangeAccessor::getaspectMask() {
 }
 
 VkImageSubresourceRangeAccessor::~VkImageSubresourceRangeAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

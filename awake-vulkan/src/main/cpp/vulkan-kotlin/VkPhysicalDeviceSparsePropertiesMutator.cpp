@@ -5,7 +5,8 @@
 
 #include <includes/VkPhysicalDeviceSparsePropertiesMutator.h>
 
-VkPhysicalDeviceSparsePropertiesMutator::VkPhysicalDeviceSparsePropertiesMutator(JNIEnv *env) {
+VkPhysicalDeviceSparsePropertiesMutator::VkPhysicalDeviceSparsePropertiesMutator(JNIEnv *env) : env(
+        env) {
     this->env = env;
     clazz = env->FindClass(
             "io/github/ronjunevaldoz/awake/vulkan/models/physicaldevice/VkPhysicalDeviceSparseProperties");

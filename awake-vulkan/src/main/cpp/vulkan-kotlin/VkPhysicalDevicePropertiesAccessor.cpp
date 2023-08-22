@@ -5,10 +5,9 @@
 
 #include <includes/VkPhysicalDevicePropertiesAccessor.h>
 
-VkPhysicalDevicePropertiesAccessor::VkPhysicalDevicePropertiesAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkPhysicalDevicePropertiesAccessor::VkPhysicalDevicePropertiesAccessor(JNIEnv *env, jobject obj)
+        : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     apiVersionField = env->GetFieldID(clazz, "apiVersion", "I");
     driverVersionField = env->GetFieldID(clazz, "driverVersion", "I");
     vendorIDField = env->GetFieldID(clazz, "vendorID", "I");
@@ -131,7 +130,6 @@ VkPhysicalDevicePropertiesAccessor::getdriverVersion() {
 }
 
 VkPhysicalDevicePropertiesAccessor::~VkPhysicalDevicePropertiesAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

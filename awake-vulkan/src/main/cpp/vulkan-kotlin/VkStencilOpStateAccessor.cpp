@@ -5,10 +5,8 @@
 
 #include <includes/VkStencilOpStateAccessor.h>
 
-VkStencilOpStateAccessor::VkStencilOpStateAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkStencilOpStateAccessor::VkStencilOpStateAccessor(JNIEnv *env, jobject obj) : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     failOpField = env->GetFieldID(clazz, "failOp",
                                   "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkStencilOp;");
     passOpField = env->GetFieldID(clazz, "passOp",
@@ -81,7 +79,6 @@ VkStencilOpStateAccessor::getdepthFailOp() {
 }
 
 VkStencilOpStateAccessor::~VkStencilOpStateAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

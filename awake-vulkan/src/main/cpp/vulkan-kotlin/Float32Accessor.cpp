@@ -5,10 +5,8 @@
 
 #include <includes/Float32Accessor.h>
 
-Float32Accessor::Float32Accessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+Float32Accessor::Float32Accessor(JNIEnv *env, jobject obj) : env(env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     valuesField = env->GetFieldID(clazz, "values", "[F");
 }
 
@@ -35,7 +33,6 @@ Float32Accessor::getvalues(VkClearColorValue &clazzInfo) {
 }
 
 Float32Accessor::~Float32Accessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

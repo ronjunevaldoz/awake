@@ -5,10 +5,9 @@
 
 #include <includes/VkComponentMappingAccessor.h>
 
-VkComponentMappingAccessor::VkComponentMappingAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkComponentMappingAccessor::VkComponentMappingAccessor(JNIEnv *env, jobject obj) : env(env),
+                                                                                   obj(obj) {
+    clazz = env->GetObjectClass(obj);
     rField = env->GetFieldID(clazz, "r",
                              "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkComponentSwizzle;");
     gField = env->GetFieldID(clazz, "g",
@@ -60,7 +59,6 @@ VkComponentMappingAccessor::getg() {
 }
 
 VkComponentMappingAccessor::~VkComponentMappingAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

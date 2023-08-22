@@ -5,10 +5,9 @@
 
 #include <includes/VkSurfaceCapabilitiesKHRAccessor.h>
 
-VkSurfaceCapabilitiesKHRAccessor::VkSurfaceCapabilitiesKHRAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkSurfaceCapabilitiesKHRAccessor::VkSurfaceCapabilitiesKHRAccessor(JNIEnv *env, jobject obj) : env(
+        env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     minImageCountField = env->GetFieldID(clazz, "minImageCount", "I");
     maxImageCountField = env->GetFieldID(clazz, "maxImageCount", "I");
     currentExtentField = env->GetFieldID(clazz, "currentExtent",
@@ -121,7 +120,6 @@ VkSurfaceCapabilitiesKHRAccessor::fromObject(VkSurfaceCapabilitiesKHR &clazzInfo
 }
 
 VkSurfaceCapabilitiesKHRAccessor::~VkSurfaceCapabilitiesKHRAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

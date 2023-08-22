@@ -5,10 +5,9 @@
 
 #include <includes/VkDeviceCreateInfoAccessor.h>
 
-VkDeviceCreateInfoAccessor::VkDeviceCreateInfoAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkDeviceCreateInfoAccessor::VkDeviceCreateInfoAccessor(JNIEnv *env, jobject obj) : env(env),
+                                                                                   obj(obj) {
+    clazz = env->GetObjectClass(obj);
     sTypeField = env->GetFieldID(clazz, "sType",
                                  "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType;");
     pNextField = env->GetFieldID(clazz, "pNext", "Ljava/lang/Object;");
@@ -177,7 +176,6 @@ VkDeviceCreateInfoAccessor::getpQueueCreateInfos(VkDeviceCreateInfo &clazzInfo) 
 }
 
 VkDeviceCreateInfoAccessor::~VkDeviceCreateInfoAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

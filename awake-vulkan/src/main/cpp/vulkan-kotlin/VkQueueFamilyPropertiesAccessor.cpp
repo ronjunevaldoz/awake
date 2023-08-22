@@ -5,10 +5,9 @@
 
 #include <includes/VkQueueFamilyPropertiesAccessor.h>
 
-VkQueueFamilyPropertiesAccessor::VkQueueFamilyPropertiesAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkQueueFamilyPropertiesAccessor::VkQueueFamilyPropertiesAccessor(JNIEnv *env, jobject obj) : env(
+        env), obj(obj) {
+    clazz = env->GetObjectClass(obj);
     queueFlagsField = env->GetFieldID(clazz, "queueFlags", "I");
     queueCountField = env->GetFieldID(clazz, "queueCount", "I");
     timestampValidBitsField = env->GetFieldID(clazz, "timestampValidBits", "I");
@@ -56,7 +55,6 @@ VkQueueFamilyPropertiesAccessor::gettimestampValidBits() {
 }
 
 VkQueueFamilyPropertiesAccessor::~VkQueueFamilyPropertiesAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

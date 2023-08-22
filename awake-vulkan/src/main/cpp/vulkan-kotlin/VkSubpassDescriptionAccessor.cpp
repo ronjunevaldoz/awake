@@ -5,10 +5,9 @@
 
 #include <includes/VkSubpassDescriptionAccessor.h>
 
-VkSubpassDescriptionAccessor::VkSubpassDescriptionAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkSubpassDescriptionAccessor::VkSubpassDescriptionAccessor(JNIEnv *env, jobject obj) : env(env),
+                                                                                       obj(obj) {
+    clazz = env->GetObjectClass(obj);
     flagsField = env->GetFieldID(clazz, "flags", "I");
     pipelineBindPointField = env->GetFieldID(clazz, "pipelineBindPoint",
                                              "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkPipelineBindPoint;");
@@ -200,7 +199,6 @@ VkSubpassDescriptionAccessor::getpDepthStencilAttachment(VkSubpassDescription &c
 }
 
 VkSubpassDescriptionAccessor::~VkSubpassDescriptionAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 

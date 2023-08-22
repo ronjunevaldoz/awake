@@ -5,10 +5,9 @@
 
 #include <includes/VkSubpassDependencyAccessor.h>
 
-VkSubpassDependencyAccessor::VkSubpassDependencyAccessor(JNIEnv *env, jobject obj) {
-    this->env = env;
-    this->obj = env->NewGlobalRef(obj);
-    clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
+VkSubpassDependencyAccessor::VkSubpassDependencyAccessor(JNIEnv *env, jobject obj) : env(env),
+                                                                                     obj(obj) {
+    clazz = env->GetObjectClass(obj);
     srcSubpassField = env->GetFieldID(clazz, "srcSubpass", "I");
     dstSubpassField = env->GetFieldID(clazz, "dstSubpass", "I");
     srcStageMaskField = env->GetFieldID(clazz, "srcStageMask", "I");
@@ -65,7 +64,6 @@ VkSubpassDependencyAccessor::fromObject(VkSubpassDependency &clazzInfo) {
 }
 
 VkSubpassDependencyAccessor::~VkSubpassDependencyAccessor() {
-    env->DeleteGlobalRef(obj);
-    env->DeleteGlobalRef(clazz);
+    env->DeleteLocalRef(clazz);
 }
 
