@@ -430,7 +430,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         val queueInfos = uniqueQueueFamilies.map { uniqueQueueFamilyIndex ->
             VkDeviceQueueCreateInfo(
                 queueFamilyIndex = uniqueQueueFamilyIndex,
-                queueCount = queueFamilyProperties[uniqueQueueFamilyIndex].queueCount.toInt(),
+                queueCount = 1,//queueFamilyProperties[uniqueQueueFamilyIndex].queueCount.toInt(),
                 pQueuePriorities = floatArrayOf(1.0f)
             )
         }
