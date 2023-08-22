@@ -45,14 +45,18 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandPoolCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkComponentMapping
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkFenceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkFramebufferCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageSubresourceRange
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkInstanceCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPresentInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassBeginInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSemaphoreCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSubmitInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSubpassDescription
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.VkDebugUtilsLabelEXT
@@ -171,6 +175,13 @@ fun main(args: Array<String>) {
     generateJavaToVulkanCpp<VkClearColorValue>()
 //    generateJavaToVulkanCpp<VkClearValue>()
     generateJavaToVulkanCpp<VkRenderPassBeginInfo>()
+
+    // rendering
+    generateJavaToVulkanCpp<VkSemaphoreCreateInfo>()
+    generateJavaToVulkanCpp<VkFenceCreateInfo>()
+
+    generateJavaToVulkanCpp<VkSubmitInfo>()
+    generateJavaToVulkanCpp<VkPresentInfoKHR>()
 
 
     // props

@@ -26,9 +26,9 @@ public:
 
     VkStructureType getsType();
 
-    uint32_t getflags();
+    uint32_t getqueueFamilyIndex();
 
-    int32_t getqueueFamilyIndex();
+    uint32_t getflags();
 
     void getpNext(VkCommandPoolCreateInfo &clazzInfo);
 

@@ -1,11 +1,11 @@
 /*
- *  VkCommandPoolCreateInfoAccessor.cpp
- *  Vulkan accessor for VkCommandPoolCreateInfo
+ *  VkSemaphoreCreateInfoAccessor.cpp
+ *  Vulkan accessor for VkSemaphoreCreateInfo
  *  Created by Ron June Valdoz */
 
-#include <includes/VkCommandPoolCreateInfoAccessor.h>
+#include <includes/VkSemaphoreCreateInfoAccessor.h>
 
-VkCommandPoolCreateInfoAccessor::VkCommandPoolCreateInfoAccessor(JNIEnv *env, jobject obj) {
+VkSemaphoreCreateInfoAccessor::VkSemaphoreCreateInfoAccessor(JNIEnv *env, jobject obj) {
     this->env = env;
     this->obj = env->NewGlobalRef(obj);
     clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -13,11 +13,10 @@ VkCommandPoolCreateInfoAccessor::VkCommandPoolCreateInfoAccessor(JNIEnv *env, jo
                                  "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType;");
     pNextField = env->GetFieldID(clazz, "pNext", "Ljava/lang/Object;");
     flagsField = env->GetFieldID(clazz, "flags", "I");
-    queueFamilyIndexField = env->GetFieldID(clazz, "queueFamilyIndex", "I");
 }
 
 VkStructureType
-VkCommandPoolCreateInfoAccessor::getsType() {
+VkSemaphoreCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
     auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     env->DeleteLocalRef(sTypeEnum); // release enum reference
@@ -25,30 +24,24 @@ VkCommandPoolCreateInfoAccessor::getsType() {
 }
 
 uint32_t
-VkCommandPoolCreateInfoAccessor::getqueueFamilyIndex() {
-    return (uint32_t) (jint) env->GetIntField(obj, queueFamilyIndexField); // primitive
-}
-
-uint32_t
-VkCommandPoolCreateInfoAccessor::getflags() {
+VkSemaphoreCreateInfoAccessor::getflags() {
     return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 void
-VkCommandPoolCreateInfoAccessor::getpNext(VkCommandPoolCreateInfo &clazzInfo) {
+VkSemaphoreCreateInfoAccessor::getpNext(VkSemaphoreCreateInfo &clazzInfo) {
     auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
     clazzInfo.pNext = ref;
 }
 
 void
-VkCommandPoolCreateInfoAccessor::fromObject(VkCommandPoolCreateInfo &clazzInfo) {
+VkSemaphoreCreateInfoAccessor::fromObject(VkSemaphoreCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
     getpNext(clazzInfo); // Other void*
     clazzInfo.flags = getflags(); // Primitive uint32_t
-    clazzInfo.queueFamilyIndex = getqueueFamilyIndex(); // Primitive uint32_t
 }
 
-VkCommandPoolCreateInfoAccessor::~VkCommandPoolCreateInfoAccessor() {
+VkSemaphoreCreateInfoAccessor::~VkSemaphoreCreateInfoAccessor() {
     env->DeleteGlobalRef(obj);
     env->DeleteGlobalRef(clazz);
 }

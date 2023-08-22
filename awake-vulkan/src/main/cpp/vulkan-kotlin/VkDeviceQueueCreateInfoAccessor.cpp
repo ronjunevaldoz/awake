@@ -27,13 +27,13 @@ VkDeviceQueueCreateInfoAccessor::getsType() {
 }
 
 uint32_t
-VkDeviceQueueCreateInfoAccessor::getflags() {
-    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
+VkDeviceQueueCreateInfoAccessor::getqueueFamilyIndex() {
+    return (uint32_t) (jint) env->GetIntField(obj, queueFamilyIndexField); // primitive
 }
 
-int32_t
-VkDeviceQueueCreateInfoAccessor::getqueueFamilyIndex() {
-    return (int32_t) (jint) env->GetIntField(obj, queueFamilyIndexField); // primitive
+uint32_t
+VkDeviceQueueCreateInfoAccessor::getflags() {
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
 }
 
 void
@@ -68,7 +68,7 @@ VkDeviceQueueCreateInfoAccessor::fromObject(VkDeviceQueueCreateInfo &clazzInfo) 
     clazzInfo.sType = getsType(); // Enum VkStructureType
     getpNext(clazzInfo); // Other void*
     clazzInfo.flags = getflags(); // Primitive uint32_t
-    clazzInfo.queueFamilyIndex = getqueueFamilyIndex(); // Primitive int32_t
+    clazzInfo.queueFamilyIndex = getqueueFamilyIndex(); // Primitive uint32_t
     clazzInfo.queueCount = getqueueCount(); // Primitive uint32_t
     getpQueuePriorities(clazzInfo);  // float Object Array
 }

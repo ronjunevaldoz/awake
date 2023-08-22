@@ -356,7 +356,7 @@ VkPhysicalDeviceLimitsAccessor::fromObject(VkPhysicalDeviceLimits &clazzInfo) {
     clazzInfo.subPixelPrecisionBits = getsubPixelPrecisionBits(); // Primitive uint32_t
     clazzInfo.subTexelPrecisionBits = getsubTexelPrecisionBits(); // Primitive uint32_t
     clazzInfo.mipmapPrecisionBits = getmipmapPrecisionBits(); // Primitive uint32_t
-    clazzInfo.maxDrawIndexedIndexValue = getmaxDrawIndexedIndexValue(); // Primitive int32_t
+    clazzInfo.maxDrawIndexedIndexValue = getmaxDrawIndexedIndexValue(); // Primitive uint32_t
     clazzInfo.maxDrawIndirectCount = getmaxDrawIndirectCount(); // Primitive uint32_t
     clazzInfo.maxSamplerLodBias = getmaxSamplerLodBias(); // Primitive float
     clazzInfo.maxSamplerAnisotropy = getmaxSamplerAnisotropy(); // Primitive float
@@ -556,6 +556,11 @@ VkPhysicalDeviceLimitsAccessor::getmaxTessellationControlTotalOutputComponents()
 }
 
 uint32_t
+VkPhysicalDeviceLimitsAccessor::getmaxDrawIndexedIndexValue() {
+    return (uint32_t) (jint) env->GetIntField(obj, maxDrawIndexedIndexValueField); // primitive
+}
+
+uint32_t
 VkPhysicalDeviceLimitsAccessor::getmaxTessellationControlPerVertexInputComponents() {
     return (uint32_t) (jint) env->GetIntField(obj,
                                               maxTessellationControlPerVertexInputComponentsField); // primitive
@@ -751,11 +756,6 @@ uint32_t
 VkPhysicalDeviceLimitsAccessor::getframebufferStencilSampleCounts() {
     return (uint32_t) (jint) env->GetIntField(obj,
                                               framebufferStencilSampleCountsField); // primitive
-}
-
-int32_t
-VkPhysicalDeviceLimitsAccessor::getmaxDrawIndexedIndexValue() {
-    return (int32_t) (jint) env->GetIntField(obj, maxDrawIndexedIndexValueField); // primitive
 }
 
 uint32_t

@@ -99,36 +99,49 @@ fun createVulkanUtils(clazz: Class<*>) {
                                 vkMethodParams
                             )
 
-                            method.name.startsWith("vkCmd") || method.name.contains(
-                                "command",
-                                true
-                            ) -> processVkCmd(
+                            method.name.contains("reset", true) ||
+                                    method.name.contains("wait", true) ||
+                                    method.name.startsWith("vkCmd") ||
+                                    method.name.contains("command", true)
+                            -> processVkCmd(
                                 vkMethodName,
                                 vkMethodParams
                             )
 
-                            else -> processVkDefault(vkMethodName, vkMethodParams)
+                            else -> processVkDefault(
+                                method,
+                                vkMethodName,
+                                vkMethodParams
+                            )
                         }
 
-                        when (returnType) {
-                            "jlong" -> {
-                                child("return reinterpret_cast<$returnType>(handle);")
-                            }
-
-                            "void" -> {
-                                child("// void")
-                            }
-
-                            "jobject" -> {
-                                import("<includes/${vkReturnType}Mutator.h>")
-                                child("return ${vkReturnType}Mutator(env).toObject(handle);")
-                            }
-
-                            else -> {
-                                if (method.returnType.isArray) {
-                                    child("return jArray;")
+                        when {
+                            method.returnType.isEnum -> child("enum???")
+                            method.returnType.isPrimitive -> {
+                                if (method.isAnnotationPresent(VkReturnType::class.java)) {
+                                    child("return reinterpret_cast<$returnType>(handle);")
+                                } else if (method.returnType == Void.TYPE) {
+                                    child("// unable to process void")
                                 } else {
-                                    child("return handle;")
+                                    child("return static_cast<$returnType>(handle);")
+                                }
+                            }
+
+                            method.returnType.isArray -> child("return jArray;")
+                            else -> {
+                                when (returnType) {
+                                    "void" -> {
+                                        child("// void")
+                                    }
+
+                                    "jobject" -> {
+                                        import("<includes/${vkReturnType}Mutator.h>")
+                                        child("return ${vkReturnType}Mutator(env).toObject(handle);")
+                                    }
+
+                                    else -> {
+                                        child("return handle;")
+                                    }
                                 }
                             }
                         }
@@ -153,41 +166,71 @@ private fun CppFunctionBodyBuilder.processParameters(
     method: Method,
     import: (dependency: String) -> Unit
 ): List<String> {
+    child("// process parameter??")
     val methodParams = mutableSetOf<String>()
     method.parameters.forEach { param ->
-        val handle = param.getDeclaredAnnotation(VkHandleRef::class.java)
-        if (handle != null) {
-            val handleVar = handle.name.replace("Vk", "").decapitalize()
-            methodParams.add(handleVar)
-            child("auto $handleVar = reinterpret_cast<${handle.name}>(${param.name});")
-        } else if (param.type.simpleName.startsWith("vk", true)) {
-            if (param.type.isEnum) {
-                child("// enum ")
-                child("auto vk${param.name} = enum_utils::getEnumFromObject(env, ${param.name});")
-                methodParams.add("static_cast<${param.type.simpleName}>(vk${param.name})")
-            } else if (param.type.isArray) {
-                methodParams.add("static_cast<uint32_t>(vkArray.size())")
-                methodParams.add("vkArray.data()")
+        fun processEnum() {
+            child("// enum ")
+            child("auto vk${param.name} = enum_utils::getEnumFromObject(env, ${param.name});")
+            methodParams.add("static_cast<${param.type.simpleName}>(vk${param.name})")
+        }
+
+        fun processArray() {
+            val handle = param.getDeclaredAnnotation(VkHandleRef::class.java)
+
+            methodParams.add("static_cast<uint32_t>(vkArray.size())")
+            methodParams.add("vkArray.data()")
+
+            val listType = handle?.name ?: param.type.componentType.simpleName
+
+            child("// process array")
+            child("auto size = env->GetArrayLength(${param.name});")
+            child("std::vector<$listType> vkArray;")
+            child("for (int i = 0; i < size; ++i) {")
+            if (handle != null) {
+                child("    jlong element;")
+                child("    env->GetLongArrayRegion(${param.name}, i, 1, &element);")
+                child("    auto info = reinterpret_cast<$listType>(element);")
+                child("    vkArray.push_back(info);")
+            } else {
                 val accessor = "${param.type.toVulkanType()}Accessor"
-                val listType = param.type.componentType.simpleName
                 import("<includes/$accessor.h>")
-                child("// process array")
-                child("auto size = env->GetArrayLength(${param.name});")
-                child("std::vector<$listType> vkArray;")
-                child("for (int i = 0; i < size; ++i) {")
                 child("    $listType info{};")
                 child("    auto element = (jobject) env->GetObjectArrayElement(${param.name}, i);")
                 child("    $accessor(env, element).fromObject(info);")
                 child("    vkArray.push_back(info);")
                 child("    env->DeleteLocalRef(element);")
-                child("}")
+            }
+            child("}")
+        }
+
+        fun processPrimitive() {
+            val handle = param.getDeclaredAnnotation(VkHandleRef::class.java)
+            if (handle != null) {
+                val handleVar = handle.name.replace("Vk", "").decapitalize()
+                methodParams.add(handleVar)
+                child("auto $handleVar = reinterpret_cast<${handle.name}>(${param.name});")
             } else {
+                child("// process primitive  ${param.type.simpleName}??")
+                methodParams.add("vk${param.name}")
+                child("${param.type.toVulkanType()} vk${param.name} = ${param.name};")
+            }
+        }
+
+        fun processObject() {
+            if (param.type.toJavaType() == JNIType.JString) {
+                methodParams.add("vk${param.name}")
+                child("${param.type.toVulkanType()} vk${param.name} = nullptr;")
+                child("if (${param.name} != nullptr) {")
+                child("    vk${param.name} = env->GetStringUTFChars(${param.name}, nullptr);")
+                child("    env->ReleaseStringUTFChars(${param.name}, vk${param.name});")
+                child("}")
+            } else if (param.type.toJavaType() == JNIType.JObject) {
+                val accessor = "${param.type.toVulkanType()}Accessor"
                 child("// object accessor?")
                 methodParams.add("&info")
                 child("${param.type.simpleName} info{};")
-                val accessor = "${param.type.toVulkanType()}Accessor"
                 import("<includes/$accessor.h>")
-                // TODO check if singleton
                 if (method.name.contains("VkCreateDebugUtilsMessengerEXT", true)) {
                     child("// process singleton")
                     child("$accessor::init(env, ${param.name});")
@@ -195,19 +238,19 @@ private fun CppFunctionBodyBuilder.processParameters(
                 } else {
                     child("$accessor(env, ${param.name}).fromObject(info);")
                 }
-            }
-        } else {
-            methodParams.add("vk${param.name}")
-            if (param.type.toJavaType() == JNIType.JString) {
-                child("${param.type.toVulkanType()} vk${param.name} = nullptr;")
-                child("if (${param.name} != nullptr) {")
-                child("    vk${param.name} = env->GetStringUTFChars(${param.name}, nullptr);")
-                child("    env->ReleaseStringUTFChars(${param.name}, vk${param.name});")
-                child("}")
             } else {
+
+                methodParams.add("vk${param.name}")
                 child("// default??")
                 child("${param.type.toVulkanType()} vk${param.name} = ${param.name};")
             }
+        }
+
+        when {
+            param.type.isEnum -> processEnum()
+            param.type.isArray -> processArray()
+            param.type.isPrimitive -> processPrimitive()
+            else -> processObject()
         }
     }
     return methodParams.toList()
@@ -219,10 +262,11 @@ private fun CppFunctionBodyBuilder.processVkCreate(
     methodName: String,
     methodParams: String
 ) {
+    child("// process create??")
     val params = if (methodParams.isNotEmpty()) "$methodParams, " else ""
     val handleReturnType = method.getDeclaredAnnotation(VkReturnType::class.java)
     if (handleReturnType != null) {
-        child("// handle")
+        child("// process handle")
         if (method.returnType.isArray) {
             child("std::vector<${handleReturnType.name}> handle(size);")
             child("VkResult result = $methodName(${params}nullptr, handle.data());")
@@ -239,10 +283,8 @@ private fun CppFunctionBodyBuilder.processVkCreate(
             child("${handleReturnType.name} handle;")
             if (method.isAnnotationPresent(VkSingleton::class.java)) {
                 child("auto pfn$methodName = (PFN_$methodName) vkGetInstanceProcAddr (instance, \"$methodName\");")
-
                 child("VkResult result = pfn$methodName(${params}nullptr, &handle);")
             } else {
-
                 child("VkResult result = $methodName(${params}nullptr, &handle);")
             }
             child("if(result != VK_SUCCESS){")
@@ -257,7 +299,6 @@ private fun CppFunctionBodyBuilder.processVkCreate(
         child("    throw std::runtime_error(\"There was a problem executing ${methodName}\");")
         child("}")
     }
-
 }
 
 private fun CppFunctionBodyBuilder.processVkAllocate(
@@ -265,6 +306,7 @@ private fun CppFunctionBodyBuilder.processVkAllocate(
     methodName: String,
     methodParams: String
 ) {
+    child("// process allocate??")
     val handleReturnType = method.getDeclaredAnnotation(VkReturnType::class.java)
     if (handleReturnType != null) {
         child("${handleReturnType.name} handle;")
@@ -279,6 +321,7 @@ private fun CppFunctionBodyBuilder.processVkDestroy(
     methodName: String,
     methodParams: String
 ) {
+    child("// process destroy??")
     if (method.isAnnotationPresent(VkSingleton::class.java)) {
         child("auto pfn$methodName = (PFN_$methodName) vkGetInstanceProcAddr (instance, \"$methodName\");")
         child("pfn${methodName}(${methodParams}, nullptr);")
@@ -288,6 +331,7 @@ private fun CppFunctionBodyBuilder.processVkDestroy(
 }
 
 private fun CppFunctionBodyBuilder.processVkCmd(methodName: String, methodParams: String) {
+    child("// process cmd??")
     child("${methodName}(${methodParams});")
 }
 
@@ -297,6 +341,7 @@ private fun CppFunctionBodyBuilder.processVkGet(
     methodParams: String,
     import: (dependency: String) -> Unit
 ) {
+    child("// process get??")
     val returnType = method.returnType
     val vulkanReturnType = returnType.toVulkanType()
     val emptyParams = method.parameters.isEmpty()
@@ -328,6 +373,7 @@ private fun CppFunctionBodyBuilder.processVkGet(
         } else {
             child("jclass clazz = env->FindClass(\"${clazzSig}\");")
             child("auto jArray = env->NewObjectArray(static_cast<jsize>(count), clazz, nullptr);")
+            child("env->DeleteLocalRef(clazz);")
         }
         child("for (int i = 0; i < count; ++i) {")
         if (returnType.componentType.isEnum) {
@@ -364,12 +410,21 @@ private fun CppFunctionBodyBuilder.processVkGet(
     }
 }
 
-private fun CppFunctionBodyBuilder.processVkDefault(methodName: String, methodParams: String) {
-    child("VkResult result = ${methodName}(${methodParams}, nullptr);")
+private fun CppFunctionBodyBuilder.processVkDefault(
+    method: Method,
+    methodName: String,
+    methodParams: String
+) {
+    child("// process default??")
+    if (method.returnType == Void.TYPE) {
+        child("VkResult result = ${methodName}(${methodParams});")
+    } else {
+        child("${method.returnType.toVulkanType()} handle;")
+        child("VkResult result = ${methodName}(${methodParams}, &handle);")
+    }
     child("if(result != VK_SUCCESS){")
     child("    throw std::runtime_error(\"There was a problem executing ${methodName}\");")
     child("}")
-
 }
 
 

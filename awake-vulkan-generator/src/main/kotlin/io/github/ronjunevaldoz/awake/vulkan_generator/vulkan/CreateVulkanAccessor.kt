@@ -182,6 +182,8 @@ private fun CppClassBuilder.generateVulkanGetters(
     declareMembers.forEach { javaMember ->
         val returnType: String = if (javaMember.type.isEnum) {
             javaMember.type.simpleName
+        } else if (javaMember.type.isArray) {
+            javaMember.toVulkanType()
         } else {
             javaMember.toVulkanType()
         }
@@ -413,7 +415,7 @@ fun CppFunctionBodyBuilder.processArrayAccessor(
                 )
             };"
         )
-        child("   jlong value = env->Call${javaMember.type.componentType.simpleName}Method(element, getValueMethod);")
+        child("   jlong value = env->Call${javaMember.type.componentType.simpleName.capitalize()}Method(element, getValueMethod);")
 
         child("   $arrayName.push_back(reinterpret_cast<${handle.name}>(value)); //vkhandle ")
         child("   env->DeleteLocalRef(element); // release element reference")
@@ -480,8 +482,11 @@ fun CppFunctionBodyBuilder.processArrayAccessor(
                 child("std::copy(${arrayName}.begin(), ${arrayName}.end(), $clazzInfo.${unionMember.alias}); // union member")
             } else {
                 child("// Make a copy of the primitive to ensure proper memory management;")
-                val newData = if (javaMember.toJavaTypeArray() == JNIType.JIntArray) {
+                val javaTypeArray = javaMember.toJavaTypeArray()
+                val newData = if (javaTypeArray == JNIType.JIntArray) {
                     "uint32_t"
+                } else if (javaMember.isVkHandle()) {
+                    javaMember.toVulkanType(false)
                 } else {
                     javaMember.type.componentType.simpleName
                 }
@@ -530,7 +535,12 @@ fun CppFunctionBodyBuilder.processArrayAccessor(
     val element = javaMember.type.componentType
     val javaElementType = javaMember.getArrayElementJavaType()
     when {
-        element.isPrimitive -> processPrimitiveElement()
+        element.isPrimitive -> if (!javaMember.isVkHandle()) {
+            processPrimitiveElement()
+        } else {
+            processObjectVkHandleElement()
+        }
+
         element.isEnum -> processEnumElement()
         element.isArray -> throw RuntimeException("Nested array not supported")
         else -> when (javaElementType) {

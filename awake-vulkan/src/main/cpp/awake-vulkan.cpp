@@ -341,3 +341,72 @@ Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkCmdBeginRenderPass(JNIEnv *en
                                                                       jobject contents) {
     awake::cmdBeginRenderPass(env, command_buffer, render_pass_info, contents);
 }
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkCreateSemaphore(JNIEnv *env, jobject thiz,
+                                                                   jlong device,
+                                                                   jobject create_info) {
+    return awake::createSemaphore(env, device, create_info);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkDestroySemaphore(JNIEnv *env, jobject thiz,
+                                                                    jlong device, jlong semaphore) {
+    awake::destroySemaphore(device, semaphore);
+}
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkCreateFence(JNIEnv *env, jobject thiz,
+                                                               jlong device, jobject create_info) {
+    return awake::createFence(env, device, create_info);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkDestroyFence(JNIEnv *env, jobject thiz,
+                                                                jlong device, jlong fence) {
+    awake::destroyFence(device, fence);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkWaitForFences(JNIEnv *env, jobject thiz,
+                                                                 jlong device, jlongArray fences,
+                                                                 jboolean wait_all, jlong timeout) {
+    awake::waitForFences(env, device, fences, wait_all, timeout);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkResetFences(JNIEnv *env, jobject thiz,
+                                                               jlong device, jlongArray fences) {
+    awake::resetFences(env, device, fences);
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkAcquireNextImageKHR(JNIEnv *env, jobject thiz,
+                                                                       jlong device,
+                                                                       jlong swapchain,
+                                                                       jlong timeout,
+                                                                       jlong semaphore,
+                                                                       jlong fence) {
+    return awake::acquireNextImageKHR(env, device, swapchain, timeout, semaphore, fence);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkResetCommandBuffer(JNIEnv *env, jobject thiz,
+                                                                      jlong command_buffer,
+                                                                      jint flags) {
+    return awake::resetCommandBuffer(env, command_buffer, flags);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkQueueSubmit(JNIEnv *env, jobject thiz,
+                                                               jlong queue, jobjectArray p_submits,
+                                                               jlong fence) {
+    awake::queueSubmit(env, queue, p_submits, fence);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_ronjunevaldoz_awake_vulkan_Vulkan_vkQueuePresentKHR(JNIEnv *env, jobject thiz,
+                                                                   jlong queue,
+                                                                   jobject p_present_info_khr) {
+    awake::queuePresentKHR(env, queue, p_present_info_khr);
+}

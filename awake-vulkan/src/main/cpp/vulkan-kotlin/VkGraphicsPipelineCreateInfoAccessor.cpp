@@ -186,6 +186,11 @@ VkGraphicsPipelineCreateInfoAccessor::getrenderPass() {
 }
 
 uint32_t
+VkGraphicsPipelineCreateInfoAccessor::getbasePipelineIndex() {
+    return (uint32_t) (jint) env->GetIntField(obj, basePipelineIndexField); // primitive
+}
+
+uint32_t
 VkGraphicsPipelineCreateInfoAccessor::getstageCount() {
     return (uint32_t) (jint) env->GetIntField(obj, stageCountField); // primitive
 }
@@ -196,11 +201,6 @@ VkGraphicsPipelineCreateInfoAccessor::getsType() {
     auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     env->DeleteLocalRef(sTypeEnum); // release enum reference
     return enumValue;
-}
-
-int32_t
-VkGraphicsPipelineCreateInfoAccessor::getbasePipelineIndex() {
-    return (int32_t) (jint) env->GetIntField(obj, basePipelineIndexField); // primitive
 }
 
 uint32_t
@@ -331,7 +331,7 @@ VkGraphicsPipelineCreateInfoAccessor::fromObject(VkGraphicsPipelineCreateInfo &c
     clazzInfo.renderPass = getrenderPass(); // VkHandle
     clazzInfo.subpass = getsubpass(); // Primitive uint32_t
     clazzInfo.basePipelineHandle = getbasePipelineHandle(); // VkHandle
-    clazzInfo.basePipelineIndex = getbasePipelineIndex(); // Primitive int32_t
+    clazzInfo.basePipelineIndex = getbasePipelineIndex(); // Primitive uint32_t
     clazzInfo.stageCount = getstageCount(); // Primitive uint32_t
 }
 

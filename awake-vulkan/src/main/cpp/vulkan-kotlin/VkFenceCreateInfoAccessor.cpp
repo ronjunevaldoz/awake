@@ -1,11 +1,11 @@
 /*
- *  VkCommandPoolCreateInfoAccessor.cpp
- *  Vulkan accessor for VkCommandPoolCreateInfo
+ *  VkFenceCreateInfoAccessor.cpp
+ *  Vulkan accessor for VkFenceCreateInfo
  *  Created by Ron June Valdoz */
 
-#include <includes/VkCommandPoolCreateInfoAccessor.h>
+#include <includes/VkFenceCreateInfoAccessor.h>
 
-VkCommandPoolCreateInfoAccessor::VkCommandPoolCreateInfoAccessor(JNIEnv *env, jobject obj) {
+VkFenceCreateInfoAccessor::VkFenceCreateInfoAccessor(JNIEnv *env, jobject obj) {
     this->env = env;
     this->obj = env->NewGlobalRef(obj);
     clazz = (jclass) env->NewGlobalRef(env->GetObjectClass(obj));
@@ -13,42 +13,35 @@ VkCommandPoolCreateInfoAccessor::VkCommandPoolCreateInfoAccessor(JNIEnv *env, jo
                                  "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkStructureType;");
     pNextField = env->GetFieldID(clazz, "pNext", "Ljava/lang/Object;");
     flagsField = env->GetFieldID(clazz, "flags", "I");
-    queueFamilyIndexField = env->GetFieldID(clazz, "queueFamilyIndex", "I");
 }
 
 VkStructureType
-VkCommandPoolCreateInfoAccessor::getsType() {
+VkFenceCreateInfoAccessor::getsType() {
     auto sTypeEnum = (jobject) env->GetObjectField(obj, sTypeField);
     auto enumValue = (VkStructureType) enum_utils::getEnumFromObject(env, sTypeEnum);
     env->DeleteLocalRef(sTypeEnum); // release enum reference
     return enumValue;
 }
 
-uint32_t
-VkCommandPoolCreateInfoAccessor::getqueueFamilyIndex() {
-    return (uint32_t) (jint) env->GetIntField(obj, queueFamilyIndexField); // primitive
-}
-
-uint32_t
-VkCommandPoolCreateInfoAccessor::getflags() {
-    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
-}
-
 void
-VkCommandPoolCreateInfoAccessor::getpNext(VkCommandPoolCreateInfo &clazzInfo) {
+VkFenceCreateInfoAccessor::getpNext(VkFenceCreateInfo &clazzInfo) {
     auto ref = (void *) (jobject) env->GetObjectField(obj, pNextField); // Any Object
     clazzInfo.pNext = ref;
 }
 
+uint32_t
+VkFenceCreateInfoAccessor::getflags() {
+    return (uint32_t) (jint) env->GetIntField(obj, flagsField); // primitive
+}
+
 void
-VkCommandPoolCreateInfoAccessor::fromObject(VkCommandPoolCreateInfo &clazzInfo) {
+VkFenceCreateInfoAccessor::fromObject(VkFenceCreateInfo &clazzInfo) {
     clazzInfo.sType = getsType(); // Enum VkStructureType
     getpNext(clazzInfo); // Other void*
     clazzInfo.flags = getflags(); // Primitive uint32_t
-    clazzInfo.queueFamilyIndex = getqueueFamilyIndex(); // Primitive uint32_t
 }
 
-VkCommandPoolCreateInfoAccessor::~VkCommandPoolCreateInfoAccessor() {
+VkFenceCreateInfoAccessor::~VkFenceCreateInfoAccessor() {
     env->DeleteGlobalRef(obj);
     env->DeleteGlobalRef(clazz);
 }

@@ -34,13 +34,17 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandBufferAllocateI
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandBufferBeginInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandPoolCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkFenceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkFramebufferCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkGraphicsPipelineCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkImageViewCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkInstanceCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkPresentInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassBeginInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkRenderPassCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSemaphoreCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkShaderModuleCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSubmitInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkSwapchainCreateInfoKHR
 import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.VkDebugUtilsMessengerCreateInfoEXT
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
@@ -407,6 +411,61 @@ expect object Vulkan {
 
     fun vkCmdEndRenderPass(@VkHandleRef("VkCommandBuffer") commandBuffer: Long)
     fun vkEndCommandBuffer(@VkHandleRef("VkCommandBuffer") commandBuffer: Long)
+
+    @VkReturnType("VkSemaphore")
+    fun vkCreateSemaphore(
+        @VkHandleRef("VkDevice") device: Long,
+        createInfo: VkSemaphoreCreateInfo
+    ): Long
+
+    fun vkDestroySemaphore(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkSemaphore") semaphore: Long
+    )
+
+    @VkReturnType("VkFence")
+    fun vkCreateFence(@VkHandleRef("VkDevice") device: Long, createInfo: VkFenceCreateInfo): Long
+    fun vkDestroyFence(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkFence") fence: Long
+    )
+
+    fun vkWaitForFences(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkFence") fences: LongArray,
+        waitAll: Boolean,
+        timeout: Long
+    )
+
+    fun vkResetFences(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkFence") fences: LongArray
+    )
+
+    fun vkAcquireNextImageKHR(
+        @VkHandleRef("VkDevice") device: Long,
+        @VkHandleRef("VkSwapchainKHR") swapchain: Long,
+        timeout: Long,
+        @VkHandleRef("VkSemaphore") semaphore: Long,
+        @VkHandleRef("VkFence") fence: Long,
+//        pImageIndex : Int
+    ): Int
+
+    fun vkResetCommandBuffer(
+        @VkHandleRef("VkCommandBuffer") commandBuffer: Long,
+        flags: Int
+    )
+
+    fun vkQueueSubmit(
+        @VkHandleRef("VkQueue") queue: Long,
+        pSubmits: Array<VkSubmitInfo>,
+        @VkHandleRef("VkFence") fence: Long,
+    )
+
+    fun vkQueuePresentKHR(
+        @VkHandleRef("VkQueue") queue: Long,
+        pPresentInfoKHR: VkPresentInfoKHR
+    )
 
     // Debug messenger
     @VkSingleton

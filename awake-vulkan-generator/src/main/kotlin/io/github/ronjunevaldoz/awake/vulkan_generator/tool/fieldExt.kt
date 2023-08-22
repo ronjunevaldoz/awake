@@ -108,37 +108,19 @@ fun Class<*>.toVulkanType(): String {
     return type
 }
 
-fun Field.toVulkanType(): String {
+fun Field.toVulkanType(useVector: Boolean = true): String {
     val isPrimitiveArray = type.isArray && type.componentType.isPrimitive
     val isArray = type.isArray && !isPrimitiveArray
     val elementType = if (isArray) type.componentType.simpleName else type.simpleName
     val simpleName = elementType.toLowerCase()
-
-    // by default the value should all unsigned
-    var prefix = "u"
-    var suffix = ""
-
-    if (name.contains("index", true)) {
-        prefix = ""
+    if (isAnnotationPresent(VkHandleRef::class.java)) {
+        val handle = getDeclaredAnnotation(VkHandleRef::class.java)
+        if (type.isArray && useVector) {
+            return "std::vector<${handle.name}>"
+        }
+        return handle.name
     }
-    if (isVkPointer()) {
-        suffix = ""
-    }
-
-    val type = when {
-        simpleName.contains("int") -> "${prefix}int32_t$suffix"
-        simpleName.contains("long") -> "${prefix}int64_t$suffix"
-        simpleName.contains("short") -> "${prefix}int16_t$suffix"
-        simpleName.contains("byte") -> "${prefix}int8_t$suffix"
-        simpleName.contains("double") -> "double"
-        simpleName.contains("float") -> "float"
-        simpleName.contains("boolean") -> "VkBool32"
-        simpleName.contains("char") -> "char"
-        simpleName.contains("string") -> "const char*"
-        simpleName.contains("object") -> "void*"
-        isArray -> elementType
-        else -> elementType //"void* sdsd"
-    }
+    val type = type.toVulkanType()
     return if (isPrimitiveArray) {
         "std::vector<${type}>"
     } else if (isArray) {

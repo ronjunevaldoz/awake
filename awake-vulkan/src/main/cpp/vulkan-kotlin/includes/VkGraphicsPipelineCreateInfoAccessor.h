@@ -63,11 +63,11 @@ public:
 
     VkRenderPass getrenderPass();
 
+    uint32_t getbasePipelineIndex();
+
     uint32_t getstageCount();
 
     VkStructureType getsType();
-
-    int32_t getbasePipelineIndex();
 
     uint32_t getflags();
 

@@ -36,6 +36,10 @@
 #include <includes/VkViewportAccessor.h>
 #include <includes/VkRect2DAccessor.h>
 #include <includes/VkRenderPassBeginInfoAccessor.h>
+#include <includes/VkSemaphoreCreateInfoAccessor.h>
+#include <includes/VkFenceCreateInfoAccessor.h>
+#include <includes/VkSubmitInfoAccessor.h>
+#include <includes/VkPresentInfoKHRAccessor.h>
 
 namespace awake {
     jobjectArray getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0);
@@ -52,23 +56,11 @@ namespace awake {
 
     void cmdBeginRenderPass(JNIEnv *env, jlong arg0, jobject arg1, jobject arg2);
 
-    jlongArray getSwapchainImagesKHR(JNIEnv *env, jlong arg0, jlong arg1);
-
-    void destroyShaderModule(jlong arg0, jlong arg1);
-
-    jlong createPipelineLayout(JNIEnv *env, jlong arg0, jobject arg1);
-
     jlong allocateCommandBuffers(JNIEnv *env, jlong arg0, jobject arg1);
 
     jlong getDeviceQueue(JNIEnv *env, jlong arg0, jint arg1, jint arg2);
 
-    jlong createAndroidSurfaceKHR(JNIEnv *env, jlong arg0, jobject arg1);
-
     jobject getPhysicalDeviceSurfaceCapabilitiesKHR(JNIEnv *env, jlong arg0, jlong arg1);
-
-    jobjectArray enumerateInstanceLayerProperties(JNIEnv *env);
-
-    jlong createInstance(JNIEnv *env, jobject arg0);
 
     jobject getPhysicalDeviceProperties(JNIEnv *env, jlong arg0);
 
@@ -76,19 +68,21 @@ namespace awake {
 
     void cmdBindPipeline(JNIEnv *env, jlong arg0, jobject arg1, jlong arg2);
 
-    void cmdSetScissor(JNIEnv *env, jlong arg0, jint arg1, jobjectArray arg2);
-
     jobjectArray enumerateDeviceExtensionProperties(JNIEnv *env, jlong arg0, jstring arg1);
 
     void destroyPipelineLayout(jlong arg0, jlong arg1);
 
-    void beginCommandBuffer(JNIEnv *env, jlong arg0, jobject arg1);
-
     jobject getPhysicalDeviceFeatures(JNIEnv *env, jlong arg0);
 
-    void destroyRenderPass(jlong arg0, jlong arg1);
+    void destroySemaphore(jlong arg0, jlong arg1);
+
+    void queuePresentKHR(JNIEnv *env, jlong arg0, jobject arg1);
 
     void destroyImageView(jlong arg0, jlong arg1);
+
+    jlong createSemaphore(JNIEnv *env, jlong arg0, jobject arg1);
+
+    void queueSubmit(JNIEnv *env, jlong arg0, jobjectArray arg1, jlong arg2);
 
     jlong createFramebuffer(JNIEnv *env, jlong arg0, jobject arg1);
 
@@ -96,25 +90,11 @@ namespace awake {
 
     jlongArray enumeratePhysicalDevices(JNIEnv *env, jlong arg0);
 
-    jlong createShaderModule(JNIEnv *env, jlong arg0, jobject arg1);
-
-    jboolean getPhysicalDeviceSurfaceSupportKHR(JNIEnv *env, jlong arg0, jint arg1, jlong arg2);
-
     jlong createDevice(JNIEnv *env, jlong arg0, jobject arg1);
-
-    jlong createPipelineCache(JNIEnv *env, jlong arg0, jobject arg1);
 
     void destroySwapchainKHR(jlong arg0, jlong arg1);
 
-    jobjectArray getPhysicalDeviceSurfacePresentModesKHR(JNIEnv *env, jlong arg0, jlong arg1);
-
     jobjectArray enumerateInstanceExtensionProperties(JNIEnv *env, jstring arg0);
-
-    void destroyCommandPool(jlong arg0, jlong arg1);
-
-    void cmdDraw(JNIEnv *env, jlong arg0, jint arg1, jint arg2, jint arg3, jint arg4);
-
-    void destroyPipeline(jlong arg0, jlong arg1);
 
     jlong createSwapchainKHR(JNIEnv *env, jlong arg0, jobject arg1);
 
@@ -129,6 +109,51 @@ namespace awake {
     void destroyInstance(jlong arg0);
 
     jlong createImageView(JNIEnv *env, jlong arg0, jobject arg1);
+
+    void resetFences(JNIEnv *env, jlong arg0, jlongArray arg1);
+
+    jlongArray getSwapchainImagesKHR(JNIEnv *env, jlong arg0, jlong arg1);
+
+    void destroyShaderModule(jlong arg0, jlong arg1);
+
+    jlong createPipelineLayout(JNIEnv *env, jlong arg0, jobject arg1);
+
+    jlong createFence(JNIEnv *env, jlong arg0, jobject arg1);
+
+    jlong createAndroidSurfaceKHR(JNIEnv *env, jlong arg0, jobject arg1);
+
+    jobjectArray enumerateInstanceLayerProperties(JNIEnv *env);
+
+    jlong createInstance(JNIEnv *env, jobject arg0);
+
+    void waitForFences(JNIEnv *env, jlong arg0, jlongArray arg1, jboolean arg2, jlong arg3);
+
+    void cmdSetScissor(JNIEnv *env, jlong arg0, jint arg1, jobjectArray arg2);
+
+    void destroyFence(jlong arg0, jlong arg1);
+
+    void beginCommandBuffer(JNIEnv *env, jlong arg0, jobject arg1);
+
+    void destroyRenderPass(jlong arg0, jlong arg1);
+
+    jint
+    acquireNextImageKHR(JNIEnv *env, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4);
+
+    jlong createShaderModule(JNIEnv *env, jlong arg0, jobject arg1);
+
+    void resetCommandBuffer(JNIEnv *env, jlong arg0, jint arg1);
+
+    jboolean getPhysicalDeviceSurfaceSupportKHR(JNIEnv *env, jlong arg0, jint arg1, jlong arg2);
+
+    jlong createPipelineCache(JNIEnv *env, jlong arg0, jobject arg1);
+
+    jobjectArray getPhysicalDeviceSurfacePresentModesKHR(JNIEnv *env, jlong arg0, jlong arg1);
+
+    void destroyCommandPool(jlong arg0, jlong arg1);
+
+    void cmdDraw(JNIEnv *env, jlong arg0, jint arg1, jint arg2, jint arg3, jint arg4);
+
+    void destroyPipeline(jlong arg0, jlong arg1);
 
     jlong createCommandPool(JNIEnv *env, jlong arg0, jobject arg1);
 

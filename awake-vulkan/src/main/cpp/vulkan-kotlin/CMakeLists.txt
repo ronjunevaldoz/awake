@@ -13,6 +13,7 @@ set(VULKAN_KOTLIN_SOURCES
         VkDebugUtilsObjectNameInfoEXTMutator.cpp
         VkClearDepthStencilValueAccessor.cpp
         VkPhysicalDevicePropertiesAccessor.cpp
+        VkPresentInfoKHRAccessor.cpp
         VkRect2DAccessor.cpp
         VkDeviceCreateInfoAccessor.cpp
         VkRenderPassBeginInfoAccessor.cpp
@@ -53,12 +54,14 @@ set(VULKAN_KOTLIN_SOURCES
         VkSpecializationInfoAccessor.cpp
         Float32Accessor.cpp
         VkVertexInputAttributeDescriptionAccessor.cpp
+        VkFenceCreateInfoAccessor.cpp
         VkPipelineShaderStageCreateInfoAccessor.cpp
         VkPipelineViewportStateCreateInfoAccessor.cpp
         VkCommandPoolCreateInfoAccessor.cpp
         VkPipelineDepthStencilStateCreateInfoAccessor.cpp
         VkExtent3DMutator.cpp
         VkPipelineCacheCreateInfoAccessor.cpp
+        VkSemaphoreCreateInfoAccessor.cpp
         VkLayerPropertiesMutator.cpp
         VkPipelineDynamicStateCreateInfoAccessor.cpp
         VkApplicationInfoAccessor.cpp
@@ -78,6 +81,7 @@ set(VULKAN_KOTLIN_SOURCES
         VkPipelineMultisampleStateCreateInfoAccessor.cpp
         VkFramebufferCreateInfoAccessor.cpp
         VkStencilOpStateAccessor.cpp
+        VkSubmitInfoAccessor.cpp
         VkRenderPassCreateInfoAccessor.cpp
         VkPhysicalDevicePropertiesMutator.cpp
         VkImageViewCreateInfoAccessor.cpp
