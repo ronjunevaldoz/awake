@@ -35,7 +35,7 @@ class VkPipelineRasterizationStateCreateInfo(
     val rasterizerDiscardEnable: VkBool32 = false,
     val polygonMode: VkPolygonMode = VkPolygonMode.VK_POLYGON_MODE_FILL,
     val cullMode: VkCullModeFlags = VkCullModeFlagBits.VK_CULL_MODE_BACK_BIT.value,
-    val frontFace: VkFrontFace = VkFrontFace.VK_FRONT_FACE_COUNTER_CLOCKWISE,
+    val frontFace: VkFrontFace = VkFrontFace.VK_FRONT_FACE_CLOCKWISE,
     val depthBiasEnable: VkBool32 = false,
     val depthBiasConstantFactor: Float = 0.0f,
     val depthBiasClamp: Float = 0.0f,

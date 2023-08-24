@@ -660,7 +660,9 @@ fun CppFunctionBodyBuilder.processPrimitiveAccessor(javaMember: Field, returnTyp
         child("return reinterpret_cast<$returnType>(value); // VkHandle")
     } else if (javaMember.isVkPointer()) {
         child("auto ptr = ($returnType) $javaValue; // Primitive Pointer")
-        child("clazzInfo.${javaMember.name} = &ptr; // Primitive Pointer")
+        child("if(ptr != 0) {")
+        child("    clazzInfo.${javaMember.name} = &ptr; // Primitive Pointer")
+        child("}")
     } else {
         child("return (${returnType}) ($javaType) $javaValue; // primitive")
     }
