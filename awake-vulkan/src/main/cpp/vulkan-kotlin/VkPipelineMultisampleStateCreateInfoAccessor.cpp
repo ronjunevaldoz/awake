@@ -57,7 +57,9 @@ void
 VkPipelineMultisampleStateCreateInfoAccessor::getpSampleMask(
         VkPipelineMultisampleStateCreateInfo &clazzInfo) {
     auto ptr = (uint32_t) env->GetIntField(obj, pSampleMaskField); // Primitive Pointer
-    clazzInfo.pSampleMask = &ptr; // Primitive Pointer
+    if (ptr != 0) {
+        clazzInfo.pSampleMask = &ptr; // Primitive Pointer
+    }
 }
 
 VkBool32

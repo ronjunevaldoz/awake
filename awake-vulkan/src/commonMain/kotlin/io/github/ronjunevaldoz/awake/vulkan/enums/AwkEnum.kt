@@ -25,6 +25,10 @@ interface VkEnum {
     val value: Int
 }
 
+infix fun VkEnum.or(other: Int): Int {
+    return this.value or other
+}
+
 infix fun VkEnum.or(other: VkEnum): Int {
     return this.value or other.value
 }

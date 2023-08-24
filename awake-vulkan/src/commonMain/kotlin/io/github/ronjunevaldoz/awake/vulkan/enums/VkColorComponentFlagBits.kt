@@ -21,7 +21,7 @@ package io.github.ronjunevaldoz.awake.vulkan.enums
 
 import io.github.ronjunevaldoz.awake.vulkan.VkFlags
 
-enum class VkColorComponentFlagBits(val value: Int) {
+enum class VkColorComponentFlagBits(override val value: Int) : VkEnum {
     VK_COLOR_COMPONENT_R_BIT(0x00000001),
     VK_COLOR_COMPONENT_G_BIT(0x00000002),
     VK_COLOR_COMPONENT_B_BIT(0x00000004),

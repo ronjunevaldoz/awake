@@ -28,11 +28,15 @@ import io.github.ronjunevaldoz.awake.vulkan.VK_SUBPASS_EXTERNAL
 import io.github.ronjunevaldoz.awake.vulkan.Version
 import io.github.ronjunevaldoz.awake.vulkan.Version.Companion.vkVersion
 import io.github.ronjunevaldoz.awake.vulkan.Vulkan
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkColorComponentFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkColorSpaceKHR
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkCommandBufferLevel
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkComponentSwizzle
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkCompositeAlphaFlagBitsKHR
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkCullModeFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkDynamicState
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkFormat
+import io.github.ronjunevaldoz.awake.vulkan.enums.VkFrontFace
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkImageAspectFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkImageLayout
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkImageUsageFlagBits
@@ -45,8 +49,8 @@ import io.github.ronjunevaldoz.awake.vulkan.enums.VkResult
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkShaderStageFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSharingMode
 import io.github.ronjunevaldoz.awake.vulkan.enums.VkSubpassContents
-import io.github.ronjunevaldoz.awake.vulkan.enums.VkSurfaceTransformFlagBitsKHR
 import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkAccessFlagBits
+import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkCommandBufferUsageFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkCommandPoolCreateFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkFenceCreateFlagBits
 import io.github.ronjunevaldoz.awake.vulkan.enums.flags.VkPipelineStageFlagBits
@@ -67,6 +71,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.VkApplicationInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandBufferAllocateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandBufferBeginInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkCommandPoolCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.VkComponentMapping
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkDeviceQueueCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.VkFenceCreateInfo
@@ -88,6 +93,7 @@ import io.github.ronjunevaldoz.awake.vulkan.models.info.debug.VkDebugUtilsMessen
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineCacheCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendAttachmentState
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineColorBlendStateCreateInfo
+import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineDepthStencilStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineDynamicStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineInputAssemblyStateCreateInfo
 import io.github.ronjunevaldoz.awake.vulkan.models.info.pipeline.VkPipelineLayoutCreateInfo
@@ -133,13 +139,15 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
     var graphicsPipeline: LongArray = longArrayOf()
     var swapChainFrameBuffers: List<Long> = emptyList()
     var commandPool: Long = 0
-    var commandBuffer: Long = 0
 
-    var imageAvailableSemaphore: Long = 0//  VkSemaphore? = null
-    var renderFinishedSemaphore: Long = 0//VkSemaphore? = null
-    var inFlightFence: Long = 0 ////VkFence? = null
+    val MAX_FRAMES_IN_FLIGHT = 2
+    var commandBuffers: LongArray = LongArray(MAX_FRAMES_IN_FLIGHT)
+    var imageAvailableSemaphores: LongArray = LongArray(MAX_FRAMES_IN_FLIGHT)
+    var renderFinishedSemaphores: LongArray = LongArray(MAX_FRAMES_IN_FLIGHT)
+    var inFlightFences: LongArray = LongArray(MAX_FRAMES_IN_FLIGHT)
 
-    val clearColorValue = VkClearColorValue.rgba(0f, 1f, 0f, 1f)
+    val clearColorValue = VkClearColorValue.rgba(0f, 0f, 0f, 1f)
+    var currentFrame = 0
 
     private val mainScope = CoroutineScope(Dispatchers.Main)
 
@@ -189,45 +197,51 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         mainScope.launch {
             while (true) {
                 drawFrame()
+                swapChainImageViews.size % 2
                 delay(16)
             }
         }
     }
 
     private fun drawFrame() {
-        Vulkan.vkWaitForFences(device, longArrayOf(inFlightFence), true, Long.MAX_VALUE)
-        Vulkan.vkResetFences(device, longArrayOf(inFlightFence))
+        Vulkan.vkWaitForFences(
+            device,
+            longArrayOf(inFlightFences[currentFrame]),
+            true,
+            Long.MAX_VALUE
+        )
+        Vulkan.vkResetFences(device, longArrayOf(inFlightFences[currentFrame]))
 
         val imageIndex = Vulkan.vkAcquireNextImageKHR(
             device,
             swapChain,
             Int.MAX_VALUE.toLong(),
-            imageAvailableSemaphore,
+            imageAvailableSemaphores[currentFrame],
             0
         )
 
-        Vulkan.vkResetCommandBuffer(commandBuffer, 0)
-        recordCommandBuffer(commandBuffer, imageIndex)
+        Vulkan.vkResetCommandBuffer(commandBuffers[currentFrame], 0)
+        recordCommandBuffer(commandBuffers[currentFrame], imageIndex)
 
-        val waitSemaphores = arrayOf(imageAvailableSemaphore)
+        val waitSemaphores = arrayOf(imageAvailableSemaphores[currentFrame])
         val waitStages =
             intArrayOf(VkPipelineStageFlagBits.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT.value)
-        val signalSemaphores = arrayOf(renderFinishedSemaphore)
+        val signalSemaphores = arrayOf(renderFinishedSemaphores[currentFrame])
 
         val submitInfo = VkSubmitInfo(
             pWaitSemaphores = waitSemaphores,
             pWaitDstStageMask = waitStages,
-            pCommandBuffers = arrayOf(commandBuffer),
+            pCommandBuffers = arrayOf(commandBuffers[currentFrame]),
             pSignalSemaphores = signalSemaphores
         )
 
-        Vulkan.vkQueueSubmit(graphicsQueue, arrayOf(submitInfo), inFlightFence)
+        Vulkan.vkQueueSubmit(graphicsQueue, arrayOf(submitInfo), inFlightFences[currentFrame])
 
         val presentInfo = VkPresentInfoKHR(
             pWaitSemaphores = signalSemaphores,
             pSwapchains = arrayOf(swapChain),
             pImageIndices = intArrayOf(imageIndex),
-            pResults = null
+            pResults = VkResult.values()
         )
 
         try {
@@ -238,6 +252,8 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
                 else -> throw e
             }
         }
+
+        currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT
     }
 
     private fun recreateSwapChain() {
@@ -251,13 +267,17 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             flags = VkFenceCreateFlagBits.VK_FENCE_CREATE_SIGNALED_BIT.value
         )
 
-        imageAvailableSemaphore = Vulkan.vkCreateSemaphore(device, semaphoreInfo)
-        renderFinishedSemaphore = Vulkan.vkCreateSemaphore(device, semaphoreInfo)
-        inFlightFence = Vulkan.vkCreateFence(device, fenceInfo)
+        for (i in 0 until MAX_FRAMES_IN_FLIGHT) {
+            imageAvailableSemaphores[i] = Vulkan.vkCreateSemaphore(device, semaphoreInfo)
+            renderFinishedSemaphores[i] = Vulkan.vkCreateSemaphore(device, semaphoreInfo)
+            inFlightFences[i] = Vulkan.vkCreateFence(device, fenceInfo)
+        }
     }
+
     private fun recordCommandBuffer(commandBuffer: Long, aquiredImageIndex: Int) {
         val beginInfo = VkCommandBufferBeginInfo(
-            flags = 0 // VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT.value
+            flags = VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT.value,
+//            flags = 0 // VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT.value
         )
         Vulkan.vkBeginCommandBuffer(commandBuffer, beginInfo)
 
@@ -301,8 +321,9 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             level = VkCommandBufferLevel.VK_COMMAND_BUFFER_LEVEL_PRIMARY,
             commandBufferCount = 1
         )
-
-        commandBuffer = Vulkan.vkAllocateCommandBuffers(device, allocInfo)
+        for (i in 0 until MAX_FRAMES_IN_FLIGHT) {
+            commandBuffers[i] = Vulkan.vkAllocateCommandBuffers(device, allocInfo)
+        }
     }
 
     private fun createCommandPool() {
@@ -357,7 +378,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
                         srcStageMask = VkPipelineStageFlagBits.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT.value,
                         srcAccessMask = 0,
                         dstStageMask = VkPipelineStageFlagBits.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT.value,
-                        dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT.value,
+                        dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_READ_BIT.value or VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT.value,
                     )
                 )
             )
@@ -438,10 +459,17 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
         val deviceExtensions =
             Vulkan.vkEnumerateDeviceExtensionProperties(physicalDevice)
                 .map { it.extensionName }.toList()
+        val layerProperties = getAppLayerProps()
+        val layerDeviceExtProps = layerProperties.map { layer ->
+            Vulkan.vkEnumerateDeviceExtensionProperties(physicalDevice, layer)
+                .map { it.extensionName }.toList()
+        }.flatten()
+
         val deviceInfo = VkDeviceCreateInfo(
             pQueueCreateInfos = queueInfos.toTypedArray(),
             pEnabledFeatures = arrayOf(features),
-            ppEnabledExtensionNames = deviceExtensions.toTypedArray()
+            ppEnabledExtensionNames = (deviceExtensions + layerDeviceExtProps).distinct()
+                .toTypedArray()
         )
         device = Vulkan.vkCreateDevice(physicalDevice, deviceInfo) // VkDevice
 
@@ -519,11 +547,11 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             }
 
         val preTransform =
-            if (capabilities.supportedTransforms has VkSurfaceTransformFlagBitsKHR.VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR) {
-                VkSurfaceTransformFlagBitsKHR.VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR
-            } else {
-                capabilities.currentTransform
-            }
+//            if (capabilities.supportedTransforms has VkSurfaceTransformFlagBitsKHR.VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR) {
+//                VkSurfaceTransformFlagBitsKHR.VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR
+//            } else {
+            capabilities.currentTransform
+//            }
 
         val createInfo = VkSwapchainCreateInfoKHR(
             surface = surface,
@@ -539,7 +567,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             compositeAlpha = compositeAlpha,
             presentMode = presentMode,
             clipped = true,
-            oldSwapchain = 0
+            oldSwapchain = swapChain
         )
         swapChainImageFormat = format
         swapChain = Vulkan.vkCreateSwapchainKHR(device, createInfo)
@@ -549,11 +577,18 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
 
     private fun createImageViews() {
         val swapChainImages = Vulkan.vkGetSwapchainImagesKHR(device, swapChain)
+
         swapChainImageViews = swapChainImages.map { swapChainImage ->
             val createInfo = VkImageViewCreateInfo(
                 image = swapChainImage,
                 viewType = VkImageViewType.VK_IMAGE_VIEW_TYPE_2D,
                 format = swapChainImageFormat,
+                components = VkComponentMapping(
+                    VkComponentSwizzle.VK_COMPONENT_SWIZZLE_R,
+                    VkComponentSwizzle.VK_COMPONENT_SWIZZLE_G,
+                    VkComponentSwizzle.VK_COMPONENT_SWIZZLE_B,
+                    VkComponentSwizzle.VK_COMPONENT_SWIZZLE_A,
+                ),
                 subresourceRange = VkImageSubresourceRange(
                     aspectMask = VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT.value,
                     baseMipLevel = 0,
@@ -615,12 +650,6 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
                     )
                 )
             )
-            val inputAssemblyInfo = arrayOf(
-                VkPipelineInputAssemblyStateCreateInfo(
-                    topology = VkPrimitiveTopology.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-                    primitiveRestartEnable = false
-                )
-            )
 
             val viewportInfo = arrayOf(
                 VkPipelineViewportStateCreateInfo(
@@ -639,17 +668,38 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
                 )
             )
 
-            val colorBlendInfo = arrayOf(
-                VkPipelineColorBlendStateCreateInfo(
-                    pAttachments = arrayOf(VkPipelineColorBlendAttachmentState())
-                )
+            val depthStencil = arrayOf(
+                VkPipelineDepthStencilStateCreateInfo()
             )
 
             val multisamplingInfo = arrayOf(
                 VkPipelineMultisampleStateCreateInfo()
             )
+            // Specify we will use triangle lists to draw geometry.
+            val inputAssemblyInfo = arrayOf(
+                VkPipelineInputAssemblyStateCreateInfo(
+                    topology = VkPrimitiveTopology.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+                    primitiveRestartEnable = false
+                )
+            )
+            // Specify rasterization state.
             val rasterizationInfo = arrayOf(
-                VkPipelineRasterizationStateCreateInfo()
+                VkPipelineRasterizationStateCreateInfo(
+                    cullMode = VkCullModeFlagBits.VK_CULL_MODE_BACK_BIT.value,
+                    frontFace = VkFrontFace.VK_FRONT_FACE_CLOCKWISE,
+                    lineWidth = 1f
+                )
+            )
+
+            val blendAttachment = VkPipelineColorBlendAttachmentState(
+                blendEnable = false,
+                colorWriteMask = VkColorComponentFlagBits.VK_COLOR_COMPONENT_R_BIT.value or VkColorComponentFlagBits.VK_COLOR_COMPONENT_G_BIT.value or VkColorComponentFlagBits.VK_COLOR_COMPONENT_B_BIT.value or VkColorComponentFlagBits.VK_COLOR_COMPONENT_A_BIT.value
+            )
+
+            val colorBlendInfo = arrayOf(
+                VkPipelineColorBlendStateCreateInfo(
+                    pAttachments = arrayOf(blendAttachment)
+                )
             )
 
             pipelineLayout = Vulkan.vkCreatePipelineLayout(device, VkPipelineLayoutCreateInfo())
@@ -663,6 +713,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
                     pRasterizationState = rasterizationInfo,
                     pMultisampleState = multisamplingInfo,
                     pColorBlendState = colorBlendInfo,
+//                    pDepthStencilState = depthStencil,
                     pDynamicState = dynamicInfo,
                     layout = pipelineLayout,
                     renderPass = renderPass,
@@ -683,10 +734,13 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
 
     private fun chooseSwapSurfaceFormat(availableFormats: List<VkSurfaceFormatKHR>): VkSurfaceFormatKHR {
         require(availableFormats.isNotEmpty()) { "AvailableFormats must not be empty." }
+        val preferedFormats = listOf(
+            VkFormat.VK_FORMAT_R8G8B8A8_SRGB,
+            VkFormat.VK_FORMAT_B8G8R8A8_SRGB,
+            VkFormat.VK_FORMAT_A8B8G8R8_SRGB_PACK32,
+        )
         return availableFormats.find { surfaceFormat ->
-            surfaceFormat.format == VkFormat.VK_FORMAT_R8G8B8A8_SRGB && // RGBA
-//            surfaceFormat.format == VkFormat.VK_FORMAT_B8G8R8A8_SRGB && // BGRA I think this format is for c++??
-                    surfaceFormat.colorSpace == VkColorSpaceKHR.VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
+            preferedFormats.contains(surfaceFormat.format) && surfaceFormat.colorSpace == VkColorSpaceKHR.VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
         } ?: availableFormats.first()
     }
 
@@ -739,11 +793,11 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
     private fun destroy() {
         cleanSwapChain()
 
-//        for (var MAX_FRAMES_IN_FLIGHT) {
-        Vulkan.vkDestroySemaphore(device, imageAvailableSemaphore)
-        Vulkan.vkDestroySemaphore(device, renderFinishedSemaphore)
-        Vulkan.vkDestroyFence(device, inFlightFence)
-//        }
+        repeat(MAX_FRAMES_IN_FLIGHT) { index ->
+            Vulkan.vkDestroySemaphore(device, imageAvailableSemaphores[index])
+            Vulkan.vkDestroySemaphore(device, renderFinishedSemaphores[index])
+            Vulkan.vkDestroyFence(device, inFlightFences[index])
+        }
 //      Vulkan.vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
         Vulkan.vkDestroyCommandPool(device, commandPool)
 
