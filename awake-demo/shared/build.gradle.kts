@@ -55,6 +55,7 @@ kotlin {
                 implementation(compose.material3)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
+                implementation(project(":awake-vulkan"))
                 implementation(project(":awake-core"))
             }
         }
@@ -101,6 +102,9 @@ android {
     kotlin {
         jvmToolchain(11)
     }
+}
+dependencies {
+    implementation(project(mapOf("path" to ":awake-vulkan")))
 }
 
 

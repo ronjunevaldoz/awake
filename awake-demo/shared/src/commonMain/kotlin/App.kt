@@ -1,5 +1,26 @@
+/*
+ * Awake
+ * Awake.awake-demo.shared.commonMain
+ *
+ * Copyright (c) ronjunevaldoz 2023.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,6 +29,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,10 +40,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import demo.DemoApplication
 import demo.DemoDrawer
 import demo.DemoScene
+import demo.VulkanScene
 import io.github.ronjunevaldoz.awake.core.AwakeContext
 import io.github.ronjunevaldoz.awake.core.Greeting
 import io.github.ronjunevaldoz.awake.core.utils.Time
@@ -31,6 +55,7 @@ import kotlinx.coroutines.delay
 fun App() {
     MaterialTheme {
         var greetingText by remember { mutableStateOf("Hello, World!") }
+        var vulkan by remember { mutableStateOf(true) }
         var fpsText by remember { mutableStateOf("") }
         val items = remember { mutableStateOf(DemoApplication.drawableLabels) }
         LaunchedEffect(Unit) {
@@ -54,10 +79,18 @@ fun App() {
                     contentDescription = "Double Arrow",
                     modifier = Modifier.padding(start = 8.dp)
                 )
+
+            }
+            SwitchGraphics(true) { isVulkan ->
+                vulkan = isVulkan
             }
             Box(modifier = Modifier.fillMaxSize()) {
-                DemoScene {
-                    colorObject = Color.LightGray
+                if (vulkan) {
+                    VulkanScene()
+                } else {
+                    DemoScene {
+                        colorObject = Color.LightGray
+                    }
                 }
                 Text(
                     text = fpsText,
@@ -66,5 +99,25 @@ fun App() {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun SwitchGraphics(default: Boolean, onStateChange: (Boolean) -> Unit) {
+    val checked = remember { mutableStateOf(default) }
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(16.dp)
+    ) {
+        Text("Enable Vulkan", fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.padding(start = 8.dp))
+        Switch(
+            checked = checked.value,
+            onCheckedChange = {
+                checked.value = it
+                onStateChange(checked.value)
+            },
+        )
     }
 }
