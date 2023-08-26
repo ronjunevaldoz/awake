@@ -37,16 +37,6 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         // unable to process void
     }
 
-    void
-    destroySurfaceKHR(jlong arg0, jlong arg1) {
-        // process parameter??
-        auto instance = reinterpret_cast<VkInstance>(arg0);
-        auto surfaceKHR = reinterpret_cast<VkSurfaceKHR>(arg1);
-        // process destroy??
-        vkDestroySurfaceKHR(instance, surfaceKHR, nullptr);
-        // unable to process void
-    }
-
     jlongArray
     createGraphicsPipelines(JNIEnv *env, jlong arg0, jlong arg1, jobjectArray arg2) {
         // process parameter??
@@ -80,6 +70,16 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         return jArray;
     }
 
+    void
+    destroySurfaceKHR(jlong arg0, jlong arg1) {
+        // process parameter??
+        auto instance = reinterpret_cast<VkInstance>(arg0);
+        auto surfaceKHR = reinterpret_cast<VkSurfaceKHR>(arg1);
+        // process destroy??
+        vkDestroySurfaceKHR(instance, surfaceKHR, nullptr);
+        // unable to process void
+    }
+
     jlong
     createDebugUtilsMessengerEXT(JNIEnv *env, jlong arg0, jobject arg1) {
         // process parameter??
@@ -103,15 +103,6 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
     }
 
     void
-    cmdEndRenderPass(JNIEnv *env, jlong arg0) {
-        // process parameter??
-        auto commandBuffer = reinterpret_cast<VkCommandBuffer>(arg0);
-        // process cmd??
-        vkCmdEndRenderPass(commandBuffer);
-        // unable to process void
-    }
-
-    void
     cmdBeginRenderPass(JNIEnv *env, jlong arg0, jobject arg1, jobject arg2) {
         // process parameter??
         auto commandBuffer = reinterpret_cast<VkCommandBuffer>(arg0);
@@ -122,6 +113,15 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         auto vkarg2 = enum_utils::getEnumFromObject(env, arg2);
         // process cmd??
         vkCmdBeginRenderPass(commandBuffer, &info, static_cast<VkSubpassContents>(vkarg2));
+        // unable to process void
+    }
+
+    void
+    cmdEndRenderPass(JNIEnv *env, jlong arg0) {
+        // process parameter??
+        auto commandBuffer = reinterpret_cast<VkCommandBuffer>(arg0);
+        // process cmd??
+        vkCmdEndRenderPass(commandBuffer);
         // unable to process void
     }
 
@@ -235,6 +235,16 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         return jArray;
     }
 
+    jobject
+    getPhysicalDeviceFeatures(JNIEnv *env, jlong arg0) {
+        // process parameter??
+        auto physicalDevice = reinterpret_cast<VkPhysicalDevice>(arg0);
+        // process get??
+        VkPhysicalDeviceFeatures handle;
+        vkGetPhysicalDeviceFeatures(physicalDevice, &handle);
+        return VkPhysicalDeviceFeaturesMutator(env).toObject(handle);
+    }
+
     void
     destroySemaphore(jlong arg0, jlong arg1) {
         // process parameter??
@@ -261,16 +271,6 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         // unable to process void
     }
 
-    jobject
-    getPhysicalDeviceFeatures(JNIEnv *env, jlong arg0) {
-        // process parameter??
-        auto physicalDevice = reinterpret_cast<VkPhysicalDevice>(arg0);
-        // process get??
-        VkPhysicalDeviceFeatures handle;
-        vkGetPhysicalDeviceFeatures(physicalDevice, &handle);
-        return VkPhysicalDeviceFeaturesMutator(env).toObject(handle);
-    }
-
     void
     destroyImageView(jlong arg0, jlong arg1) {
         // process parameter??
@@ -279,24 +279,6 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         // process destroy??
         vkDestroyImageView(device, imageView, nullptr);
         // unable to process void
-    }
-
-    jlong
-    createSemaphore(JNIEnv *env, jlong arg0, jobject arg1) {
-        // process parameter??
-        auto device = reinterpret_cast<VkDevice>(arg0);
-        // object accessor?
-        VkSemaphoreCreateInfo info{};
-        VkSemaphoreCreateInfoAccessor(env, arg1).fromObject(info);
-        // process create??
-        // process handle
-        VkSemaphore handle;
-        VkResult result = vkCreateSemaphore(device, &info, nullptr, &handle);
-        if (result != VK_SUCCESS) {
-            exception_utils::resultException(env, result,
-                                             "There was a problem executing vkCreateSemaphore");
-        }
-        return reinterpret_cast<jlong>(handle);
     }
 
     void
@@ -322,6 +304,24 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
                                              "There was a problem executing vkQueueSubmit");
         }
         // unable to process void
+    }
+
+    jlong
+    createSemaphore(JNIEnv *env, jlong arg0, jobject arg1) {
+        // process parameter??
+        auto device = reinterpret_cast<VkDevice>(arg0);
+        // object accessor?
+        VkSemaphoreCreateInfo info{};
+        VkSemaphoreCreateInfoAccessor(env, arg1).fromObject(info);
+        // process create??
+        // process handle
+        VkSemaphore handle;
+        VkResult result = vkCreateSemaphore(device, &info, nullptr, &handle);
+        if (result != VK_SUCCESS) {
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateSemaphore");
+        }
+        return reinterpret_cast<jlong>(handle);
     }
 
     jlong
@@ -504,15 +504,6 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         // unable to process void
     }
 
-    void
-    destroyInstance(jlong arg0) {
-        // process parameter??
-        auto instance = reinterpret_cast<VkInstance>(arg0);
-        // process destroy??
-        vkDestroyInstance(instance, nullptr);
-        // unable to process void
-    }
-
     jlong
     createImageView(JNIEnv *env, jlong arg0, jobject arg1) {
         // process parameter??
@@ -529,6 +520,15 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
                                              "There was a problem executing vkCreateImageView");
         }
         return reinterpret_cast<jlong>(handle);
+    }
+
+    void
+    destroyInstance(jlong arg0) {
+        // process parameter??
+        auto instance = reinterpret_cast<VkInstance>(arg0);
+        // process destroy??
+        vkDestroyInstance(instance, nullptr);
+        // unable to process void
     }
 
     void
@@ -549,34 +549,6 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         // unable to process void
     }
 
-    jlongArray
-    getSwapchainImagesKHR(JNIEnv *env, jlong arg0, jlong arg1) {
-        // process parameter??
-        auto device = reinterpret_cast<VkDevice>(arg0);
-        auto swapchainKHR = reinterpret_cast<VkSwapchainKHR>(arg1);
-        // process get??
-        uint32_t count;
-        vkGetSwapchainImagesKHR(device, swapchainKHR, &count, nullptr);
-        std::vector<VkImage> vkArray(count);
-        vkGetSwapchainImagesKHR(device, swapchainKHR, &count, vkArray.data());
-        auto jArray = env->NewLongArray(static_cast<jsize>(count));
-        for (int i = 0; i < count; ++i) {
-            auto value = reinterpret_cast<jlong>(vkArray[i]);
-            env->SetLongArrayRegion(jArray, i, 1, &value);
-        }
-        return jArray;
-    }
-
-    void
-    destroyShaderModule(jlong arg0, jlong arg1) {
-        // process parameter??
-        auto device = reinterpret_cast<VkDevice>(arg0);
-        auto shaderModule = reinterpret_cast<VkShaderModule>(arg1);
-        // process destroy??
-        vkDestroyShaderModule(device, shaderModule, nullptr);
-        // unable to process void
-    }
-
     jlong
     createPipelineLayout(JNIEnv *env, jlong arg0, jobject arg1) {
         // process parameter??
@@ -593,6 +565,34 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
                                              "There was a problem executing vkCreatePipelineLayout");
         }
         return reinterpret_cast<jlong>(handle);
+    }
+
+    void
+    destroyShaderModule(jlong arg0, jlong arg1) {
+        // process parameter??
+        auto device = reinterpret_cast<VkDevice>(arg0);
+        auto shaderModule = reinterpret_cast<VkShaderModule>(arg1);
+        // process destroy??
+        vkDestroyShaderModule(device, shaderModule, nullptr);
+        // unable to process void
+    }
+
+    jlongArray
+    getSwapchainImagesKHR(JNIEnv *env, jlong arg0, jlong arg1) {
+        // process parameter??
+        auto device = reinterpret_cast<VkDevice>(arg0);
+        auto swapchainKHR = reinterpret_cast<VkSwapchainKHR>(arg1);
+        // process get??
+        uint32_t count;
+        vkGetSwapchainImagesKHR(device, swapchainKHR, &count, nullptr);
+        std::vector<VkImage> vkArray(count);
+        vkGetSwapchainImagesKHR(device, swapchainKHR, &count, vkArray.data());
+        auto jArray = env->NewLongArray(static_cast<jsize>(count));
+        for (int i = 0; i < count; ++i) {
+            auto value = reinterpret_cast<jlong>(vkArray[i]);
+            env->SetLongArrayRegion(jArray, i, 1, &value);
+        }
+        return jArray;
     }
 
     jlong
@@ -631,23 +631,6 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         return reinterpret_cast<jlong>(handle);
     }
 
-    jlong
-    createInstance(JNIEnv *env, jobject arg0) {
-        // process parameter??
-        // object accessor?
-        VkInstanceCreateInfo info{};
-        VkInstanceCreateInfoAccessor(env, arg0).fromObject(info);
-        // process create??
-        // process handle
-        VkInstance handle;
-        VkResult result = vkCreateInstance(&info, nullptr, &handle);
-        if (result != VK_SUCCESS) {
-            exception_utils::resultException(env, result,
-                                             "There was a problem executing vkCreateInstance");
-        }
-        return reinterpret_cast<jlong>(handle);
-    }
-
     jobjectArray
     enumerateInstanceLayerProperties(JNIEnv *env) {
         // process parameter??
@@ -666,6 +649,23 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
             env->DeleteLocalRef(obj);
         }
         return jArray;
+    }
+
+    jlong
+    createInstance(JNIEnv *env, jobject arg0) {
+        // process parameter??
+        // object accessor?
+        VkInstanceCreateInfo info{};
+        VkInstanceCreateInfoAccessor(env, arg0).fromObject(info);
+        // process create??
+        // process handle
+        VkInstance handle;
+        VkResult result = vkCreateInstance(&info, nullptr, &handle);
+        if (result != VK_SUCCESS) {
+            exception_utils::resultException(env, result,
+                                             "There was a problem executing vkCreateInstance");
+        }
+        return reinterpret_cast<jlong>(handle);
     }
 
     void
@@ -769,6 +769,17 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
         return static_cast<jint>(handle);
     }
 
+    void
+    resetCommandBuffer(JNIEnv *env, jlong arg0, jint arg1) {
+        // process parameter??
+        auto commandBuffer = reinterpret_cast<VkCommandBuffer>(arg0);
+        // process primitive  int??
+        uint32_t vkarg1 = arg1;
+        // process cmd??
+        vkResetCommandBuffer(commandBuffer, vkarg1);
+        // unable to process void
+    }
+
     jlong
     createShaderModule(JNIEnv *env, jlong arg0, jobject arg1) {
         // process parameter??
@@ -785,17 +796,6 @@ getPhysicalDeviceQueueFamilyProperties(JNIEnv *env, jlong arg0) {
                                              "There was a problem executing vkCreateShaderModule");
         }
         return reinterpret_cast<jlong>(handle);
-    }
-
-    void
-    resetCommandBuffer(JNIEnv *env, jlong arg0, jint arg1) {
-        // process parameter??
-        auto commandBuffer = reinterpret_cast<VkCommandBuffer>(arg0);
-        // process primitive  int??
-        uint32_t vkarg1 = arg1;
-        // process cmd??
-        vkResetCommandBuffer(commandBuffer, vkarg1);
-        // unable to process void
     }
 
     jboolean

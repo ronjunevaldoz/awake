@@ -535,7 +535,7 @@ class VulkanApplication : Application {
             imageArrayLayers = 1,
             imageUsage = imageUsage,
             imageSharingMode = imageSharingMode,
-            pQueueFamilyIndices = queueFamilyIndices,
+            pQueueFamilyIndices = queueFamilyIndices?.toIntArray(),
             preTransform = preTransform,
             compositeAlpha = compositeAlpha,
             presentMode = presentMode,

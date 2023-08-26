@@ -19,8 +19,7 @@ VkSubpassDescriptionAccessor::VkSubpassDescriptionAccessor(JNIEnv *env, jobject 
                                                "[Lio/github/ronjunevaldoz/awake/vulkan/models/VkAttachmentReference;");
     pDepthStencilAttachmentField = env->GetFieldID(clazz, "pDepthStencilAttachment",
                                                    "[Lio/github/ronjunevaldoz/awake/vulkan/models/VkAttachmentReference;");
-    pPreserveAttachmentsField = env->GetFieldID(clazz, "pPreserveAttachments",
-                                                "[Ljava/lang/Integer;");
+    pPreserveAttachmentsField = env->GetFieldID(clazz, "pPreserveAttachments", "[I");
 }
 
 uint32_t
@@ -139,7 +138,7 @@ VkSubpassDescriptionAccessor::fromObject(VkSubpassDescription &clazzInfo) {
     getpColorAttachments(clazzInfo);  // VkAttachmentReference Object Array
     getpResolveAttachments(clazzInfo);  // VkAttachmentReference Object Array
     getpDepthStencilAttachment(clazzInfo);  // VkAttachmentReference Object Array
-    getpPreserveAttachments(clazzInfo);  // Integer Object Array
+    getpPreserveAttachments(clazzInfo);  // int Object Array
 }
 
 void
@@ -160,8 +159,7 @@ VkSubpassDescriptionAccessor::getpPreserveAttachments(VkSubpassDescription &claz
     // processing array data
     auto preserveAttachmentCount = static_cast<uint32_t>(pPreserveAttachments.size());
     clazzInfo.preserveAttachmentCount = preserveAttachmentCount;
-    // Make a copy of the object to ensure proper memory management;
-    // jintArray
+    // Make a copy of the primitive to ensure proper memory management;
     auto copy = new uint32_t[size];
     std::copy(pPreserveAttachments.begin(), pPreserveAttachments.end(), copy);
     clazzInfo.pPreserveAttachments = copy;
