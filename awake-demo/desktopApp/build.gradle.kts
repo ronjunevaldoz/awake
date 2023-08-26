@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -17,7 +18,12 @@ kotlin {
             }
         }
     }
+
 }
+
+val host: TargetMachine =
+    gradle.serviceOf<org.gradle.nativeplatform.internal.DefaultTargetMachineFactory>().host()
+
 
 compose.desktop {
     application {
@@ -28,8 +34,8 @@ compose.desktop {
             packageName = "KotlinMultiplatformComposeDesktopApplication"
             packageVersion = "1.0.0"
         }
-        jvmArgs(
-            "-XstartOnFirstThread"
-        )
+        if (host.operatingSystemFamily.isMacOs) {
+            jvmArgs("-XstartOnFirstThread")
+        }
     }
 }

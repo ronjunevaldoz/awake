@@ -47,7 +47,7 @@ class VkSwapchainCreateInfoKHR(
     val imageUsage: VkImageUsageFlags = 0,
     val imageSharingMode: VkSharingMode = VkSharingMode.VK_SHARING_MODE_EXCLUSIVE,
     @field:VkArray("queueFamilyIndexCount")
-    val pQueueFamilyIndices: Array<Int>? = null, // Set it to null if it's optional
+    val pQueueFamilyIndices: IntArray? = null, // Set it to null if it's optional
     val preTransform: VkSurfaceTransformFlagBitsKHR = VkSurfaceTransformFlagBitsKHR.VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
     val compositeAlpha: VkCompositeAlphaFlagBitsKHR = VkCompositeAlphaFlagBitsKHR.VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
     val presentMode: VkPresentModeKHR = VkPresentModeKHR.VK_PRESENT_MODE_IMMEDIATE_KHR,

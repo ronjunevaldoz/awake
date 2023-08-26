@@ -24,8 +24,7 @@ VkSwapchainCreateInfoKHRAccessor::VkSwapchainCreateInfoKHRAccessor(JNIEnv *env, 
     imageUsageField = env->GetFieldID(clazz, "imageUsage", "I");
     imageSharingModeField = env->GetFieldID(clazz, "imageSharingMode",
                                             "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkSharingMode;");
-    pQueueFamilyIndicesField = env->GetFieldID(clazz, "pQueueFamilyIndices",
-                                               "[Ljava/lang/Integer;");
+    pQueueFamilyIndicesField = env->GetFieldID(clazz, "pQueueFamilyIndices", "[I");
     preTransformField = env->GetFieldID(clazz, "preTransform",
                                         "Lio/github/ronjunevaldoz/awake/vulkan/enums/VkSurfaceTransformFlagBitsKHR;");
     compositeAlphaField = env->GetFieldID(clazz, "compositeAlpha",
@@ -72,8 +71,7 @@ VkSwapchainCreateInfoKHRAccessor::getpQueueFamilyIndices(VkSwapchainCreateInfoKH
     // processing array data
     auto queueFamilyIndexCount = static_cast<uint32_t>(pQueueFamilyIndices.size());
     clazzInfo.queueFamilyIndexCount = queueFamilyIndexCount;
-    // Make a copy of the object to ensure proper memory management;
-    // jintArray
+    // Make a copy of the primitive to ensure proper memory management;
     auto copy = new uint32_t[size];
     std::copy(pQueueFamilyIndices.begin(), pQueueFamilyIndices.end(), copy);
     clazzInfo.pQueueFamilyIndices = copy;
@@ -163,7 +161,7 @@ VkSwapchainCreateInfoKHRAccessor::fromObject(VkSwapchainCreateInfoKHR &clazzInfo
     clazzInfo.imageArrayLayers = getimageArrayLayers(); // Primitive uint32_t
     clazzInfo.imageUsage = getimageUsage(); // Primitive uint32_t
     clazzInfo.imageSharingMode = getimageSharingMode(); // Enum VkSharingMode
-    getpQueueFamilyIndices(clazzInfo);  // Integer Object Array
+    getpQueueFamilyIndices(clazzInfo);  // int Object Array
     clazzInfo.preTransform = getpreTransform(); // Enum VkSurfaceTransformFlagBitsKHR
     clazzInfo.compositeAlpha = getcompositeAlpha(); // Enum VkCompositeAlphaFlagBitsKHR
     clazzInfo.presentMode = getpresentMode(); // Enum VkPresentModeKHR

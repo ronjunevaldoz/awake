@@ -81,7 +81,7 @@ android {
         minSdk = 24
         externalNativeBuild {
             cmake {
-                abiFilters += listOf("arm64-v8a")
+                abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
                 cppFlags += listOf("-DVK_USE_PLATFORM_ANDROID_KHR", "-lvulkan")
 //                "-DVKB_VALIDATION_LAYERS=OFF"
                 arguments += listOf("-DANDROID_TOOLCHAIN=clang", "-DANDROID_STL=c++_static")

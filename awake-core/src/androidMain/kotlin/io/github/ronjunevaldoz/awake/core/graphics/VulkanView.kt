@@ -562,7 +562,7 @@ class VulkanView(context: Context) : SurfaceView(context), SurfaceHolder.Callbac
             imageArrayLayers = 1,
             imageUsage = imageUsage,
             imageSharingMode = imageSharingMode,
-            pQueueFamilyIndices = queueFamilyIndices,
+            pQueueFamilyIndices = queueFamilyIndices?.toIntArray(),
             preTransform = preTransform,
             compositeAlpha = compositeAlpha,
             presentMode = presentMode,
