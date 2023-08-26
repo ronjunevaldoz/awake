@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.support.serviceOf
+
 /*
  * Awake
  * Awake.awake-demo.shared
@@ -103,30 +105,69 @@ android {
     }
 }
 
+val glslangDownload =
+    tasks.register<org.jetbrains.kotlin.de.undercouch.gradle.tasks.download.Download>("glslangDownload") {
+        val host: TargetMachine =
+            gradle.serviceOf<org.gradle.nativeplatform.internal.DefaultTargetMachineFactory>()
+                .host()
+        val os = host.operatingSystemFamily
+        val hostFile = when {
+            os.isMacOs -> "osx"
+            os.isWindows -> "windows"
+            os.isLinux -> "linux"
+            else -> throw Exception("${os.name} not supported")
+        }
+        src("https://github.com/KhronosGroup/glslang/releases/download/main-tot/glslang-master-$hostFile-Release.zip")
+        dest(file("${buildDir}/glslang.zip"))
+    }
 
-tasks.register<Glslangvalidator_conventions_gradle.GlslValidator>("glslValidator") {
+val glslangDownloadCopy = tasks.register<Copy>("glslangDownloadCopy") {
+    dependsOn(glslangDownload)
+    from(zipTree(file("$buildDir/glslang.zip")))
+    into(layout.buildDirectory.dir("glslang"))
+}
+
+tasks.create<Exec>("glslValidator") {
+    dependsOn(glslangDownloadCopy)
+
     val commonResourceDir = android.sourceSets["main"].resources.srcDirs.first { srcDir ->
         srcDir.toString().contains("common")
     }
 
+    val bin = "$buildDir/glslang/bin"
+
     val shadersDir = File(commonResourceDir, "assets/shader/vulkan")
-    targetVulkanVersion.set(1.3) // TODO get version from awake-vulkan library
-    shaderDir.set(shadersDir.path)
-    spvDir.set(shadersDir.path)
+    val outputSpv = shadersDir.path
+
+    val shaders = project.fileTree(shadersDir) {
+        include("**/*.frag", "**/*.vert")
+    }
+
+    shaders.forEach { shaderFile ->
+        val shaderExt = shaderFile.extension
+        val shaderName =
+            if (shaderExt == "frag" || shaderExt == "vert") shaderFile.name else shaderFile.nameWithoutExtension
+        val spvFile = File(outputSpv, "$shaderName.spv")
+        commandLine(
+            "$bin/glslangValidator",
+            "-V",
+            shaderFile.absolutePath,
+            "-o",
+            spvFile.absolutePath
+        )
+    }
 }
 
 tasks.register<JavaExec>("runVulkanCpp") {
-//    doFirst {
     mainClass.set("io.github.ronjunevaldoz.awake.vulkan_generator.MainKt")
     classpath = project(":awake-vulkan-generator").sourceSets["main"].runtimeClasspath
     args(project(":awake-vulkan-generator").rootDir.path)
-//    }
 }
 // After evaluating the project configuration
 afterEvaluate {
     // Access the preCompileShaders task and make it run before Java compilation tasks
     tasks.withType(JavaCompile::class.java) {
-        dependsOn(tasks.withType<Glslangvalidator_conventions_gradle.GlslValidator>())
 //        dependsOn(tasks.named("runVulkanCpp"))
+        dependsOn(tasks.named("glslValidator"))
     }
 }
