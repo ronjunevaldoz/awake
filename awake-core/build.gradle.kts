@@ -68,6 +68,7 @@ kotlin {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
                 implementation(napier)
+                implementation(project(":awake-vulkan"))
             }
         }
         val commonTest by getting {

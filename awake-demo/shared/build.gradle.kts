@@ -1,3 +1,43 @@
+/*
+ * Awake
+ * Awake.awake-demo.shared
+ *
+ * Copyright (c) ronjunevaldoz 2023.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import org.gradle.kotlin.dsl.support.serviceOf
+
+/*
+ * Awake
+ * Awake.awake-demo.shared
+ *
+ * Copyright (c) ronjunevaldoz 2023.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -36,6 +76,7 @@ kotlin {
                 implementation(compose.material3)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
+                implementation(project(":awake-vulkan"))
                 implementation(project(":awake-core"))
             }
         }
@@ -81,5 +122,75 @@ android {
     }
     kotlin {
         jvmToolchain(11)
+    }
+}
+dependencies {
+    implementation(project(mapOf("path" to ":awake-vulkan")))
+}
+
+val glslangDownload =
+    tasks.register<org.jetbrains.kotlin.de.undercouch.gradle.tasks.download.Download>("glslangDownload") {
+        val host: TargetMachine =
+            gradle.serviceOf<org.gradle.nativeplatform.internal.DefaultTargetMachineFactory>()
+                .host()
+        val os = host.operatingSystemFamily
+        val hostFile = when {
+            os.isMacOs -> "main-osx"
+            os.isWindows -> "master-windows"
+            os.isLinux -> "main-linux"
+            else -> throw Exception("${os.name} not supported")
+        }
+        src("https://github.com/KhronosGroup/glslang/releases/download/main-tot/glslang-$hostFile-Release.zip")
+        dest(file("${buildDir}/glslang.zip"))
+    }
+
+val glslangDownloadCopy = tasks.register<Copy>("glslangDownloadCopy") {
+    dependsOn(glslangDownload)
+    from(zipTree(file("$buildDir/glslang.zip")))
+    into(layout.buildDirectory.dir("glslang"))
+}
+
+tasks.create<Exec>("glslValidator") {
+    dependsOn(glslangDownloadCopy)
+
+    val commonResourceDir = android.sourceSets["main"].resources.srcDirs.first { srcDir ->
+        srcDir.toString().contains("common")
+    }
+
+    val bin = "$buildDir/glslang/bin"
+
+    val shadersDir = File(commonResourceDir, "assets/shader/vulkan")
+    val outputSpv = shadersDir.path
+
+    val shaders = project.fileTree(shadersDir) {
+        include("**/*.frag", "**/*.vert")
+    }
+
+    shaders.forEach { shaderFile ->
+        val shaderExt = shaderFile.extension
+        val shaderName =
+            if (shaderExt == "frag" || shaderExt == "vert") shaderFile.name else shaderFile.nameWithoutExtension
+        val spvFile = File(outputSpv, "$shaderName.spv")
+        commandLine(
+            "$bin/glslangValidator",
+            "-V",
+            shaderFile.absolutePath,
+            "-o",
+            spvFile.absolutePath
+        )
+    }
+}
+
+tasks.register<JavaExec>("runVulkanCpp") {
+    mainClass.set("io.github.ronjunevaldoz.awake.vulkan_generator.MainKt")
+    classpath = project(":awake-vulkan-generator").sourceSets["main"].runtimeClasspath
+    args(project(":awake-vulkan-generator").rootDir.path)
+}
+// After evaluating the project configuration
+afterEvaluate {
+    // Access the preCompileShaders task and make it run before Java compilation tasks
+    tasks.withType(JavaCompile::class.java) {
+//        dependsOn(tasks.named("runVulkanCpp"))
+        dependsOn(tasks.named("glslValidator"))
     }
 }
